@@ -1,0 +1,26 @@
+import { AlaPipeline, AppContext, BaseStack, StackConfig } from "@ala/ala-cdk-libs";
+
+export class EventsPipelineStack extends BaseStack {
+
+    readonly pipeline: AlaPipeline;
+
+    constructor(appContext: AppContext, stackConfig: StackConfig) {
+
+        super(appContext, stackConfig);
+
+        this.pipeline = new AlaPipeline(this)
+
+        const sourceArtifact = this.pipeline.getSourceArtifact()
+
+        this.pipeline.addSourceStage(sourceArtifact, {
+            connectionArn: stackConfig.Paramaters.connectionArn,
+            repo: stackConfig.Paramaters.repo,
+            branch: stackConfig.Paramaters.branch
+        })
+
+        this.pipeline.addCdkStage({
+            configFile: `events-${appContext.appConfig.Project.Stage}.yaml`,
+            stackName: this.withStackName('UI'),
+        })
+    }
+}

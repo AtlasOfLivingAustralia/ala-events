@@ -1,0 +1,18 @@
+Project:
+  Name: ALA-events
+  Stage: test
+
+Stack:
+  EventsUI:
+    Name: UI
+    Paramaters:
+      zoneArn: ''
+      domainName: ''
+  Pipeline:
+    Name: Pipeline
+    Paramaters:
+      connectionArn: 'arn:aws:codestar-connections:ap-southeast-2:748909248546:connection/e336fd41-54c2-42e1-97c9-cbd6cc09fe88'
+      repo: 'ala-events',
+      branch: 'main',
+
+      

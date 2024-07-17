@@ -267,6 +267,10 @@ function Survey({ eventID, setActiveEvent, filters, ...props }) {
         return coords;
     }
 
+    if (!event) {
+        return null;
+    }
+
     let geojson = null;
     let extent = null;
 

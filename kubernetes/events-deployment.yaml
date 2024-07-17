@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: events-es-api
+  labels:
+    app: events-es-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: events-es-api
+  template:
+    metadata:
+      labels:
+        app: events-es-api
+    spec:
+      containers:
+      - name: events-es-api
+        image: atlasoflivingaustralia/es-api:6508a7b5
+        ports:
+        - containerPort: 4001
+        volumeMounts:
+        - name: events-config
+          mountPath: /usr/src/.env
+          subPath: es-api.env
+      volumes:
+        - name: events-config
+          configMap:
+            name: events-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: events-es2vt
+  labels:
+    app: events-es2vt
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: events-es2vt
+  template:
+    metadata:
+      labels:
+        app: events-es2vt
+    spec:
+      containers:
+      - name: events-es2vt
+        image: atlasoflivingaustralia/es2vt:be674a85
+        ports:
+        - containerPort: 4002
+        volumeMounts:
+        - name: events-config
+          mountPath: /usr/src/.env
+          subPath: es2vt.env
+      volumes:
+        - name: events-config
+          configMap:
+            name: events-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: events-graphql-api
+  labels:
+    app: events-graphql-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: events-graphql-api
+  template:
+    metadata:
+      labels:
+        app: events-graphql-api
+    spec:
+      containers:
+      - name: events-graphql-api
+        image: atlasoflivingaustralia/graphql-api:6508a7b5
+        ports:
+        - containerPort: 4000
+        volumeMounts:
+        - name: events-config
+          mountPath: /usr/src/.env
+          subPath: graphql-api.env
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        # readinessProbe:
+        #   httpGet:
+        #     path: /ready
+        #     port: 4000
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
+      volumes:
+        - name: events-config
+          configMap:
+            name: events-config
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: events-graphql-api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: events-graphql-api
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50

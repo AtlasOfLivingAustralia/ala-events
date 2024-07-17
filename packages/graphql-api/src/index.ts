@@ -29,7 +29,7 @@ import mapController from './api-utils/maps/index.ctrl.js';
 
 // we are doing this async as we need to load the various enumerations from the APIs
 // and generate the schema from those
-async function initializeServer() {
+async function initializeServer() { 
   // this is async as we generate parts of the schema from the live enumeration API
   const typeDefs = await getSchema();
   const server = new ApolloServer({
