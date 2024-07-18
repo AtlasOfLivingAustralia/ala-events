@@ -1,15 +1,16 @@
 Project:
   Name: ALA-events
-  Stage: test
+  Stage: dev
 
 Stack:
   EventsUI:
     Name: UI
     Parameters:
-      # domain: 
-      #   zoneId: Z0788991HA5BZCF09QS3
-      #   domainName: events.test.ala.org.au
-      #   certificateArn: arn:aws:acm:us-east-1:748909248546:certificate/dd739e47-f989-4181-ad28-34518473eff4
+      domain: 
+        zoneId: Z0205454134UILBVG0TC
+        zoneName: dev.ala.org.au
+        domainName: events.dev.ala.org.au
+        certificateArn: arn:aws:acm:us-east-1:748909248546:certificate/44fe9e04-6511-4a46-a0b8-36209d443f21
   Pipeline:
     Name: Pipeline
     Parameters:

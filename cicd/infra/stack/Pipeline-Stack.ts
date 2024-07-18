@@ -13,17 +13,17 @@ export class EventsPipelineStack extends BaseStack {
         const sourceArtifact = this.pipeline.getSourceArtifact()
 
         this.pipeline.addSourceStage(sourceArtifact, {
-            connectionArn: stackConfig.Paramaters.connectionArn,
-            owner: stackConfig.Paramaters.owner,
-            repo: stackConfig.Paramaters.repo,
-            branch: stackConfig.Paramaters.branch,
+            connectionArn: stackConfig.Parameters.connectionArn,
+            owner: stackConfig.Parameters.owner,
+            repo: stackConfig.Parameters.repo,
+            branch: stackConfig.Parameters.branch,
             codeBuildCloneOutput: false,
             triggerOnPush: true
         })
 
         this.pipeline.addCdkStage({
             configFile: `events-${appContext.appConfig.Project.Stage}.yaml`,
-            stackName: this.withStackName('UI'),
+            stackName: this.withProjectPrefix('UI'),
         })
     }
 }
