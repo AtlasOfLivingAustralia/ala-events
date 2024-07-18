@@ -14,8 +14,10 @@ export class EventsPipelineStack extends BaseStack {
 
         this.pipeline.addSourceStage(sourceArtifact, {
             connectionArn: stackConfig.Paramaters.connectionArn,
+            owner: stackConfig.Paramaters.owner,
             repo: stackConfig.Paramaters.repo,
-            branch: stackConfig.Paramaters.branch
+            branch: stackConfig.Paramaters.branch,
+            codeBuildCloneOutput: false
         })
 
         this.pipeline.addCdkStage({

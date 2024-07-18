@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-//import { ... } from './stack/...-stack';
 import { AppContext, AppContextError, PipelineBaseStack, ProjectPrefixType } from '@ala/ala-cdk-libs';
 import { EventsUIStack } from './stack/Events-UI-Stack';
 import { EventsPipelineStack } from './stack/Pipeline-Stack';
