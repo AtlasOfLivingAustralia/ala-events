@@ -17,7 +17,8 @@ export class EventsPipelineStack extends BaseStack {
             owner: stackConfig.Paramaters.owner,
             repo: stackConfig.Paramaters.repo,
             branch: stackConfig.Paramaters.branch,
-            codeBuildCloneOutput: false
+            codeBuildCloneOutput: false,
+            triggerOnPush: true
         })
 
         this.pipeline.addCdkStage({
