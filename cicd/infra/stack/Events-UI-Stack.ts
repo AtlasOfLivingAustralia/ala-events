@@ -26,7 +26,8 @@ export class EventsUIStack extends BaseStack {
                     hostedZone: hostedZone,
                     domainNames: [ stackConfig.Parameters.domain.domainName ],
                     certificate: certificate
-                }
+                },
+                entryPage: '/ala-demo.html'
             })
         } else {
 
