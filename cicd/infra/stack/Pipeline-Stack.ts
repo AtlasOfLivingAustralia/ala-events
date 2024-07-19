@@ -55,6 +55,27 @@ export class EventsPipelineStack extends BaseStack {
             // Use '*' in resources to allow access to all parameters, or specify individual parameter ARNs for finer control
         }));
 
+        const invalidateCache = new codebuild.PipelineProject(this, 'invalidate-cache', {
+            buildSpec: codebuild.BuildSpec.fromObject({
+                version: '0.2',
+                phases: {
+                    build: {
+                        commands: [
+                            'aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"'
+                        ]
+                    }
+                }
+            }),
+            environmentVariables: {
+                CLOUDFRONT_ID: { value: eventsUiStack.eventsSpa.distribution.distributionId }
+            }
+        })
+
+        invalidateCache.addToRolePolicy(new iam.PolicyStatement({
+            resources: [ Stack.of(this).formatArn({ service: 'cloudfront', region: '', resource: `distribution/${eventsUiStack.eventsSpa.distribution.distributionId}` }) ],
+            actions: [ 'cloudfront:CreateInvalidation' ]
+        }))
+
         this.pipeline.addStage({
             stageName: 'Deploy-Events-UI',
             actions: [
@@ -99,7 +120,7 @@ export class EventsPipelineStack extends BaseStack {
                                 files: [
                                     'ala-demo.html',
                                     'config.js',
-                                    'dist/**'
+                                    'dist/**/*'
                                 ]
                             }
                         })
@@ -116,21 +137,7 @@ export class EventsPipelineStack extends BaseStack {
                 }),
                 new codepipeline_actions.CodeBuildAction({
                     actionName: 'Invalidate-Events-UI-cache',
-                    project: new codebuild.PipelineProject(this, 'invalidate-cache', {
-                        buildSpec: codebuild.BuildSpec.fromObject({
-                            version: '0.2',
-                            phases: {
-                                build: {
-                                    commands: [
-                                        'aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"'
-                                    ]
-                                }
-                            }
-                        }),
-                        environmentVariables: {
-                            CLOUDFRONT_ID: { value: eventsUiStack.eventsSpa.distribution.distributionId }
-                        }
-                    }),
+                    project: invalidateCache,
                     input: buildArtifact,
                     runOrder: 3
                 })
