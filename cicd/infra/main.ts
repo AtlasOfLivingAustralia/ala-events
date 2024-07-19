@@ -11,9 +11,13 @@ try {
         projectPrefixType: ProjectPrefixType.NameHyphenStage,
     });
 
-    new EventsUIStack(appContext, appContext.appConfig.Stack.EventsUI);
+    const eventUIStack = new EventsUIStack(appContext, appContext.appConfig.Stack.EventsUI);
 
-    new EventsPipelineStack(appContext, appContext.appConfig.Stack.Pipeline);
+
+    new EventsPipelineStack(appContext, { 
+        eventsUiStack: eventUIStack,
+        ...appContext.appConfig.Stack.Pipeline 
+    });
 
 } catch (error) {
     if (error instanceof AppContextError) {

@@ -7,7 +7,7 @@ import { CfnOutput } from 'aws-cdk-lib';
 
 export class EventsUIStack extends BaseStack {
 
-    readonly eventsUI: StaticSpa;
+    readonly eventsSpa: StaticSpa;
 
     constructor(appContext: AppContext, stackConfig: StackConfig) {
 
@@ -21,7 +21,7 @@ export class EventsUIStack extends BaseStack {
             })
             const certificate = cert.Certificate.fromCertificateArn(this, 'Certificate', stackConfig.Parameters.domain.certificateArn)
 
-            this.eventsUI = new StaticSpa(this, 'EventsUI', {
+            this.eventsSpa = new StaticSpa(this, 'EventsUI', {
                 customDomain: {
                     hostedZone: hostedZone,
                     domainNames: [ stackConfig.Parameters.domain.domainName ],
@@ -30,11 +30,11 @@ export class EventsUIStack extends BaseStack {
             })
         } else {
 
-            this.eventsUI = new StaticSpa(this, 'EventsUI', {})
+            this.eventsSpa = new StaticSpa(this, 'EventsUI', {})
         }
 
-        new CfnOutput(this, 'EventsBucketArn', { key: 'EventsBucketArn', value: this.eventsUI.bucket.bucketArn })
-        new CfnOutput(this, 'EventsBucketName', { key: 'EventsBucketName', value: this.eventsUI.bucket.bucketName })
-        new CfnOutput(this, 'EventsDistributionId', { key: 'EventsDistributionId', value: this.eventsUI.distribution.distributionId })
+        new CfnOutput(this, 'EventsBucketArn', { key: 'EventsBucketArn', value: this.eventsSpa.bucket.bucketArn })
+        new CfnOutput(this, 'EventsBucketName', { key: 'EventsBucketName', value: this.eventsSpa.bucket.bucketName })
+        new CfnOutput(this, 'EventsDistributionId', { key: 'EventsDistributionId', value: this.eventsSpa.distribution.distributionId })
     }
 }
