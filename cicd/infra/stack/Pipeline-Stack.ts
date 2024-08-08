@@ -5,7 +5,6 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 
 export class EventsPipelineStack extends BaseStack {
 
@@ -49,7 +48,7 @@ export class EventsPipelineStack extends BaseStack {
 
         // Attach a policy to the role for accessing SSM Parameter Store
         codeBuildRole.addToPolicy(new iam.PolicyStatement({
-            actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+            actions: [ 'ssm:GetParameter', 'ssm:GetParameters'],
             resources: [ Stack.of(this).formatArn({ service: 'ssm', resource: `parameter${ssmBasePath}/*` }) ],
             // Use '*' in resources to allow access to all parameters, or specify individual parameter ARNs for finer control
         }));
