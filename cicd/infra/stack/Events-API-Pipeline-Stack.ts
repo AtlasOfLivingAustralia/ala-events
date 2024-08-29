@@ -54,9 +54,9 @@ export class EventsApiPipelineStack extends BaseStack {
             // Use '*' in resources to allow access to all parameters, or specify individual parameter ARNs for finer control
         }));
 
-        // eventsApiStack.esApiRepo.grantPullPush(codeBuildRole)
-        // eventsApiStack.es2vtRepo.grantPullPush(codeBuildRole)
-        // eventsApiStack.graphqlApiRepo.grantPullPush(codeBuildRole)
+        eventsApiStack.esApiRepo.grantPullPush(codeBuildRole)
+        eventsApiStack.es2vtRepo.grantPullPush(codeBuildRole)
+        eventsApiStack.graphqlApiRepo.grantPullPush(codeBuildRole)
 
         const buildProject = new codebuild.PipelineProject(this, `docket-image-build`, {
             role: codeBuildRole,
@@ -68,7 +68,7 @@ export class EventsApiPipelineStack extends BaseStack {
                 phases: {
                     pre_build: {
                         commands: [
-                            'cd packages/$COMPOMEMT_NAME',
+                            'cd packages/$COMPONENT_NAME',
                             'echo Logging in to Amazon ECR...',
                             'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI',
                         ]
@@ -91,7 +91,7 @@ export class EventsApiPipelineStack extends BaseStack {
                     }                          
                 },
                 artifacts: {
-                    'base-directory': 'packages/$COMPOMEMT_NAME',
+                    'base-directory': 'packages/$COMPONENT_NAME',
                     files: [ '**/*' ]
                 }
             })
@@ -144,5 +144,12 @@ export class EventsApiPipelineStack extends BaseStack {
                 })
             ]
         })
+
+        // this.pipeline.addStage({
+        //     stageName: 'Deploy-Events-API',
+        //     actions: [
+
+        //     ]
+        // })
     }
 }

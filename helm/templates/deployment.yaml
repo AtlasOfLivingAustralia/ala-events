@@ -6,7 +6,7 @@ metadata:
     {{- include "ala-events.labels" . | nindent 4 }}
     app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.esApi.replicaCount }}
   selector:
     matchLabels:
       {{- include "ala-events.selectorLabels" . | nindent 6 }}
@@ -19,12 +19,12 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-es-api
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.esApi.image.repository }}:{{ .Values.esApi.image.tag }}"
+          imagePullPolicy: {{ .Values.esApi.image.pullPolicy }}
           ports:
             - containerPort: 4001
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.esApi.resources | nindent 12 }}
           volumeMounts:
             - name: events-config
               mountPath: /usr/src/.env
@@ -42,7 +42,7 @@ metadata:
     {{- include "ala-events.labels" . | nindent 4 }}
     app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.es2vt.replicaCount }}
   selector:
     matchLabels:
       {{- include "ala-events.selectorLabels" . | nindent 6 }}
@@ -54,8 +54,8 @@ spec:
         app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
     spec:
       containers:
-      - name: {{ .Chart.Name }}--es2vt
-        image: atlasoflivingaustralia/es2vt:be674a85
+      - name: {{ .Chart.Name }}-es2vt
+        image: "{{ .Values.es2vt.image.repository }}:{{ .Values.es2vt.image.tag }}"
         ports:
         - containerPort: 4002
         volumeMounts:
@@ -75,7 +75,7 @@ metadata:
     {{- include "ala-events.labels" . | nindent 4 }}
     app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.graphqlApi.replicaCount }}
   selector:
     matchLabels:
       {{- include "ala-events.selectorLabels" . | nindent 6 }}
@@ -87,8 +87,8 @@ spec:
         app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
     spec:
       containers:
-      - name: {{ .Chart.Name }}--graphql-api
-        image: atlasoflivingaustralia/graphql-api:6508a7b5
+      - name: {{ .Chart.Name }}-graphql-api
+        image: "{{ .Values.graphqlApi.image.repository }}:{{ .Values.graphqlApi.image.tag }}"
         ports:
         - containerPort: 4000
         volumeMounts:

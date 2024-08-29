@@ -73,7 +73,7 @@ setupSshTunnels() {
 
 case $1 in
     'test')
-        elNodes=('aws-events-es-2022-1.ala' 'aws-events-es-2022-2.ala')
+        elNodes=('aws-events-es-2022.ala' 'aws-events-es-2022-1.ala' 'aws-events-es-2022-2.ala')
     ;;
     'prod')
         elNodes=()

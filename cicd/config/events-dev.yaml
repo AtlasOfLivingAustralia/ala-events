@@ -24,6 +24,10 @@ Stack:
       owner: AtlasOfLivingAustralia
       repo: ala-events
       branch: epic/cicd/develop
+  EventsEks:
+    Name: EKS
+    Parameters:
+      clusterName: testing
   Pipeline:
     Name: Pipeline
     Parameters:

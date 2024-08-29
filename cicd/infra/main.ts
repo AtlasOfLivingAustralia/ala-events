@@ -5,6 +5,8 @@ import { EventsUIStack } from './stack/Events-UI-Stack';
 import { EventsPipelineStack } from './stack/Pipeline-Stack';
 import { EventsAPIStack } from './stack/Events-API-Stack';
 import { EventsApiPipelineStack } from './stack/Events-API-Pipeline-Stack';
+import { EventsEksDeploymentPipelineStack } from './stack/Events-EKS-Pipeline-Stack';
+import { EventsEKSStack as EventsEksStack } from './stack/Events-EKS-Stack';
 
 try {
 
@@ -25,6 +27,10 @@ try {
     new EventsApiPipelineStack(appContext, {
         eventsApiStack: eventsAPIStack,
         ...appContext.appConfig.Stack.EventsAPIPipeline
+    })
+
+    new EventsEksStack(appContext, {
+        ...appContext.appConfig.Stack.EventsEks
     })
 
 } catch (error) {
