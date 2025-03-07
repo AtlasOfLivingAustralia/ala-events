@@ -59,3 +59,18 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create a comma seperated list of ES node names
+*/}}
+{{- define "es-nodes" -}}
+{{- $protocol := .protocol }}
+{{- $clusterName := .clusterName }}
+{{- $nodeGroup := .nodeGroup }}
+{{- $httpPort := .httpPort }}
+{{- $nodeCount := .replicas | int }}
+  {{- range $index0, $e := until $nodeCount -}}
+    {{- $index1 := $index0 | add1 -}}
+{{ $protocol }}://{{ $clusterName }}-{{ $nodeGroup }}-{{ $index0 }}:{{ $httpPort }}{{ if ne $index1 $nodeCount }},{{ end }}
+  {{- end -}}
+{{- end -}}

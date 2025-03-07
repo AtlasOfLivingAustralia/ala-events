@@ -28,11 +28,11 @@ spec:
           volumeMounts:
             - name: events-config
               mountPath: /usr/src/.env
-              subPath: es2vt.env
+              subPath: es-api.env
       volumes:
         - name: events-config
           configMap:
-            name: events-config
+            name: {{ include "ala-events.fullname" . }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -65,7 +65,7 @@ spec:
       volumes:
         - name: events-config
           configMap:
-            name: events-config
+            name: {{ include "ala-events.fullname" . }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -110,4 +110,4 @@ spec:
       volumes:
         - name: events-config
           configMap:
-            name: events-config
+            name: {{ include "ala-events.fullname" . }}
