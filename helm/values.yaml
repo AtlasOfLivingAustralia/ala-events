@@ -31,8 +31,8 @@ securityContext: {}
 ingress:
   enabled: true
   className: "alb"
-  # certificateArn: "arn:aws:acm:ap-southeast-2:748909248546:certificate/969309c3-9c24-4fc8-9e16-10334e82bbd4"
-  # hostname: events.dev.ala.org.au
+  certificateArn: "arn:aws:acm:ap-southeast-2:748909248546:certificate/969309c3-9c24-4fc8-9e16-10334e82bbd4"
+  hostname: events-api.dev.ala.org.au
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internal
@@ -167,8 +167,43 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 elasticsearch: 
-  clusterName: elasticsearch
-  nodeGroup: master
-  replicas: 2
-  protocol: http
-  httpPort: 9200
+  pv:
+    name: ala-event-elasticsearch-pv
+  pvc:
+    name: ala-events-elasticsearch-pvc
+
+  service:
+    name: ala-event-elasticsearch
+    host: ala-event-elasticsearch
+    port: 9200
+  deployment:
+    name: ala-event-elasticsearch
+
+  clusterName: ala-event-elasticsearch
+#   nodeGroup: master
+
+#   replicas: 2
+
+#   protocol: http
+#   httpPort: 9200
+  
+#   securityContext:
+#     runAsUser: null
+
+#   podSecurityContext:
+#     allowPrivilegeEscalation: false
+#     # fsGroup: null
+#     # runAsUser: null
+
+#   sysctlInitContainer:
+#     enabled: false
+
+#   volumeClaimTemplate:
+#     accessModes: [ "ReadWriteMany" ]
+#     volumeMode: Filesystem
+#     volumeName: ala-events-elasticsearch-efs-pv
+#     storageClassName: ""
+#     resources:
+#       requests:
+#         storage: 10Gi
+    
