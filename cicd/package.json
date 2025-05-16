@@ -20,7 +20,7 @@
     "typescript": "~5.5.3"
   },
   "dependencies": {
-    "@ala/ala-cdk-libs": "0.1.4",
+    "@ala/ala-cdk-libs": "0.1.5",
     "aws-cdk-lib": "2.191.0",
     "@aws-cdk/lambda-layer-kubectl-v32": "2.1.0",
     "constructs": "^10.0.0",
