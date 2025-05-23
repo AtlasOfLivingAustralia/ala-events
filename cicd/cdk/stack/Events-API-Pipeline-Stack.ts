@@ -37,6 +37,7 @@ export class EventsApiPipelineStack extends BaseStack {
         const eventsApiStack: EventsAPIStack = stackConfig.eventsApiStack
 
         this.pipeline.addCdkStage({
+            configPath: 'cdk/config',
             configFile: `events-${appContext.appConfig.Project.Stage}.yaml`,
             stackName: eventsApiStack.stackName,
         })
