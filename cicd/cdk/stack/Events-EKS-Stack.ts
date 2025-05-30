@@ -37,9 +37,6 @@ export class EventsEKSStack extends BaseStack {
             ],
             principal: `arn:aws:iam::${cdk.Stack.of(this).account}:role/assume-ala-developer`
         })
-    
-
-        console.log('kubectlRole', this.cluster.kubectlRole?.roleArn)
 
         // Ensure the IAM role has the necessary permissions
 

@@ -18,7 +18,7 @@ export class EventsApiPipelineStack extends BaseStack {
 
         super(appContext, stackConfig);
 
-        console.log('pipeline', this.withProjectPrefix('Pipeline'))
+
 
         this.pipeline = new AlaPipeline(this)
 
@@ -59,7 +59,7 @@ export class EventsApiPipelineStack extends BaseStack {
         eventsApiStack.es2vtRepo.grantPullPush(codeBuildRole)
         eventsApiStack.graphqlApiRepo.grantPullPush(codeBuildRole)
 
-        const buildProject = new codebuild.PipelineProject(this, `docket-image-build`, {
+        const buildProject = new codebuild.PipelineProject(this, `docker-image-build`, {
             role: codeBuildRole,
             environment: {
                 buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_4

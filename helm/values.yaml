@@ -167,19 +167,24 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 elasticsearch: 
-  pv:
-    name: ala-event-elasticsearch-pv
-  pvc:
-    name: ala-events-elasticsearch-pvc
+  hosts: 
+    - http://aws-events-es-2022-1.ala:9200
+    - http://aws-events-es-2022-2.ala:9200
 
-  service:
-    name: ala-event-elasticsearch
-    host: ala-event-elasticsearch
-    port: 9200
-  deployment:
-    name: ala-event-elasticsearch
+# elastic search config for events ES instance within events namespace
+# elasticsearch: 
+#   pv:
+#     name: ala-event-elasticsearch-pv
+#   pvc:
+#     name: ala-events-elasticsearch-pvc
+#   service:
+#     name: ala-event-elasticsearch
+#     host: ala-event-elasticsearch
+#     port: 9200
+#   deployment:
+#     name: ala-event-elasticsearch
 
-  clusterName: ala-event-elasticsearch
+#   clusterName: ala-event-elasticsearch
 #   nodeGroup: master
 
 #   replicas: 2

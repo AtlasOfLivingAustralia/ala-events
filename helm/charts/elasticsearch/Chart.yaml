@@ -1,4 +1,0 @@
-apiVersion: v2
-name: elasticsearch
-version: 1.0.0
-description: Elasticsearch subchart for the ALA Lists service
