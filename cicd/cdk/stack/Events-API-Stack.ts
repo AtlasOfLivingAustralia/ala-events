@@ -15,29 +15,29 @@ export class EventsAPIStack extends BaseStack {
         super(appContext, stackConfig);
 
         this.esApiRepo = new ecr.Repository(this, 'es-api-repo', {
-            repositoryName: 'es-api'
+            repositoryName: `${this.stackName}-es-api`.toLowerCase()
         })
 
         this.es2vtRepo = new ecr.Repository(this, 'es2vt-repo', {
-            repositoryName: 'es2vt'
+            repositoryName: `${this.stackName}-es2vt`.toLowerCase()
         })
 
         this.graphqlApiRepo = new ecr.Repository(this, 'GraphQLAPI-repo', {
-            repositoryName: 'graphql-api'
+            repositoryName: `${this.stackName}-graphql-api`.toLowerCase()
         })
 
         new CfnOutput(this, 'es-api-repo-uri', {
-            exportName: 'es-api-repo',
+            exportName: `${this.stackName}-es-api-repo`,
             value: this.esApiRepo.repositoryUri
         })
 
         new CfnOutput(this, 'es2vt-repo-uri', { 
-            exportName: 'es2vt-repo',
+            exportName: `${this.stackName}-es2vt-repo`,
             value: this.es2vtRepo.repositoryUri
         })
 
         new CfnOutput(this, 'graphql-api-rep-uri', {
-            exportName: 'graphql-api-repo',
+            exportName: `${this.stackName}-graphql-api-repo`,
             value: this.graphqlApiRepo.repositoryUri
         })
     }
