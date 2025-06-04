@@ -171,7 +171,7 @@ export class EventsEKSStack extends BaseStack {
                 path: '../helm'
             }),
             namespace: 'events',
-            release: `ala-events-develop-${this.stackName}`,
+            release: 'ala-events-develop',
             values: {
                 esApi: {
                     image: {
@@ -198,7 +198,7 @@ export class EventsEKSStack extends BaseStack {
                     }
                 },
                 ingress: {
-                    hostname: `events-dev-${this.stackName}.dev.ala.org.au`
+                    hostname: `events-api-dev-${this.stackName}.dev.ala.org.au`
                 }
             }
         })
