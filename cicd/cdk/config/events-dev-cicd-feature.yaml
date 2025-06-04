@@ -1,6 +1,6 @@
 Project:
   Name: ALA-events
-  Stage: dev-cicd-feature
+  Stage: cicd-feature
 
 Stack:
   EventsAPI:
