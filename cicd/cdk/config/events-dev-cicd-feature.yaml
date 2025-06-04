@@ -1,6 +1,6 @@
 Project:
   Name: ALA-events
-  Stage: cicd-feature
+  Stage: dev-cicd-feature
 
 Stack:
   EventsAPI:
@@ -15,7 +15,7 @@ Stack:
       domain: 
         zoneId: Z0205454134UILBVG0TC
         zoneName: dev.ala.org.au
-        domainName: events-cicd-feature.dev.ala.org.au
+        domainName: events-dev-cicd-feature.dev.ala.org.au
         certificateArn: arn:aws:acm:us-east-1:748909248546:certificate/44fe9e04-6511-4a46-a0b8-36209d443f21
   EventsAPIPipeline:
     Name: API-Pipeline

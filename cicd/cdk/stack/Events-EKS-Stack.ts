@@ -198,7 +198,7 @@ export class EventsEKSStack extends BaseStack {
                     }
                 },
                 ingress: {
-                    hostname: `events-${this.stackName}.dev.ala.org.au`
+                    hostname: `events-dev-${this.stackName}.dev.ala.org.au`
                 }
             }
         })
