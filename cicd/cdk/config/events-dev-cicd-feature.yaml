@@ -27,7 +27,7 @@ Stack:
   EventsEks:
     Name: EKS
     Parameters:
-      clusterName: testing
+      clusterName: events-cluster
   Pipeline:
     Name: UI-Pipeline
     Parameters:
