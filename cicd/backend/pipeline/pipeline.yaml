@@ -329,8 +329,6 @@ Resources:
                       { "name":"IMAGES_URL", "value":"#{ExportConfigNS.IMAGES_URL}" },
                       { "name":"IMAGE_TAG", "value":"#{ExportConfigNS.IMAGE_TAG}" },
                       { "name":"LISTS_SECRET_NAME", "value":"${ListSecretName}" },
-                      { "name":"MONGODB_HOST", "value":"${MongoDbHost}" },
-                      { "name":"MONGODB_USERNAME", "value":"${MongoDbUsername}" },
                       { "name":"NAMEMATCHING_URL", "value":"#{ExportConfigNS.NAMEMATCHING_URL}" },
                       { "name":"OIDC_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
