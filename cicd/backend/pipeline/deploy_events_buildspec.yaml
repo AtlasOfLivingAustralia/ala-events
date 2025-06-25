@@ -8,7 +8,7 @@ env:
   variables:
     JAVA_TOOL_OPTIONS: -Dhttps.protocols=TLSv1.2
   secrets-manager:
-    MONGODB_PASSWORD: $LISTS_SECRET_NAME:db-password
+    ESAPI_APIKEY: $LISTS_SECRET_NAME:esApi_apiKey
 
 phases:
 
@@ -26,6 +26,8 @@ phases:
       - cd helm
       - | 
         echo "
+        esApi:
+          apiKey: \"$ESAPI_APIKEY\"
         bie:
           url: $BIE_URL
         biocache:
