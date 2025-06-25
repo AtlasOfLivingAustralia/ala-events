@@ -1,6 +1,6 @@
 version: 0.2
 ###
-# This build project builds the LISTS site files ready for upload to s3
+# This build project builds the Events site files ready for upload to s3
 
 env:
   shell: bash
@@ -11,21 +11,23 @@ phases:
     runtime-versions:
       nodejs: $NODE_VERSION
     commands:
-      - cp events-ui/vite.properties events-ui/.env
-      - echo injecting app client config
-      - sed -i "s/VITE_AUTH_CLIENT_ID=.*$/VITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID/g" events-ui/config/.env.$ENVIRONMENT
-      - cat events-ui/config/.env.$ENVIRONMENT
-      - cd packages/react-components
+      - TODO create .evn.json and config.js
+#      - cp events-ui/vite.properties events-ui/.env
+#      - echo injecting app client config
+#      - sed -i "s/VITE_AUTH_CLIENT_ID=.*$/VITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID/g" events-ui/config/.env.$ENVIRONMENT
+#      - cat events-ui/config/.env.$ENVIRONMENT
   pre_build:
     commands:
-      - echo running npm install...
-      - npm i
+      - cd packages/react-components
+      - npm install
   build:
     commands:
-      - echo building...
-      - npm run build:$ENVIRONMENT
+      - npm run build-translations
+      - npm run build
 
 artifacts:
-  base-directory: packages/react-components/dist
+  base-directory: packages/react-components
   files:
-    - '**/*'
+    - 'ala-demo.html'
+    - 'config.js'
+    - 'dist/**/*'

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Code pipeline for the lists service
+Description: Code pipeline for the events service
 
 Parameters:
   pAutoDeploy:

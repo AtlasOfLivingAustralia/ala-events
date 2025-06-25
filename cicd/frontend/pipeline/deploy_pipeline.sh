@@ -2,7 +2,7 @@
 set -ueo pipefail
 
 ###
-# Deploy the codepipeline for LISTS site
+# Deploy the codepipeline for Events site
 # You must have AWS CLI authentication for this to run. 
 
 usage() {

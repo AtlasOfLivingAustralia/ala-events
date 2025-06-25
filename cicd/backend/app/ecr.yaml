@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: Base resources for the Lists service
+Description: Base resources for the Events service
 
 Parameters:
   pBuild:

@@ -211,4 +211,16 @@ elasticsearch:
 #     resources:
 #       requests:
 #         storage: 10Gi
-    
+
+api:
+  download: https://api.test.ala.org.au/dataset/{datasetKey}
+dataset:
+  eml: https://collections-test.ala.org.au/ws/eml/{datasetKey}
+namematching:
+  url: https://namematching-ws.ala.org.au/api
+bie:
+  url: https://bie-ws.ala.org.au/ws
+biocache:
+  url: https://biocache-ws.ala.org.au/ws
+images:
+  url: https://images.ala.org.au/ws

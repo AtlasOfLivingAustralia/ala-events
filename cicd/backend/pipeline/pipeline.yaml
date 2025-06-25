@@ -109,7 +109,7 @@ Resources:
         Image: aws/codebuild/standard:7.0
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/build_lists_buildspec.yaml
+        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/build_events_buildspec.yaml
       TimeoutInMinutes: 30
 
   DeployLists:
@@ -130,7 +130,7 @@ Resources:
         Image: aws/codebuild/standard:7.0
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/deploy_lists_buildspec.yaml
+        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/deploy_events_buildspec.yaml
       TimeoutInMinutes: 20
 
   UninstallLists:
@@ -151,7 +151,7 @@ Resources:
         Image: aws/codebuild/standard:7.0
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/uninstall_lists_buildspec.yaml
+        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/uninstall_events_buildspec.yaml
       TimeoutInMinutes: 20
 
   DeployNotification:
@@ -321,30 +321,30 @@ Resources:
                     [
                       { "name":"APP_CERTIFICATE", "value":"#{ExportConfigNS.APP_CERTIFICATE}" },
                       { "name":"AWS_ACCOUNT_ID", "value":"${AWS::AccountId}" },
-                      { "name":"BIE_BASE_URL", "value":"#{ExportConfigNS.BIE_BASE_URL}" },
-                      { "name":"BIOCACHE_BASE_URL", "value":"#{ExportConfigNS.BIOCACHE_BASE_URL}" },
-                      { "name":"COLLECTORY_BASE_URL", "value":"#{ExportConfigNS.COLLECTORY_BASE_URL}" },
+                      { "name":"BIE_URL", "value":"#{ExportConfigNS.BIE_URL}" },
+                      { "name":"BIOCACHE_URL", "value":"#{ExportConfigNS.BIOCACHE_URL}" },
                       { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.ListsRepositoryUri}" },
                       { "name":"EKS_CLUSTER_NAME", "value":"${EksClusterName}" },
                       { "name":"FILE_SYSTEM_ID", "value":"${FileSystemId}" },
                       { "name":"HELM_RELEASE_NAME", "value":"#{ExportConfigNS.HELM_RELEASE_NAME}" },
                       { "name":"BUILD_TAG", "value":"#{BuildListsNS.BUILD_TAG}" },
                       { "name":"HOSTED_ZONE", "value":"#{ExportConfigNS.HOSTED_ZONE}" },
-                      { "name":"IMAGES_BASE_URL", "value":"#{ExportConfigNS.IMAGES_BASE_URL}" },
+                      { "name":"IMAGES_URL", "value":"#{ExportConfigNS.IMAGES_URL}" },
                       { "name":"IMAGE_TAG", "value":"#{ExportConfigNS.IMAGE_TAG}" },
                       { "name":"LISTS_SECRET_NAME", "value":"${ListSecretName}" },
                       { "name":"MONGODB_HOST", "value":"${MongoDbHost}" },
                       { "name":"MONGODB_USERNAME", "value":"${MongoDbUsername}" },
-                      { "name":"NAMEMATCHING_BASE_URL", "value":"#{ExportConfigNS.NAMEMATCHING_BASE_URL}" },
+                      { "name":"NAMEMATCHING_URL", "value":"#{ExportConfigNS.NAMEMATCHING_URL}" },
                       { "name":"OIDC_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
                       { "name":"SERVICE_APP_CLIENT_ID", "value":"${ServiceAppClientId}" },
                       { "name":"WS_SUB_DOMAIN", "value":"#{ExportConfigNS.WS_SUB_DOMAIN}" },
                       { "name":"UI_SUB_DOMAIN", "value":"#{ExportConfigNS.UI_SUB_DOMAIN}" },
-                      { "name":"USERDETAILS_BASE_URL", "value":"#{ExportConfigNS.USERDETAILS_BASE_URL}" },
                       { "name":"ELASTIC_HOST", "value":"#{ExportConfigNS.ELASTIC_HOST}" },
                       { "name":"ELASTIC_PORT", "value":"#{ExportConfigNS.ELASTIC_PORT}" },
-                      { "name":"USER_POOL_ID", "value":"${UserPoolId}" }
+                      { "name":"USER_POOL_ID", "value":"${UserPoolId}" },
+                      { "name":"API_DOWNLOAD", "value":"#{ExportConfigNS.API_DOWNLOAD}" },
+                      { "name":"DATASET_EML", "value":"#{ExportConfigNS.DATASET_EML}" },
                     ]
                   - AppClientId:
                       Fn::ImportValue:
@@ -357,7 +357,7 @@ Resources:
                         Fn::Sub: "${pRegolithStackName}-FileSystemId"
                     ListSecretName:
                       Fn::ImportValue:
-                        Fn::Sub: "${pBaseStackName}-DocDbPasswordSecretName"
+                        Fn::Sub: "${pBaseStackName}-EventsSecretName"
                     MongoDbHost:
                       Fn::ImportValue:
                         Fn::Sub: "${pDatabaseStackName}-DocDbClusterEndpoint"

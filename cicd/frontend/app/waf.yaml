@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Lists UI WAF - needs to launch in us-east-1
+Description: Events UI WAF - needs to launch in us-east-1
 
 Parameters:
   pAllowListedIps:
@@ -27,18 +27,18 @@ Resources:
       Name: !Sub
         - "events-ip-allowlist-${ResourceName}"
         - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: !Sub List of IPs to allow for LISTS ${pEnvironment}
+      Description: !Sub List of IPs to allow for events ${pEnvironment}
       Scope: CLOUDFRONT
       IPAddressVersion: IPV4
       Addresses: !Ref pAllowListedIps
 
-  ListsWafWebACL:
+  EventsWafWebACL:
     Type: AWS::WAFv2::WebACL
     Properties:
       Name: !Sub
         - "events-${ResourceName}"
         - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: LISTS Web ACL
+      Description: Events Web ACL
       Scope: CLOUDFRONT
       DefaultAction:
         Allow: {}
@@ -101,6 +101,6 @@ Resources:
           Value: !Ref pEnvironment
 
 Outputs:
- ListsWafWebAclArn:
+ EventsWafWebAclArn:
    Description: The ARN of the WAF Web ACL
-   Value: !GetAtt ListsWafWebACL.Arn
+   Value: !GetAtt EventsWafWebACL.Arn

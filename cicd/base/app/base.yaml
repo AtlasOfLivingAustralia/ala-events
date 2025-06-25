@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: Base resources for the Lists service
+Description: Base resources for the Events service
 
 Parameters:
   pBuild:
@@ -35,15 +35,15 @@ Conditions:
 
 Resources:
 
-  DocDbPasswordSecret:
+  EventsSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: !Sub 
-              - lists-${ResourceName}
+              - events-${ResourceName}
               - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: !Sub Lists app ${pEnvironment} secrets
+      Description: !Sub Events app ${pEnvironment} secrets
 
-  ListsAppClient:
+  EventsAppClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       AccessTokenValidity: 8
@@ -65,7 +65,7 @@ Resources:
         - !Sub ${pAppClientHost}/callback?client_name=OidcClient
         - !Sub ${pAppClientHost}/oauth2-redirect.html
       ClientName: !Sub
-          - species-lists-ui-${ResourceName}
+          - events-ui-${ResourceName}
           - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
       DefaultRedirectURI: !Sub ${pAppClientHost}
       EnablePropagateAdditionalUserContextData: False
@@ -96,74 +96,18 @@ Resources:
         Fn::ImportValue:
             !Sub ${pCognitoStackName}-UserPoolId
 
-  ListsServiceAppClient:
-    Type: AWS::Cognito::UserPoolClient
-    Properties:
-      AccessTokenValidity: 8
-      AllowedOAuthFlows: 
-        - client_credentials
-      AllowedOAuthFlowsUserPoolClient: True
-      AllowedOAuthScopes: 
-        - ala/attrs
-        - ala/roles
-        - ala/internal
-        - users/read
-      AuthSessionValidity: 3
-      CallbackURLs: 
-        - !Sub ${pAppClientServiceHost}
-        - !Sub ${pAppClientServiceHost}/
-        - !Sub ${pAppClientServiceHost}/callback?client_name=OidcClient
-        - !Sub ${pAppClientServiceHost}/oauth2-redirect.html
-      ClientName: !Sub
-          - species-lists-s2s-${ResourceName}
-          - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      DefaultRedirectURI: !Sub ${pAppClientServiceHost}/callback?client_name=OidcClient
-      EnablePropagateAdditionalUserContextData: True
-      EnableTokenRevocation: True
-      ExplicitAuthFlows:
-        - ALLOW_ADMIN_USER_PASSWORD_AUTH
-        - ALLOW_CUSTOM_AUTH
-        - ALLOW_REFRESH_TOKEN_AUTH
-        - ALLOW_USER_SRP_AUTH
-      GenerateSecret: True
-      IdTokenValidity: 8
-      LogoutURLs: 
-        - !Sub ${pAppClientServiceHost}
-        - !Sub ${pAppClientServiceHost}/
-      PreventUserExistenceErrors: ENABLED
-      RefreshTokenValidity: 30
-      SupportedIdentityProviders:
-        - COGNITO
-        - Facebook
-        - Google
-        - AAF
-        - SignInWithApple
-      TokenValidityUnits:
-        AccessToken: hours
-        IdToken: hours
-        RefreshToken: days
-      UserPoolId: 
-        Fn::ImportValue:
-            !Sub ${pCognitoStackName}-UserPoolId
-
 Outputs:
 
   AppClientId:
-    Description: The app client for the lists frontend
-    Value: !Ref ListsAppClient
+    Description: The app client for the events frontend
+    Value: !Ref EventsAppClient
     Export:
       Name: !Sub ${AWS::StackName}-AppClientId
 
-  DocDbPasswordSecretName:
-    Description: The Secrets name for lists 
+  EventsSecretName:
+    Description: The Secrets name for events
     Value: !Sub
-      - lists-${ResourceName}
+      - events-${ResourceName}
       - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
     Export:
-      Name: !Sub ${AWS::StackName}-DocDbPasswordSecretName
-
-  ServiceAppClientId:
-    Description: The app client for the lists backend service
-    Value: !Ref ListsServiceAppClient
-    Export:
-      Name: !Sub ${AWS::StackName}-ServiceAppClientId
+      Name: !Sub ${AWS::StackName}-EventsSecretName

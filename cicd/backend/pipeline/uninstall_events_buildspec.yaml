@@ -1,6 +1,6 @@
 version: 0.2
 ###
-# This build project sets up the eks context and deploys the lists service
+# This build project uninstalls the events service
 # using Helm
 
 env:
@@ -24,9 +24,9 @@ phases:
 #      - kubectl config set-context --current --namespace=$PRODUCT_NAME
 #      - printf "$(kubectl config current-context)\n"
       # do we need to create the service account here?
-      - cd lists-service/helm
-      - echo helm uninstall $HELM_RELEASE_NAME -n lists
-      - helm uninstall $HELM_RELEASE_NAME -n lists
+      - cd helm
+      - echo helm uninstall $HELM_RELEASE_NAME -n events
+      - helm uninstall $HELM_RELEASE_NAME -n events
 
   post_build:
     commands:

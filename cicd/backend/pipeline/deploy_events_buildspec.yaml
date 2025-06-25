@@ -1,0 +1,88 @@
+version: 0.2
+###
+# This build project sets up the eks context and deploys the events sub service
+# using Helm
+
+env:
+  shell: bash
+  variables:
+    JAVA_TOOL_OPTIONS: -Dhttps.protocols=TLSv1.2
+  secrets-manager:
+    MONGODB_PASSWORD: $LISTS_SECRET_NAME:db-password
+
+phases:
+
+  install:
+    commands:
+      - echo Installing dependencies...
+      - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      - chmod 700 get_helm.sh
+      - ./get_helm.sh
+
+  build:
+    commands:
+      - echo Build started on $(date)
+      - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
+      - cd helm
+      - | 
+        echo "
+        bie:
+          url: $BIE_URL
+        biocache:
+          url: $BIOCACHE_URL
+        images:
+          url: $IMAGES_URL
+        namematching:
+          url: $NAMEMATCHING_URL
+        api:
+          download: $API_DOWNLOAD
+        dataset:
+          eml: $DATASET_EML
+        elasticsearch:
+          deployment:
+            name: $ELASTIC_HOST
+          service:
+            name: $ELASTIC_HOST
+            host: $ELASTIC_HOST
+            port: $ELASTIC_PORT
+          pv:
+            name: pv-$ELASTIC_HOST
+            volumeHandle: $FILE_SYSTEM_ID
+          pvc:
+            name: pvc-$ELASTIC_HOST" > helm_values.yaml
+      - echo helm values
+      - cat helm_values.yaml
+      - echo helm upgrade --install $HELM_RELEASE_NAME . \
+        -n events \
+        --set es.image.repository=$ECR_REPO \
+        --set es.image.tag=$BUILD_TAG_ES-API \
+        --set es.ingress.hostname=es.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+        --set es2vt.image.repository=$ECR_REPO \
+        --set es2vt.image.tag=$BUILD_TAG_ES2VT \
+        --set es2vt.ingress.hostname=es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+        --set graphql.image.repository=$ECR_REPO \
+        --set graphql.image.tag=$BUILD_TAG_GRAPHQL-API \
+        --set graphql.ingress.hostname=graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .$HOSTED_ZONE \
+        --set ingress.certificateArn=$APP_CERTIFICATE \
+        -f helm_values.yaml \
+        --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
+        --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - helm upgrade --install $HELM_RELEASE_NAME . \
+        -n events \
+        --set es.image.repository=$ECR_REPO \
+        --set es.image.tag=$BUILD_TAG_ES-API \
+        --set es.ingress.hostname=es.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+        --set es2vt.image.repository=$ECR_REPO \
+        --set es2vt.image.tag=$BUILD_TAG_ES2VT \
+        --set es2vt.ingress.hostname=es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+        --set graphql.image.repository=$ECR_REPO \
+        --set graphql.image.tag=$BUILD_TAG_GRAPHQL-API \
+        --set graphql.ingress.hostname=graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+        --set ingress.certificateArn=$APP_CERTIFICATE \
+        -f helm_values.yaml \
+        --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
+        --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
+  post_build:
+    commands:
+      - echo Post-build phase...
+      - echo Build completed on $(date)

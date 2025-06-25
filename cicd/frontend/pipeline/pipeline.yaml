@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Code pipeline for the LISTS site
+Description: Code pipeline for the Events site
 
 Parameters:
   pAutoDeploy:
@@ -97,7 +97,7 @@ Resources:
       Name: !Sub
               - ${pProductName}-${pProductComponent}-build-site-${ResourceName}
               - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: Build the LISTS site
+      Description: Build the Events site
       ServiceRole:
         Fn::ImportValue:
           Fn::Sub: ${pBootstrapStackName}-CodeBuildServiceRoleArn
@@ -131,6 +131,27 @@ Resources:
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Sub cicd/${pProductComponent}/pipeline/empty_bucket_buildspec.yaml
+      TimeoutInMinutes: 5
+
+  InvalidateCache:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub
+        - "${pProductName}-${pProductComponent}-invalidate-cache-${ResourceName}"
+        - ResourceName: !If [ IsDev, !Ref pEnvironment, !Ref pEnvironment ]
+      Description: Invalidate the CloudFront cache after deploy
+      ServiceRole:
+        Fn::ImportValue:
+          Fn::Sub: ${pBootstrapStackName}-CodeBuildServiceRoleArn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/invalidate_cache_buildspec.yaml
       TimeoutInMinutes: 5
 
   DeployNotification:
@@ -220,7 +241,7 @@ Resources:
                 DetectChanges: !Ref pAutoDeploy
               Namespace: CheckoutSrcNS
               OutputArtifacts:
-                - Name: ListsSourceArtifact
+                - Name: EventsSourceArtifact
         - Name: Deploy_Infrastructure
           Actions:
             - Name: ExportConfig
@@ -242,7 +263,7 @@ Resources:
                   ]
               Namespace: ExportConfigNS
               InputArtifacts:
-                - Name: ListsSourceArtifact
+                - Name: EventsSourceArtifact
               OutputArtifacts:
                 - Name: ExportConfigArtifact
               RunOrder: 1
@@ -280,7 +301,7 @@ Resources:
                 Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
                 ParameterOverrides: |
                   { 
-                    "pListsWafWebAclArn": "#{WafCloudFormationOutNS.ListsWafWebAclArn}"
+                    "pEventsWafWebAclArn": "#{WafCloudFormationOutNS.EventsWafWebAclArn}"
                   }
                 RoleArn:
                   Fn::ImportValue:
@@ -325,11 +346,11 @@ Resources:
                               Fn::ImportValue:
                                 Fn::Sub: ${pCognitoStackName}-UserPoolId
 
-              Namespace: BuildListsNS
+              Namespace: BuildEventsNS
               InputArtifacts:
-                - Name: ListsSourceArtifact
+                - Name: EventsSourceArtifact
               OutputArtifacts:
-                - Name: BuildListsArtifact
+                - Name: BuildEventsArtifact
               RunOrder: 1
             - Name: EmptyBucket
               ActionTypeId:
@@ -346,7 +367,7 @@ Resources:
                   ]
               Namespace: EmptyBucketPreDeployNS
               InputArtifacts:
-                - Name: ListsSourceArtifact
+                - Name: EventsSourceArtifact
               RunOrder: 2
             - Name: UploadFilesToS3
               ActionTypeId:
@@ -361,8 +382,24 @@ Resources:
                 CacheControl: 'public, max-age=#{ExportConfigNS.MAX_AGE}'
               OutputArtifacts: []
               InputArtifacts:
-                - Name: BuildListsArtifact
+                - Name: BuildEventsArtifact
               RunOrder: 3
+            - Name: InvalidateCache
+              ActionTypeId:
+                Owner: AWS
+                Category: Build
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref InvalidateCache
+                EnvironmentVariables: |
+                  [
+                    { "name":"CLOUDFRONT_DISTRIBUTION_ID", "value":"#{ExportConfigNS.CLOUDFRONT_DISTRIBUTION_ID}" }
+                  ]
+              Namespace: InvalidateCacheNS
+              InputArtifacts:
+                - Name: 'SourceArtifact'
+              RunOrder: 4
             - Name: DeployNotification
               ActionTypeId:
                 Owner: AWS
@@ -387,7 +424,7 @@ Resources:
                   ]
               Namespace: DeployNotificationNS
               InputArtifacts:
-                - Name: ListsSourceArtifact
+                - Name: EventsSourceArtifact
               RunOrder: 5
         - Name: Teardown
           Actions:
@@ -415,9 +452,9 @@ Resources:
                   ]
               Namespace: EmptyBucketPreDeleteNS
               InputArtifacts:
-                - Name: ListsSourceArtifact
+                - Name: EventsSourceArtifact
               RunOrder: 2
-            - Name: TeardownListsSite
+            - Name: TeardownEventsSite
               ActionTypeId:
                 Owner: AWS
                 Category: Deploy
@@ -430,7 +467,7 @@ Resources:
                   Fn::ImportValue:
                     Fn::Sub: '${pBootstrapStackName}-CloudFormationServiceRoleArn'
               RunOrder: 3
-            - Name: TeardownListsWaf
+            - Name: TeardownEventsWaf
               ActionTypeId:
                 Owner: AWS
                 Category: Deploy
@@ -493,6 +530,16 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/codebuild/${EmptyBucket}
+      RetentionInDays: 30
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+  InvalidateCacheLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/codebuild/${InvalidateCache}
       RetentionInDays: 30
       Tags:
         - Key: Name

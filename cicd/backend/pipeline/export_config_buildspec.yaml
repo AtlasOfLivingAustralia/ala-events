@@ -13,8 +13,8 @@ env:
     - ALA_SECRETS_NAME
     - APP_CERTIFICATE
     - UI_SUB_DOMAIN
-    - BIE_BASE_URL
-    - BIOCACHE_BASE_URL
+    - BIE_URL
+    - BIOCACHE_URL
     - CODEBUILD_BUILD_NUMBER
     - COLLECTORY_BASE_URL
     - DATABASE_STACK_NAME
@@ -23,19 +23,20 @@ env:
     - ECR_STACK_NAME
     - HELM_RELEASE_NAME
     - HOSTED_ZONE
-    - IMAGES_BASE_URL
+    - IMAGES_URL
     - IMAGE_NAME
     - IMAGE_TAG
     - MONGODB_USERNAME
-    - NAMEMATCHING_BASE_URL
+    - NAMEMATCHING_URL
     - PRODUCT_COMPONENT
     - PRODUCT_NAME
     - SLACK_ALERT_CHANNEL
     - SLACK_DEPLOY_NOTIFICATION
-    - USERDETAILS_BASE_URL
     - ELASTIC_HOST
     - ELASTIC_PORT
     - WS_SUB_DOMAIN
+    - API_DOWNLOAD
+    - DATASET_EML
 
 phases:
 
@@ -77,7 +78,7 @@ phases:
       - echo loading config..
       - set -a ; source env.txt ; set +a
       # this is not being used in the deploy build spec. The environment vars are exported into the pipeline namespace.
-      - echo creating the app environment for the lists deployment...
+      - echo creating the app environment for the events deployment...
       - |
          source cicd/unset_codebuild_env_vars.sh
          for var in $(printenv | awk -F= '{print $1}'); do

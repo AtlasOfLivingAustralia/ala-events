@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: LISTS Infrastructure
+Description: Events Infrastructure
 
 Parameters:
-  pListsWafWebAclArn:
+  pEventsWafWebAclArn:
     Type: String
     Description: The WAF Web ACL to attach the CloudFront distribution to
   pSourceBucket:
@@ -35,7 +35,7 @@ Conditions:
   NotDev: !Not [ Condition: IsDev ]
 
 Resources:
-  ListsBucket:
+  EventsBucket:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
     Properties:
@@ -50,39 +50,39 @@ Resources:
         - Key: Name
           Value: !Sub ${pSourceBucket}
 
-  ListsBucketPolicy:
+  EventsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref ListsBucket
+      Bucket: !Ref EventsBucket
       PolicyDocument:
         Version: 2012-10-17
         Statement:
           - Action:
               - 's3:GetObject'
             Effect: Allow
-            Resource: !Sub 'arn:aws:s3:::${ListsBucket}/*'
+            Resource: !Sub 'arn:aws:s3:::${EventsBucket}/*'
             Principal:
-              AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${ListsCloudFrontOai}'
+              AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${EventsCloudFrontOai}'
 
-  ListsDnsRecord:
+  EventsDnsRecord:
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Sub '${pUiSubDomain}.${pHostedZone}'
-      Comment: !Sub LISTS domain for the ${pEnvironment} environment
+      Comment: !Sub Event domain for the ${pEnvironment} environment
       Type: A
       AliasTarget:
-        DNSName: !GetAtt ListsCloudFrontDistro.DomainName
+        DNSName: !GetAtt EventsCloudFrontDistro.DomainName
         HostedZoneId: Z2FDTNDATAQYW2
       HostedZoneName: !Sub '${pHostedZone}.'
 
-  ListsCloudFrontDistro:
+  EventsCloudFrontDistro:
     Type: AWS::CloudFront::Distribution
-    DependsOn: ListsBucket
+    DependsOn: EventsBucket
     Properties:
       DistributionConfig:
         Aliases:
           - !Sub '${pUiSubDomain}.${pHostedZone}'
-        Comment: !Sub CF Distribution for the LISTS site ${pEnvironment}
+        Comment: !Sub CF Distribution for the Event site ${pEnvironment}
         CustomErrorResponses:
           - ErrorCode: 403
             ErrorCachingMinTTL: 300
@@ -95,7 +95,7 @@ Resources:
           CachedMethods:
             - GET
             - HEAD
-          CachePolicyId: !Ref ListsCachePolicy
+          CachePolicyId: !Ref EventsCachePolicy
           Compress: true
           TargetOriginId: events-s3
           ViewerProtocolPolicy: redirect-to-https
@@ -107,27 +107,27 @@ Resources:
           - DomainName: !Sub '${pSourceBucket}.s3.${AWS::Region}.amazonaws.com'
             Id: events-s3
             S3OriginConfig:
-              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${ListsCloudFrontOai}'
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${EventsCloudFrontOai}'
             OriginPath: !Sub '/${pBucketPath}'
         ViewerCertificate:
           AcmCertificateArn: !Ref pCloudfrontCertificate
           MinimumProtocolVersion: TLSv1.2_2021
           SslSupportMethod: sni-only
-        WebACLId: !Ref pListsWafWebAclArn
+        WebACLId: !Ref pEventsWafWebAclArn
       Tags:
         - Key: component
           Value: cdn
 
-  ListsCachePolicy:
+  EventsCachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
-        Comment: !Sub CF Cache Policy for the LISTS site ${pEnvironment}
+        Comment: !Sub CF Cache Policy for the Event site ${pEnvironment}
         DefaultTTL: 300
         MaxTTL: 86400
         MinTTL: 1
         Name: !Sub
-          - "Lists-cache-Policy-${ResourceName}"
+          - "Events-cache-Policy-${ResourceName}"
           - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
         ParametersInCacheKeyAndForwardedToOrigin:
           CookiesConfig:
@@ -141,18 +141,18 @@ Resources:
             QueryStrings:
               - cb
 
-  ListsCloudFrontOai:
+  EventsCloudFrontOai:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: !Sub CF Origin Access Identity for the LISTS ${pEnvironment}
+        Comment: !Sub CF Origin Access Identity for the Event ${pEnvironment}
 
 Outputs:
-  ListsBucketName:
-    Value: !Ref ListsBucket
-  ListsBucketArn:
-    Value: !GetAtt ListsBucket.Arn
-  ListsCloudFrontDistributionArn:
+  EventsBucketName:
+    Value: !Ref EventsBucket
+  EventsBucketArn:
+    Value: !GetAtt EventsBucket.Arn
+  EventsCloudFrontDistributionArn:
     Value: !Sub
       - "arn:aws:cloudfront::${AWS::AccountId}:distribution/${DistributionId}"
-      - DistributionId: !GetAtt ListsCloudFrontDistro.Id
+      - DistributionId: !GetAtt EventsCloudFrontDistro.Id
