@@ -130,12 +130,6 @@ if ! aws cloudformation wait stack-create-complete --stack-name $BASE_STACK_NAME
   exit
 fi
 
-echo "Waiting for $DATABASE_STACK_NAME"
-if ! aws cloudformation wait stack-create-complete  --stack-name $DATABASE_STACK_NAME; then
-  echo "failed to create stack $DATABASE_STACK_NAME"
-  exit
-fi
-
 cd ../../backend/pipeline
 ./deploy_pipeline.sh "$@"
 
