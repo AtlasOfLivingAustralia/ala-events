@@ -332,7 +332,7 @@ Resources:
                       { "name":"NAMEMATCHING_URL", "value":"#{ExportConfigNS.NAMEMATCHING_URL}" },
                       { "name":"OIDC_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
-                      { "name":"SERVICE_APP_CLIENT_ID", "value":"${ServiceAppClientId}" },
+                      { "name":"APP_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"WS_SUB_DOMAIN", "value":"#{ExportConfigNS.WS_SUB_DOMAIN}" },
                       { "name":"UI_SUB_DOMAIN", "value":"#{ExportConfigNS.UI_SUB_DOMAIN}" },
                       { "name":"ELASTIC_HOST", "value":"#{ExportConfigNS.ELASTIC_HOST}" },
@@ -359,9 +359,6 @@ Resources:
                           - UserPoolId:
                               Fn::ImportValue:
                                 Fn::Sub: "${pCognitoStackName}-UserPoolId"
-                    ServiceAppClientId:
-                      Fn::ImportValue:
-                        Fn::Sub: "${pBaseStackName}-ServiceAppClientId"
                     UserPoolId:
                       Fn::ImportValue:
                         Fn::Sub: "${pCognitoStackName}-UserPoolId"
