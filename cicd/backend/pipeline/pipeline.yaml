@@ -20,9 +20,6 @@ Parameters:
   pCognitoStackName:
     Type: String
     Description: The name of the Cognito stack
-  pDatabaseStackName:
-    Type: String
-    Description: The name of the database stack
   pEnvironment:
     Type: String
     Description: The AWS environment this belongs to
@@ -358,12 +355,6 @@ Resources:
                     ListSecretName:
                       Fn::ImportValue:
                         Fn::Sub: "${pBaseStackName}-EventsSecretName"
-                    MongoDbHost:
-                      Fn::ImportValue:
-                        Fn::Sub: "${pDatabaseStackName}-DocDbClusterEndpoint"
-                    MongoDbUsername:
-                      Fn::ImportValue:
-                        Fn::Sub: "${pDatabaseStackName}-DocDbUsername"
                     OidcDiscoveryUrl:
                         Fn::Sub:
                           - "https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPoolId}/.well-known/openid-configuration"
