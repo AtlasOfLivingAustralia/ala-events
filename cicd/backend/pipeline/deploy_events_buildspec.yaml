@@ -69,21 +69,22 @@ phases:
         -f helm_values.yaml \
         --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
         --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - helm upgrade --install $HELM_RELEASE_NAME . \
-        -n events \
-        --set es.image.repository=$ECR_REPO \
-        --set es.image.tag=$BUILD_TAG_ES_API \
-        --set es.ingress.hostname=es.$WS_SUB_DOMAIN.$HOSTED_ZONE \
-        --set es2vt.image.repository=$ECR_REPO \
-        --set es2vt.image.tag=$BUILD_TAG_ES2VT \
-        --set es2vt.ingress.hostname=es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE \
-        --set graphql.image.repository=$ECR_REPO \
-        --set graphql.image.tag=$BUILD_TAG_GRAPHQL_API \
-        --set graphql.ingress.hostname=graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE \
-        --set ingress.certificateArn=$APP_CERTIFICATE \
-        -f helm_values.yaml \
-        --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
-        --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - |
+        helm upgrade --install $HELM_RELEASE_NAME . \
+          -n events \
+          --set es.image.repository=$ECR_REPO \
+          --set es.image.tag=$BUILD_TAG_ES_API \
+          --set es.ingress.hostname=es.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+          --set es2vt.image.repository=$ECR_REPO \
+          --set es2vt.image.tag=$BUILD_TAG_ES2VT \
+          --set es2vt.ingress.hostname=es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+          --set graphql.image.repository=$ECR_REPO \
+          --set graphql.image.tag=$BUILD_TAG_GRAPHQL_API \
+          --set graphql.ingress.hostname=graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+          --set ingress.certificateArn=$APP_CERTIFICATE \
+          -f helm_values.yaml \
+          --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
+          --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
   post_build:
     commands:
       - echo Post-build phase...
