@@ -8,7 +8,7 @@ env:
   variables:
     JAVA_TOOL_OPTIONS: -Dhttps.protocols=TLSv1.2
   secrets-manager:
-    ESAPI_APIKEY: $LISTS_SECRET_NAME:esApi_apiKey
+    ESAPI_APIKEY: $EVENTS_SECRET_NAME:esApi_apiKey
 
 phases:
 

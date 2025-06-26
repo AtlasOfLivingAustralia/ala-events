@@ -26,7 +26,7 @@ Conditions:
 
 Resources:
 
-  ESAPIRepository:
+  EventsRepository:
     Type: AWS::ECR::Repository
     Properties:
       EmptyOnDelete: !If [ NotProd, true, false ]
@@ -53,100 +53,18 @@ Resources:
         - Key: Branch
           Value: !Ref pCleanBranch
 
-  ES2VTRepository:
-    Type: AWS::ECR::Repository
-    Properties:
-      EmptyOnDelete: !If [ NotProd, true, false ]
-      EncryptionConfiguration:
-        EncryptionType: AES256
-      ImageScanningConfiguration:
-        ScanOnPush: true
-      RepositoryName: !Sub
-                         - es2vt-${ResourceName}
-                         - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      RepositoryPolicyText:
-        Version: 2012-10-17
-        Statement:
-          - Sid: AllowPublicPull
-            Effect: Allow
-            Principal: '*'
-            Action:
-              - 'ecr:GetDownloadUrlForLayer'
-              - 'ecr:BatchGetImage'
-              - 'ecr:BatchCheckLayerAvailability'
-      Tags:
-        - Key: Environment
-          Value: !Ref pEnvironment
-        - Key: Branch
-          Value: !Ref pCleanBranch
-
-  GraphqlAPIRepository:
-    Type: AWS::ECR::Repository
-    Properties:
-      EmptyOnDelete: !If [ NotProd, true, false ]
-      EncryptionConfiguration:
-        EncryptionType: AES256
-      ImageScanningConfiguration:
-        ScanOnPush: true
-      RepositoryName: !Sub
-                         - graphql-api-${ResourceName}
-                         - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      RepositoryPolicyText:
-        Version: 2012-10-17
-        Statement:
-          - Sid: AllowPublicPull
-            Effect: Allow
-            Principal: '*'
-            Action:
-              - 'ecr:GetDownloadUrlForLayer'
-              - 'ecr:BatchGetImage'
-              - 'ecr:BatchCheckLayerAvailability'
-      Tags:
-        - Key: Environment
-          Value: !Ref pEnvironment
-        - Key: Branch
-          Value: !Ref pCleanBranch
-
 Outputs:
 
-  ESAPIRepositoryArn:
-    Description: The ECR repository ARN for the es-api service
-    Value: !GetAtt ESAPIRepository.Arn
+  EventsRepositoryArn:
+    Description: The ECR repository ARN for events
+    Value: !GetAtt EventsRepository.Arn
 
-  ESAPIRepositoryUri:
-    Description: The ECR repository URI for the es-api service
-    Value: !GetAtt ESAPIRepository.RepositoryUri
+  EventsRepositoryUri:
+    Description: The ECR repository URI for events
+    Value: !GetAtt EventsRepository.RepositoryUri
     Export:
       Name: !Sub ${AWS::StackName}-ESAPIRepositoryUri
 
-  ESAPIRepositoryName:
-    Description: The ECR repository ARN for the es-api service
-    Value: !Ref ESAPIRepository
-
-  ES2VTRepositoryArn:
-    Description: The ECR repository ARN for the es2vt service
-    Value: !GetAtt ES2VTRepository.Arn
-
-  ES2VTRepositoryUri:
-    Description: The ECR repository URI for the es2vt service
-    Value: !GetAtt ES2VTRepository.RepositoryUri
-    Export:
-      Name: !Sub ${AWS::StackName}-ES2VTRepositoryUri
-
-  ES2VTRepositoryName:
-    Description: The ECR repository ARN for the es2vt service
-    Value: !Ref ES2VTRepository
-
-  GraphqlAPIRepositoryArn:
-    Description: The ECR repository ARN for the graphql-api service
-    Value: !GetAtt GraphqlAPIRepository.Arn
-
-  GraphqlAPIRepositoryUri:
-    Description: The ECR repository URI for the graphql-api service
-    Value: !GetAtt GraphqlAPIRepository.RepositoryUri
-    Export:
-      Name: !Sub ${AWS::StackName}-GraphqlAPIRepositoryUri
-
-  GraphqlAPIRepositoryName:
-    Description: The ECR repository ARN for the graphql-api service
-    Value: !Ref GraphqlAPIRepository
+  EventsRepositoryName:
+    Description: The ECR repository ARN for events
+    Value: !Ref EventsRepository

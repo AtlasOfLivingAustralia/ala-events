@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Code pipeline for the lists service
+Description: Code pipeline for the events service
 
 Parameters:
   pAutoDeploy:
@@ -88,13 +88,13 @@ Resources:
         BuildSpec: !Sub cicd/${pProductComponent}/pipeline/export_config_buildspec.yaml
       TimeoutInMinutes: 5
 
-  BuildLists:
+  BuildEvents:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub
-        - ${pProductName}-${pProductComponent}-build-lists-${ResourceName}
+        - ${pProductName}-${pProductComponent}-build-events-${ResourceName}
         - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: Build the lists project
+      Description: Build the events project
       ServiceRole:
                Fn::ImportValue:
                  Fn::Sub: ${pBootstrapStackName}-CodeBuildServiceRoleArn
@@ -109,13 +109,13 @@ Resources:
         BuildSpec: !Sub cicd/${pProductComponent}/pipeline/build_events_buildspec.yaml
       TimeoutInMinutes: 30
 
-  DeployLists:
+  DeployEvents:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub
-              - ${pProductName}-${pProductComponent}-deploy-lists-${ResourceName}
+              - ${pProductName}-${pProductComponent}-deploy-events-${ResourceName}
               - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: Deploy lists
+      Description: Deploy events
       ServiceRole:
                Fn::ImportValue:
                  Fn::Sub: ${pBootstrapStackName}-CodeBuildServiceRoleArn
@@ -130,13 +130,13 @@ Resources:
         BuildSpec: !Sub cicd/${pProductComponent}/pipeline/deploy_events_buildspec.yaml
       TimeoutInMinutes: 20
 
-  UninstallLists:
+  UninstallEvents:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub
-        - ${pProductName}-${pProductComponent}-uninstall-lists-${ResourceName}
+        - ${pProductName}-${pProductComponent}-uninstall-events-${ResourceName}
         - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
-      Description: Uninstall lists
+      Description: Uninstall events
       ServiceRole:
         Fn::ImportValue:
           Fn::Sub: ${pBootstrapStackName}-CodeBuildServiceRoleArn
@@ -201,7 +201,7 @@ Resources:
                 FilePaths:
                   Includes:
                     - !Sub cicd/${pProductComponent}/**
-                    - lists-service/**
+                    - packages/**
             SourceActionName: CheckoutSrc
       Variables:
         - Name: SRC_BRANCH
@@ -277,40 +277,40 @@ Resources:
             OutputArtifacts: [ ]
             RunOrder: 2
 
-      - Name: BuildLists
+      - Name: BuildEvents
         Actions:
-          - Name: BuildLists
+          - Name: BuildEvents
             ActionTypeId:
               Owner: AWS
               Category: Build
               Version: 1
               Provider: CodeBuild
             Configuration:
-              ProjectName: !Ref BuildLists
+              ProjectName: !Ref BuildEvents
               EnvironmentVariables: !Sub |
                 [
                   { "name":"ALA_SECRETS_NAME", "value":"#{ExportConfigNS.ALA_SECRETS_NAME}" },
                   { "name":"AWS_ACCOUNT_ID", "value":"${AWS::AccountId}" },
                   { "name":"CLEAN_BRANCH", "value":"${pCleanBranch}" },
                   { "name":"DOCKER_USERNAME", "value":"#{ExportConfigNS.DOCKER_USERNAME}" },
-                  { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.ListsRepositoryUri}" },
+                  { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.EventsRepositoryUri}" },
                   { "name":"ENVIRONMENT", "value":"${pEnvironment}" },
                   { "name":"IMAGE_NAME", "value":"#{ExportConfigNS.IMAGE_NAME}" },
                   { "name":"IMAGE_TAG", "value":"#{ExportConfigNS.IMAGE_TAG}" }
                 ]
-            Namespace: BuildListsNS
+            Namespace: BuildEventsNS
             InputArtifacts:
               - Name: SourceArtifact
             RunOrder: 1
 
-          - Name: DeployLists
+          - Name: DeployEvents
             ActionTypeId:
               Owner: AWS
               Category: Build
               Version: 1
               Provider: CodeBuild
             Configuration:
-              ProjectName: !Ref DeployLists
+              ProjectName: !Ref DeployEvents
               PrimarySource: SourceArtifact
               EnvironmentVariables:
                 Fn::Sub:
@@ -320,15 +320,15 @@ Resources:
                       { "name":"AWS_ACCOUNT_ID", "value":"${AWS::AccountId}" },
                       { "name":"BIE_URL", "value":"#{ExportConfigNS.BIE_URL}" },
                       { "name":"BIOCACHE_URL", "value":"#{ExportConfigNS.BIOCACHE_URL}" },
-                      { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.ListsRepositoryUri}" },
+                      { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.EventsRepositoryUri}" },
                       { "name":"EKS_CLUSTER_NAME", "value":"${EksClusterName}" },
                       { "name":"FILE_SYSTEM_ID", "value":"${FileSystemId}" },
                       { "name":"HELM_RELEASE_NAME", "value":"#{ExportConfigNS.HELM_RELEASE_NAME}" },
-                      { "name":"BUILD_TAG", "value":"#{BuildListsNS.BUILD_TAG}" },
+                      { "name":"BUILD_TAG", "value":"#{BuildEventsNS.BUILD_TAG}" },
                       { "name":"HOSTED_ZONE", "value":"#{ExportConfigNS.HOSTED_ZONE}" },
                       { "name":"IMAGES_URL", "value":"#{ExportConfigNS.IMAGES_URL}" },
                       { "name":"IMAGE_TAG", "value":"#{ExportConfigNS.IMAGE_TAG}" },
-                      { "name":"LISTS_SECRET_NAME", "value":"${ListSecretName}" },
+                      { "name":"EVENTS_SECRET_NAME", "value":"${EventsSecretName}" },
                       { "name":"NAMEMATCHING_URL", "value":"#{ExportConfigNS.NAMEMATCHING_URL}" },
                       { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
                       { "name":"APP_CLIENT_ID", "value":"${AppClientId}" },
@@ -349,7 +349,7 @@ Resources:
                     FileSystemId: 
                       Fn::ImportValue:
                         Fn::Sub: "${pRegolithStackName}-FileSystemId"
-                    ListSecretName:
+                    EventsSecretName:
                       Fn::ImportValue:
                         Fn::Sub: "${pBaseStackName}-EventsSecretName"
                     OidcDiscoveryUrl:
@@ -407,14 +407,14 @@ Resources:
             Configuration:
               CustomData: Approval required to tear down this stack
             RunOrder: 1
-          - Name: UninstallLists
+          - Name: UninstallEvents
             ActionTypeId:
               Owner: AWS
               Category: Build
               Version: 1
               Provider: CodeBuild
             Configuration:
-              ProjectName: !Ref UninstallLists
+              ProjectName: !Ref UninstallEvents
               EnvironmentVariables: !Sub
                 - |
                   [
@@ -454,21 +454,21 @@ Resources:
                      Fn::Sub: '${pBootstrapStackName}-CloudFormationServiceRoleArn'
             RunOrder: 4
 
-  DeployListsCodeBuildLogGroup:
+  DeployEventsCodeBuildLogGroup:
     Type: AWS::Logs::LogGroup
     DeletionPolicy: Delete
     Properties:
-      LogGroupName: !Sub /aws/codebuild/${DeployLists}
+      LogGroupName: !Sub /aws/codebuild/${DeployEvents}
       RetentionInDays: 30
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
 
-  UninstallListsCodeBuildLogGroup:
+  UninstallEventsCodeBuildLogGroup:
     Type: AWS::Logs::LogGroup
     DeletionPolicy: Delete
     Properties:
-      LogGroupName: !Sub /aws/codebuild/${UninstallLists}
+      LogGroupName: !Sub /aws/codebuild/${UninstallEvents}
       RetentionInDays: 30
       Tags:
         - Key: Name
