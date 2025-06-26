@@ -10,9 +10,9 @@ env:
   secrets-manager:
     DOCKER_PASSWORD: $ALA_SECRETS_NAME:dockerhub-password
   exported-variables:
-    - BUILD_TAG_ES-API
+    - BUILD_TAG_ES_API
     - BUILD_TAG_ES2VT
-    - BUILD_TAG_GRAPHQL-API
+    - BUILD_TAG_GRAPHQL_API
 phases:
   install:
     commands:
@@ -26,7 +26,7 @@ phases:
       - SERVICES=("es-api" "es2vt" "graphql-api")
       - for SERVICE in "${SERVICES[@]}"; do
           BUILD_TAG="$SERVICE-$CLEAN_BRANCH-$CODEBUILD_BUILD_NUMBER"
-          UPPER=$(echo "$SERVICE" | tr '[:lower:]' '[:upper:]')
+          UPPER=$(echo "$SERVICE" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
           echo "BUILD_TAG_${UPPER}=$BUILD_TAG" >> build.env
           echo "Building Docker image for $SERVICE..."
           docker build -t "$IMAGE_NAME-$SERVICE:$IMAGE_TAG" -f "packages/$SERVICE/Dockerfile" "packages/$SERVICE"
@@ -43,3 +43,7 @@ phases:
     commands:
       - echo Post-build phase...
       - echo Build completed on $(date)
+
+artifacts:
+  files:
+    - build.env
