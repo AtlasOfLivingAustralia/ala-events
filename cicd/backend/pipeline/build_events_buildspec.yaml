@@ -23,8 +23,9 @@ phases:
       - echo Build started on $(date)
       - echo Logging in to Amazon ECR...
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - SERVICES=("es-api" "es2vt" "graphql-api")
-      - for SERVICE in "${SERVICES[@]}"; do
+      - |
+        SERVICES=("es-api" "es2vt" "graphql-api")
+        for SERVICE in "${SERVICES[@]}"; do
           BUILD_TAG="$SERVICE-$CLEAN_BRANCH-$CODEBUILD_BUILD_NUMBER"
           UPPER=$(echo "$SERVICE" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
           echo "BUILD_TAG_${UPPER}=$BUILD_TAG" >> build.env
