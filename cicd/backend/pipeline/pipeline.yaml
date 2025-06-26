@@ -330,7 +330,6 @@ Resources:
                       { "name":"IMAGE_TAG", "value":"#{ExportConfigNS.IMAGE_TAG}" },
                       { "name":"LISTS_SECRET_NAME", "value":"${ListSecretName}" },
                       { "name":"NAMEMATCHING_URL", "value":"#{ExportConfigNS.NAMEMATCHING_URL}" },
-                      { "name":"OIDC_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
                       { "name":"APP_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"WS_SUB_DOMAIN", "value":"#{ExportConfigNS.WS_SUB_DOMAIN}" },
@@ -339,7 +338,7 @@ Resources:
                       { "name":"ELASTIC_PORT", "value":"#{ExportConfigNS.ELASTIC_PORT}" },
                       { "name":"USER_POOL_ID", "value":"${UserPoolId}" },
                       { "name":"API_DOWNLOAD", "value":"#{ExportConfigNS.API_DOWNLOAD}" },
-                      { "name":"DATASET_EML", "value":"#{ExportConfigNS.DATASET_EML}" },
+                      { "name":"DATASET_EML", "value":"#{ExportConfigNS.DATASET_EML}" }
                     ]
                   - AppClientId:
                       Fn::ImportValue:
