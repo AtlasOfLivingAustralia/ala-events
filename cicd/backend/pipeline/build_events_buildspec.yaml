@@ -29,6 +29,7 @@ phases:
           BUILD_TAG="$SERVICE-$CLEAN_BRANCH-$CODEBUILD_BUILD_NUMBER"
           UPPER=$(echo "$SERVICE" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
           echo "BUILD_TAG_${UPPER}=$BUILD_TAG" >> build.env
+          export "BUILD_TAG_${UPPER}=${BUILD_TAG}" 
           echo "Building Docker image for $SERVICE..."
           docker build -t "$IMAGE_NAME-$SERVICE:$IMAGE_TAG" -f "packages/$SERVICE/Dockerfile" "packages/$SERVICE"
           aws ecr get-login-password | docker login -u AWS --password-stdin "https://$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
