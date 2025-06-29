@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-{{ include "ala-events.fullname" . }}-dev-cicd-feature
+  name: ingress-{{ include "ala-events.fullname" . }}
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.className }}
     alb.ingress.kubernetes.io/scheme: internet-facing
