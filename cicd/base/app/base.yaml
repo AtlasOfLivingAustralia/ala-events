@@ -18,9 +18,6 @@ Parameters:
   pAppClientHost:
     Type: String
     Description: The host for the app client for the frontend
-  pAppClientServiceHost:
-    Type: String
-    Description: The host for the app client for the service
 
 Conditions:
 

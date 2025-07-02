@@ -25,8 +25,8 @@ phases:
 #      - printf "$(kubectl config current-context)\n"
       # do we need to create the service account here?
       - cd helm
-      - echo helm uninstall $HELM_RELEASE_NAME -n events
-      - helm uninstall $HELM_RELEASE_NAME -n events
+      - echo helm uninstall $HELM_RELEASE_NAME -n $EKS_NAMESPACE
+      - helm uninstall $HELM_RELEASE_NAME -n $EKS_NAMESPACE
 
   post_build:
     commands:

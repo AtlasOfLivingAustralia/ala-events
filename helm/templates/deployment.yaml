@@ -29,6 +29,12 @@ spec:
             - name: events-config
               mountPath: /usr/src/.env
               subPath: es-api.env
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 15
+            periodSeconds: 20
       volumes:
         - name: events-config
           configMap:
@@ -62,6 +68,12 @@ spec:
         - name: events-config
           mountPath: /usr/src/.env
           subPath: es2vt.env
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 40002
+          initialDelaySeconds: 15
+          periodSeconds: 20
       volumes:
         - name: events-config
           configMap:

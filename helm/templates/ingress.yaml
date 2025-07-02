@@ -14,12 +14,11 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certificateArn }}
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/success-codes: 200,404,301,302
-    alb.ingress.kubernetes.io/hostname: {{ .Values.ingress.hostname }}
     {{- include "ala-events.labels" . | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
-    - host:  {{ .Values.graphqlApi.ingress.hostname}}
+    - host:  {{ .Values.ingress.hostname}}
       http:
         paths:
         - pathType: Prefix
@@ -29,4 +28,18 @@ spec:
               name: {{ include "ala-events.fullname" . }}-graphql-api-service
               port:
                 number: {{ .Values.graphqlApi.service.port }}
+        - pathType: Prefix
+          path: /es
+          backend:
+            service:
+              name: {{ include "ala-events.fullname" . }}-es-api-service
+              port:
+                number: {{ .Values.esApi.service.port }}
+        - pathType: Prefix
+          path: /tile
+          backend:
+            service:
+              name: {{ include "ala-events.fullname" . }}-es2vt-service
+              port:
+                number: {{ .Values.es2vt.service.port }}
 {{- end }}

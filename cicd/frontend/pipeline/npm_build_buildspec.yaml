@@ -4,6 +4,8 @@ version: 0.2
 
 env:
   shell: bash
+  secrets-manager:
+    MAPBOX_KEY: $EVENTS_SECRET_NAME:mapbox_key
 
 phases:
   install:
@@ -11,11 +13,28 @@ phases:
     runtime-versions:
       nodejs: $NODE_VERSION
     commands:
-      - TODO create .evn.json and config.js
-#      - cp events-ui/vite.properties events-ui/.env
-#      - echo injecting app client config
-#      - sed -i "s/VITE_AUTH_CLIENT_ID=.*$/VITE_AUTH_CLIENT_ID=$VITE_AUTH_CLIENT_ID/g" events-ui/config/.env.$ENVIRONMENT
-#      - cat events-ui/config/.env.$ENVIRONMENT
+      - cp packages/react-components/env.json packages/react-components/.env.json
+      -  jq --arg translations "https://${UI_SUB_DOMAIN}.${HOSTED_ZONE}" \
+        --arg mapbox_key "$MAPBOX_KEY" \
+        --arg es_web_api "$AUTH_URL" \
+        --arg graph_api "$ANALYTICS_KEY" \
+        --arg event_tile_api "$AUTH_URL" \
+        --arg search_url "$ANALYTICS_KEY" \
+        --arg namematching_ws_url "$LOGGING_LEVEL" '
+        .TRANSLATIONS = $translations |
+        .API_URL = $api |
+        .AUTH_URL = $auth |
+        .ANALYTICS_KEY = $analytics |
+        .LOGGING_LEVEL = $loglevel
+        ' packages/react-components/.env.json > tmp.json && mv tmp.json packages/react-components/.env.json
+      - cat packages/react-components/.env.json
+      - |
+        sed -i -e "s|baseUrl: '.*'|baseUrl: '$BASE_URL'|g" \
+               -e "s|authServer: '.*'|authServer: '$AUTH_SERVER'|g" \
+               -e "s|authClientID: '.*'|authClientID: '$AUTH_CLIENT_ID'|g" \
+               -e "s|collectionsServer: \".*\"|collectionsServer: \"$COLLECTIONS_SERVER\"|g" \
+               -e "s|biocacheUrl: \".*\"|biocacheUrl: \"$BIOCACHE_URL\"|g" config.js
+      - cat packages/react-components/config.js
   pre_build:
     commands:
       - cd packages/react-components

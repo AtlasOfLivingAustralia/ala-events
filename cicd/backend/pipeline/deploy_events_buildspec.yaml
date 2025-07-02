@@ -57,7 +57,7 @@ phases:
       - echo helm values
       - cat helm_values.yaml
       - echo helm upgrade --install $HELM_RELEASE_NAME . \
-        -n events \
+        -n $EKS_NAMESPACE \
         --set esApi.image.repository=$ECR_REPO \
         --set esApi.image.tag=$BUILD_TAG_ES_API \
         --set esApi.ingress.hostname=es.$WS_SUB_DOMAIN.$HOSTED_ZONE \
@@ -73,16 +73,14 @@ phases:
         --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
       - |
         helm upgrade --install $HELM_RELEASE_NAME . \
-          -n events \
+          -n $EKS_NAMESPACE \
           --set esApi.image.repository=$ECR_REPO \
           --set esApi.image.tag=$BUILD_TAG_ES_API \
-          --set esApi.ingress.hostname=es.$WS_SUB_DOMAIN.$HOSTED_ZONE \
           --set es2vt.image.repository=$ECR_REPO \
           --set es2vt.image.tag=$BUILD_TAG_ES2VT \
-          --set es2vt.ingress.hostname=es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE \
           --set graphqlApi.image.repository=$ECR_REPO \
           --set graphqlApi.image.tag=$BUILD_TAG_GRAPHQL_API \
-          --set graphqlApi.ingress.hostname=graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE \
+          --set ingress.hostname=$WS_SUB_DOMAIN.$HOSTED_ZONE \
           --set ingress.certificateArn=$APP_CERTIFICATE \
           -f helm_values.yaml \
           --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \

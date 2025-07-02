@@ -322,6 +322,7 @@ Resources:
                       { "name":"BIOCACHE_URL", "value":"#{ExportConfigNS.BIOCACHE_URL}" },
                       { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.EventsRepositoryUri}" },
                       { "name":"EKS_CLUSTER_NAME", "value":"${EksClusterName}" },
+                      { "name":"EKS_NAMESPACE","value":"#{ExportConfigNS.EKS_NAMESPACE}" },
                       { "name":"FILE_SYSTEM_ID", "value":"${FileSystemId}" },
                       { "name":"HELM_RELEASE_NAME", "value":"#{ExportConfigNS.HELM_RELEASE_NAME}" },
                       { "name":"BUILD_TAG_ES_API", "value":"#{BuildEventsNS.BUILD_TAG_ES_API}" },
@@ -421,6 +422,7 @@ Resources:
                 - |
                   [
                     { "name":"EKS_CLUSTER_NAME", "value":"${EksClusterName}" },
+                    { "name":"EKS_NAMESPACE", "value":"#{ExportConfigNS.EKS_NAMESPACE}" },
                     { "name":"HELM_RELEASE_NAME", "value":"#{ExportConfigNS.HELM_RELEASE_NAME}" }
                   ]
                 - EksClusterName:

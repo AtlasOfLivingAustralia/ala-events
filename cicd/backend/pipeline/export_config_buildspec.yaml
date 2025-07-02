@@ -34,6 +34,7 @@ env:
     - WS_SUB_DOMAIN
     - API_DOWNLOAD
     - DATASET_EML
+    - EKS_NAMESPACE
 
 phases:
 
