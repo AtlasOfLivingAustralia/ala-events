@@ -40,8 +40,6 @@ phases:
           download: $API_DOWNLOAD
         dataset:
           eml: $DATASET_EML
-        ingress:
-          hostname: $WS_SUB_DOMAIN.$HOSTED_ZONE
         elasticsearch:
           deployment:
             name: $ELASTIC_HOST
