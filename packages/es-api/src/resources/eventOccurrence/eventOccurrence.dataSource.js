@@ -22,6 +22,9 @@ const client = new Client({
   nodes: env.eventOccurrence.hosts,
   maxRetries: env.eventOccurrence.maxRetries || 3,
   requestTimeout: env.eventOccurrence.requestTimeout || 60000,
+  ssl: {
+    rejectUnauthorized: false //TODO: remove
+  },
   agent
 });
 

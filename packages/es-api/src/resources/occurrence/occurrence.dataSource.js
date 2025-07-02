@@ -17,6 +17,9 @@ const client = new Client({
   nodes: env.occurrence.hosts,
   maxRetries: env.occurrence.maxRetries || 3,
   requestTimeout: env.occurrence.requestTimeout || 60000,
+  ssl: {
+    rejectUnauthorized: false   // <--- This disables cert check (TEMP fix)
+  },
   agent
 });
 
