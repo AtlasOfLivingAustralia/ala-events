@@ -35,6 +35,12 @@ spec:
               port: 4001
             initialDelaySeconds: 15
             periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 4001
+            initialDelaySeconds: 5
+            periodSeconds: 10
       volumes:
         - name: events-config
           configMap:
@@ -71,9 +77,15 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 40002
+            port: 4002
           initialDelaySeconds: 15
           periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 4002
+          initialDelaySeconds: 5
+          periodSeconds: 10
       volumes:
         - name: events-config
           configMap:
@@ -113,12 +125,12 @@ spec:
             port: 4000
           initialDelaySeconds: 15
           periodSeconds: 20
-        # readinessProbe:
-        #   httpGet:
-        #     path: /ready
-        #     port: 4000
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 10
+        readinessProbe:
+          httpGet:
+           path: /ready
+           port: 4000
+          initialDelaySeconds: 5
+          periodSeconds: 10
       volumes:
         - name: events-config
           configMap:
