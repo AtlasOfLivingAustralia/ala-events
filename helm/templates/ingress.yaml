@@ -18,7 +18,7 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
-    - host:  {{ .Values.ingress.hostname}}
+    - host:  {{ .Values.graphqlApi.ingress.hostname }}
       http:
         paths:
         - pathType: Prefix
@@ -28,18 +28,24 @@ spec:
               name: {{ include "ala-events.fullname" . }}-graphql-api-service
               port:
                 number: {{ .Values.graphqlApi.service.port }}
-        - pathType: Prefix
-          path: /es
-          backend:
-            service:
-              name: {{ include "ala-events.fullname" . }}-es-api-service
-              port:
-                number: {{ .Values.esApi.service.port }}
-        - pathType: Prefix
-          path: /tile
-          backend:
-            service:
-              name: {{ include "ala-events.fullname" . }}-es2vt-service
-              port:
-                number: {{ .Values.es2vt.service.port }}
+    - host: {{ .Values.esApi.ingress.hostname }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: {{ include "ala-events.fullname" . }}-es-api-service
+                port:
+                  number: {{ .Values.esApi.service.port }}
+    - host: {{ .Values.es2vt.ingress.hostname }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: {{ include "ala-events.fullname" . }}-es2vt-service
+                port:
+                  number: {{ .Values.es2vt.service.port }}
 {{- end }}
