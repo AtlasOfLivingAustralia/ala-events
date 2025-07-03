@@ -168,8 +168,8 @@ autoscaling:
 
 elasticsearch: 
   hosts: 
-    - https://aws-events-es-2022-1.ala.org.au/elastic/
-    - https://aws-events-es-2022-2.ala.org.au/elastic/
+    - http://aws-events-es-2022-1.ala.org.au:9200
+    - http://aws-events-es-2022-2.ala.org.au:9200
 
 # elastic search config for events ES instance within events namespace
 # elasticsearch: 

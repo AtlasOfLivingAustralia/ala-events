@@ -133,27 +133,6 @@ Resources:
         BuildSpec: !Sub cicd/${pProductComponent}/pipeline/empty_bucket_buildspec.yaml
       TimeoutInMinutes: 5
 
-  InvalidateCache:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Sub
-        - "${pProductName}-${pProductComponent}-invalidate-cache-${ResourceName}"
-        - ResourceName: !If [ IsDev, !Ref pEnvironment, !Ref pEnvironment ]
-      Description: Invalidate the CloudFront cache after deploy
-      ServiceRole:
-        Fn::ImportValue:
-          Fn::Sub: ${pBootstrapStackName}-CodeBuildServiceRoleArn
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:7.0
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: !Sub cicd/${pProductComponent}/pipeline/invalidate_cache_buildspec.yaml
-      TimeoutInMinutes: 5
-
   DeployNotification:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -392,22 +371,6 @@ Resources:
               InputArtifacts:
                 - Name: BuildEventsArtifact
               RunOrder: 3
-            - Name: InvalidateCache
-              ActionTypeId:
-                Owner: AWS
-                Category: Build
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref InvalidateCache
-                EnvironmentVariables: |
-                  [
-                    { "name":"CLOUDFRONT_DISTRIBUTION_ID", "value":"#{ExportConfigNS.CLOUDFRONT_DISTRIBUTION_ID}" }
-                  ]
-              Namespace: InvalidateCacheNS
-              InputArtifacts:
-                - Name: EventsSourceArtifact
-              RunOrder: 4
             - Name: DeployNotification
               ActionTypeId:
                 Owner: AWS
@@ -433,7 +396,7 @@ Resources:
               Namespace: DeployNotificationNS
               InputArtifacts:
                 - Name: EventsSourceArtifact
-              RunOrder: 5
+              RunOrder: 4
         - Name: Teardown
           Actions:
             - Name: Approval
@@ -538,16 +501,6 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/codebuild/${EmptyBucket}
-      RetentionInDays: 30
-      Tags:
-        - Key: Name
-          Value: !Ref AWS::StackName
-
-  InvalidateCacheLogGroup:
-    Type: AWS::Logs::LogGroup
-    DeletionPolicy: Delete
-    Properties:
-      LogGroupName: !Sub /aws/codebuild/${InvalidateCache}
       RetentionInDays: 30
       Tags:
         - Key: Name
