@@ -330,11 +330,10 @@ Resources:
                         { "name":"ENVIRONMENT", "value":"#{ExportConfigNS.ENVIRONMENT}" },
                         { "name":"NODE_VERSION", "value":"#{ExportConfigNS.NODE_VERSION}" },
                         { "name":"SRC_BRANCH", "value":"#{CheckoutSrcNS.BranchName}" },
-                        { "name":"VITE_API_BASEURL", "value":"#{ExportConfigNS.VITE_API_BASEURL}" },
-                        { "name":"VITE_AUTH_AUTHORITY", "value":"${OidcDiscoveryUrl}" },
-                        { "name":"VITE_AUTH_CLIENT_ID", "value":"${OidcClientId}" },
-                        { "name":"VITE_AUTH_END_SESSION_URI", "value":"#{ExportConfigNS.VITE_AUTH_END_SESSION_URI}"},
-                        { "name":"VITE_AUTH_REDIRECT_URI", "value":"#{ExportConfigNS.VITE_AUTH_REDIRECT_URI}"}
+                        { "name":"BIOCACHE_SEARCH_URL", "value":"#{ExportConfigNS.BIOCACHE_SEARCH_URL}" },
+                        { "name":"NAMEMATCHING_WS_URL", "value":"#{ExportConfigNS.NAMEMATCHING_WS_URL}"},
+                        { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
+                        { "name":"AUTH_CLIENT_ID", "value":"${OidcClientId}" },
                       ]
                     - OidcClientId:
                         Fn::ImportValue:
