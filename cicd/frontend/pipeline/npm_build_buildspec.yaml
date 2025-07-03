@@ -14,7 +14,8 @@ phases:
       nodejs: $NODE_VERSION
     commands:
       - cp packages/react-components/env.json packages/react-components/.env.json
-      - jq \
+      - |  
+        jq \
         --arg translations "https://$UI_SUB_DOMAIN.$HOSTED_ZONE" \
         --arg mapbox_key "$MAPBOX_KEY" \
         --arg es_web_api "https://es.$WS_SUB_DOMAIN.$HOSTED_ZONE" \
