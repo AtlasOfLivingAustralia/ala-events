@@ -21,9 +21,6 @@ const client = new Client({
   nodes: env.event.hosts,
   maxRetries: env.event.maxRetries || 3,
   requestTimeout: env.event.requestTimeout || 60000,
-  ssl: {
-    rejectUnauthorized: false   // <--- This disables cert check (TEMP fix)
-  },
   agent,
   auth: {
     username: env.event.username,
