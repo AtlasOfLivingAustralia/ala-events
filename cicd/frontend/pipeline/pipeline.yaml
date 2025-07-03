@@ -334,7 +334,7 @@ Resources:
                         { "name":"NAMEMATCHING_WS_URL", "value":"#{ExportConfigNS.NAMEMATCHING_WS_URL}"},
                         { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
                         { "name":"AUTH_CLIENT_ID", "value":"${OidcClientId}" },
-                        { "name":"EVENTS_SECRET_NAME", "value":"${EventsSecretName}" },
+                        { "name":"EVENTS_SECRET_NAME", "value":"${EventsSecretName}" }
                       ]
                     - OidcClientId:
                         Fn::ImportValue:
