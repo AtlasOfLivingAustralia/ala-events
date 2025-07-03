@@ -397,7 +397,7 @@ Resources:
                   ]
               Namespace: InvalidateCacheNS
               InputArtifacts:
-                - Name: 'SourceArtifact'
+                - Name: EventsSourceArtifact
               RunOrder: 4
             - Name: DeployNotification
               ActionTypeId:
