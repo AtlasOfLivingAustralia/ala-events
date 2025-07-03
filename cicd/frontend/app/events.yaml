@@ -87,7 +87,7 @@ Resources:
           - ErrorCode: 403
             ErrorCachingMinTTL: 300
             ResponseCode: 200
-            ResponsePagePath: /index.html
+            ResponsePagePath: /ala-demo.html
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
@@ -99,7 +99,7 @@ Resources:
           Compress: true
           TargetOriginId: events-s3
           ViewerProtocolPolicy: redirect-to-https
-        DefaultRootObject: index.html
+        DefaultRootObject: ala-demo.html
         Enabled: true
         HttpVersion: http2
         IPV6Enabled: false
