@@ -337,7 +337,9 @@ Resources:
                         { "name":"EVENTS_SECRET_NAME", "value":"${EventsSecretName}" },
                         { "name":"WS_SUB_DOMAIN", "value":"#{ExportConfigNS.WS_SUB_DOMAIN}" },
                         { "name":"UI_SUB_DOMAIN", "value":"#{ExportConfigNS.UI_SUB_DOMAIN}" },
-                        { "name":"HOSTED_ZONE", "value":"#{ExportConfigNS.HOSTED_ZONE}" }
+                        { "name":"HOSTED_ZONE", "value":"#{ExportConfigNS.HOSTED_ZONE}" },
+                        { "name":"BIOCACHE_URL", "value":"#{ExportConfigNS.BIOCACHE_URL}" },
+                        { "name":"COLLECTION_URL", "value":"#{ExportConfigNS.COLLECTION_URL}" }
                       ]
                     - OidcClientId:
                         Fn::ImportValue:
