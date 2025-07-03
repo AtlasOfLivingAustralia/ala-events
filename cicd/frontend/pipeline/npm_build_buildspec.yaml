@@ -20,7 +20,7 @@ phases:
         --arg graph_api "https://graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE/graphql" \
         --arg event_tile_api "https://es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE" \
         --arg search_url "$BIOCACHE_SEARCH_URL" \
-        --arg namematching_ws_url "$NAMEMATCHING_WS_URLL" '
+        --arg namematching_ws_url "$NAMEMATCHING_WS_URL" '
         .TRANSLATIONS = $translations |
         .MAPBOX_KEY = $mapbox_key |
         .ES_WEB_API = $es_web_api |

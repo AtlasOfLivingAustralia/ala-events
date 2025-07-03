@@ -30,6 +30,7 @@ env:
     - NAMEMATCHING_WS_URL
     - BIOCACHE_URL
     - COLLECTION_URL
+    - WS_SUB_DOMAIN
 
 phases:
   install:
