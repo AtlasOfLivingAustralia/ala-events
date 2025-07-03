@@ -333,7 +333,8 @@ Resources:
                         { "name":"BIOCACHE_SEARCH_URL", "value":"#{ExportConfigNS.BIOCACHE_SEARCH_URL}" },
                         { "name":"NAMEMATCHING_WS_URL", "value":"#{ExportConfigNS.NAMEMATCHING_WS_URL}"},
                         { "name":"OIDC_DISCOVERY_URI", "value":"${OidcDiscoveryUrl}" },
-                        { "name":"AUTH_CLIENT_ID", "value":"${OidcClientId}" }
+                        { "name":"AUTH_CLIENT_ID", "value":"${OidcClientId}" },
+                        { "name":"EVENTS_SECRET_NAME", "value":"${EventsSecretName}" },
                       ]
                     - OidcClientId:
                         Fn::ImportValue:
@@ -344,6 +345,9 @@ Resources:
                           - UserPoolId:
                               Fn::ImportValue:
                                 Fn::Sub: ${pCognitoStackName}-UserPoolId
+                      EventsSecretName:
+                        Fn::ImportValue:
+                          Fn::Sub: "${pBaseStackName}-EventsSecretName"
 
               Namespace: BuildEventsNS
               InputArtifacts:
