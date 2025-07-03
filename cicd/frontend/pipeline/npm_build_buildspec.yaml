@@ -38,7 +38,7 @@ phases:
                -e "s|authServer: '.*'|authServer: '$OIDC_DISCOVERY_URI'|g" \
                -e "s|authClientID: '.*'|authClientID: '$AUTH_CLIENT_ID'|g" \
                -e "s|collectionsServer: \".*\"|collectionsServer: \"$COLLECTION_URL\"|g" \
-               -e "s|biocacheUrl: \".*\"|biocacheUrl: \"$BIOCACHE_URL\"|g" config.js
+               -e "s|biocacheUrl: \".*\"|biocacheUrl: \"$BIOCACHE_URL\"|g" packages/react-components/config.js
       - cat packages/react-components/config.js
   pre_build:
     commands:
