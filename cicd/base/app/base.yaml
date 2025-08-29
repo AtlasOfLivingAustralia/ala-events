@@ -39,6 +39,14 @@ Resources:
               - events-${ResourceName}
               - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
       Description: !Sub Events app ${pEnvironment} secrets
+      SecretString: !If
+        - IsFirstBuild
+        - |
+          {
+             "esApi_apiKey" : "",
+             "mapbox_key": ""
+          }
+        - !Ref "AWS::NoValue"
 
   EventsAppClient:
     Type: AWS::Cognito::UserPoolClient
