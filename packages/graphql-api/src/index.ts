@@ -29,7 +29,7 @@ import mapController from './api-utils/maps/index.ctrl.js';
 
 // we are doing this async as we need to load the various enumerations from the APIs
 // and generate the schema from those
-async function initializeServer() { 
+async function initializeServer() {
   // this is async as we generate parts of the schema from the live enumeration API
   const typeDefs = await getSchema();
   const server = new ApolloServer({
@@ -78,7 +78,9 @@ async function initializeServer() {
   app.use(compression());
   app.use(
     cors({
-      methods: 'GET,POST,OPTIONS',
+      origin: '*',
+      methods: ['GET', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     }),
   );
   app.use(express.static('public'));
@@ -103,7 +105,7 @@ async function initializeServer() {
   });
 
   app.get('/health', health);
-  
+
   // utils for map styles
   mapController(app);
 
