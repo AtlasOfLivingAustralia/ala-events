@@ -7,8 +7,8 @@ const config = require('./config');
 
 var queue = require('express-queue');
 const queueOptions = {
-  activeLimit: 10,
-  queuedLimit: 2000,
+  activeLimit: 100,
+  queuedLimit: 10000,
   rejectHandler: (req, res) => {
     res.status(429);
     res.json({ error: 429, message: 'Too many concurrent requests. This threshold is shared across users, so it is not only your requests.' });
