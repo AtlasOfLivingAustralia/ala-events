@@ -9,6 +9,7 @@ const client = new Client({
   nodes: env.event.hosts,
   maxRetries: env.event.maxRetries || 3,
   requestTimeout: env.event.requestTimeout || 60000,
+  keepAlive: true,
   auth: {
     username: env.event.username,
     password: env.event.password
