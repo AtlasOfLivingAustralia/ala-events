@@ -29,6 +29,7 @@ function reduce(item) {
       eventID:                            seedbankVerbatim['http://rs.tdwg.org/dwc/terms/eventID'],
       degreeOfEstablishment:              seedbankVerbatim['http://rs.tdwg.org/dwc/terms/degreeOfEstablishment'],
       accessionNumber:                    seedbankVerbatim['http://ala.org.au/terms/seedbank/0.1/accessionNumber'],
+      herbariumVoucher:                   seedbankVerbatim['http://ala.org.au/terms/seedbank/0.1/herbariumVoucher'],
       seedPerGram:                        event.seedbankRecord?.seedPerGram,
       formInStorage:                      seedbankVerbatim['http://ala.org.au/terms/seedbank/0.1/formInStorage'],
       quantityInGrams:                    event.seedbankRecord?.quantityInGrams,
@@ -60,6 +61,7 @@ function reduce(item) {
       numberFull:                         event.seedbankRecord?.numberFull,
       numberEmpty:                        event.seedbankRecord?.numberEmpty,
       numberTested:                       event.seedbankRecord?.numberTested,
+      numberNotViable:                    event.seedbankRecord?.numberNotViable,
       preTestProcessingNotes:             seedbankVerbatim['http://ala.org.au/terms/seedbank/0.1/preTestProcessingNotes'],
       pretreatment:                       seedbankVerbatim['http://ala.org.au/terms/seedbank/0.1/pretreatment'],
       mediaSubstrate:                     seedbankVerbatim['http://ala.org.au/terms/seedbank/0.1/mediaSubstrate'],
@@ -67,7 +69,7 @@ function reduce(item) {
       dayTemperatureInCelsius:            event.seedbankRecord?.dayTemperatureInCelsius,
       darkHours:                          event.seedbankRecord?.darkHours,
       lightHours:                         event.seedbankRecord?.lightHours,
-    }); 
+    });
   }
 
   return removeUndefined({
