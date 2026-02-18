@@ -40,6 +40,8 @@ phases:
           download: $API_DOWNLOAD
         dataset:
           eml: $DATASET_EML
+        es:
+          indexName: $ES_INDEX
         elasticsearch:
           deployment:
             name: $ELASTIC_HOST

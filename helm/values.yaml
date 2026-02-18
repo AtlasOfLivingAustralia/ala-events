@@ -165,7 +165,8 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
+es:
+  indexName: events
 elasticsearch: 
   hosts: 
     - http://aws-events-es-2022-1.ala:9200
