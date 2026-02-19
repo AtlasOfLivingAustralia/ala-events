@@ -152,7 +152,7 @@ graphqlApi:
   affinity: {}
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 4000
     targetPort: 4000
 
