@@ -9,6 +9,8 @@ class EventAPI extends RESTDataSource {
     super();
     this.config = config;
     this.baseURL = config.apiEs;
+    // Disable GET request memoization to prevent abort signal reuse issues
+    this.memoizeGetRequests = false;
   }
 
   willSendRequest(request) {
