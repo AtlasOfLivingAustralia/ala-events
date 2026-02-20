@@ -18,13 +18,13 @@ class EventAPI extends RESTDataSource {
     request.headers.set('Authorization', `ApiKey-v1 ${this.config.apiEsKey}`);
   }
 
-  async searchEventDocuments({ query }) {
-    const response = await this.searchEvents({ query });
+  async searchEventDocuments({ query, skipAbort = false }) {
+    const response = await this.searchEvents({ query, skipAbort });
     return response.documents;
   }
 
-  async searchOccurrenceDocuments({ query }) {
-    const response = await this.searchOccurrences({ query });
+  async searchOccurrenceDocuments({ query, skipAbort = false }) {
+    const response = await this.searchOccurrences({ query, skipAbort });
     return response.documents;
   }
 
@@ -66,19 +66,18 @@ class EventAPI extends RESTDataSource {
     }
   }
 
-  searchEvents = async ({ query }) => {
+  searchEvents = async ({ query, skipAbort = false }) => {
     const body = { ...query, includeMeta: true };
     let response;
+    const options = skipAbort ? {} : { signal: this.context.abortController.signal };
     if (JSON.stringify(body).length < urlSizeLimit) {
       response = await this.get(
         '/event',
         { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
+        options,
       );
     } else {
-      response = await this.post('/event', body, {
-        signal: this.context.abortController.signal,
-      });
+      response = await this.post('/event', body, options);
     }
     // map to support APIv1 naming
     response.documents.count = response.documents.total;
@@ -112,19 +111,18 @@ class EventAPI extends RESTDataSource {
     return response;
   };
 
-  searchOccurrences = async ({ query }) => {
+  searchOccurrences = async ({ query, skipAbort = false }) => {
     const body = { ...query, includeMeta: true };
     let response;
+    const options = skipAbort ? {} : { signal: this.context.abortController.signal };
     if (JSON.stringify(body).length < urlSizeLimit) {
       response = await this.get(
         '/event-occurrence',
         { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
+        options,
       );
     } else {
-      response = await this.post('/event-occurrence', body, {
-        signal: this.context.abortController.signal,
-      });
+      response = await this.post('/event-occurrence', body, options);
     }
     // map to support APIv1 naming
     response.documents.count = response.documents.total;

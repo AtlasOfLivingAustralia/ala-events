@@ -209,15 +209,15 @@ export default {
     datasetTitle: ({ key }, args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
       return dataSources.eventAPI
-        .searchEventDocuments({ query: { datasetKey: key }, size: 1 })
+        .searchEventDocuments({ query: { datasetKey: key }, size: 1, skipAbort: true })
         .then((response) => {
-          return response.results[0].datasetTitle;
+          return response.results[0]?.datasetTitle;
         });
     },
     occurrenceCount: ({ key }, args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
       return dataSources.eventAPI
-        .searchOccurrenceDocuments({ query: { datasetKey: key }, size: 1 })
+        .searchOccurrenceDocuments({ query: { datasetKey: key }, size: 1, skipAbort: true })
         .then((response) => {
           return response.total;
         });
