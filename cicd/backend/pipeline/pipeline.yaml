@@ -338,6 +338,7 @@ Resources:
                       { "name":"ELASTIC_HOST", "value":"#{ExportConfigNS.ELASTIC_HOST}" },
                       { "name":"ELASTIC_PORT", "value":"#{ExportConfigNS.ELASTIC_PORT}" },
                       { "name":"USER_POOL_ID", "value":"${UserPoolId}" },
+                      { "name":"ES_INDEX", "value":"#{ExportConfigNS.ES_INDEX}" },
                       { "name":"API_DOWNLOAD", "value":"#{ExportConfigNS.API_DOWNLOAD}" },
                       { "name":"DATASET_EML", "value":"#{ExportConfigNS.DATASET_EML}" }
                     ]

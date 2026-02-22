@@ -101,12 +101,16 @@ spec:
             port: 4000
           initialDelaySeconds: 15
           periodSeconds: 20
-#        readinessProbe:
-#          httpGet:
-#           path: /ready
-#           port: 4000
-#          initialDelaySeconds: 5
-#          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
       volumes:
         - name: events-config
           configMap:
