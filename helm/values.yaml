@@ -152,7 +152,7 @@ graphqlApi:
   affinity: {}
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 4000
     targetPort: 4000
 
@@ -166,6 +166,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+es:
+  indexName: events
 elasticsearch: 
   hosts: 
     - http://aws-events-es-2022-1.ala:9200

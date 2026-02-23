@@ -337,6 +337,7 @@ Resources:
                       { "name":"UI_SUB_DOMAIN", "value":"#{ExportConfigNS.UI_SUB_DOMAIN}" },
                       { "name":"ELASTIC_HOST", "value":"#{ExportConfigNS.ELASTIC_HOST}" },
                       { "name":"ELASTIC_PORT", "value":"#{ExportConfigNS.ELASTIC_PORT}" },
+                      { "name":"ES_INDEX", "value":"#{ExportConfigNS.ES_INDEX}" },
                       { "name":"USER_POOL_ID", "value":"${UserPoolId}" },
                       { "name":"API_DOWNLOAD", "value":"#{ExportConfigNS.API_DOWNLOAD}" },
                       { "name":"DATASET_EML", "value":"#{ExportConfigNS.DATASET_EML}" }

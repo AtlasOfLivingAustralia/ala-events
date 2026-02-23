@@ -18,9 +18,9 @@ phases:
         jq \
         --arg translations "https://$UI_SUB_DOMAIN.$HOSTED_ZONE" \
         --arg mapbox_key "$MAPBOX_KEY" \
-        --arg es_web_api "https://es.$WS_SUB_DOMAIN.$HOSTED_ZONE" \
-        --arg graph_api "https://graphql.$WS_SUB_DOMAIN.$HOSTED_ZONE/graphql" \
-        --arg event_tile_api "https://es2vt.$WS_SUB_DOMAIN.$HOSTED_ZONE" \
+        --arg es_web_api "https://es-$WS_SUB_DOMAIN.$HOSTED_ZONE" \
+        --arg graph_api "https://graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE/graphql" \
+        --arg event_tile_api "https://es2vt-$WS_SUB_DOMAIN.$HOSTED_ZONE" \
         --arg search_url "$BIOCACHE_SEARCH_URL" \
         --arg namematching_ws_url "$NAMEMATCHING_WS_URL" \
         '
