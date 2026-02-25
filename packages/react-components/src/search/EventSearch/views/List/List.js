@@ -2,7 +2,7 @@ import { css} from '@emotion/react';
 import React, { useEffect, useCallback, useState, useContext } from 'react';
 import { useUpdateEffect } from 'react-use';
 import SearchContext from '../../../SearchContext';
-import {Button, Skeleton, DetailsDrawer, Row, Col, Tag, Tags, ResourceLink} from '../../../../components';
+import {Button, Skeleton, DetailsDrawer, Row, Col, Tag, Tags, ResourceLink, DataTable} from '../../../../components';
 import { useQuery } from '../../../../dataManagement/api';
 import * as style from './style';
 import { FilterContext } from "../../../../widgets/Filter/state";
@@ -80,9 +80,17 @@ export const List = ({query, first, prev, next, size, from, data, total, loading
       <EventDatasetSidebar id={activeKey} defaultTab='details' style={{ maxWidth: '100%', height: '100%' }} onCloseRequest={() => dialog.setVisible(false)} />
     </DetailsDrawer>}
     <ResultsHeader loading={loading} total={noOfDatasets} />
-    <ul css={style.datasetList}>
-      {datasets.map(x => <li style={{ marginBottom: 12 }} key={x.key}><Dataset {...x} datasetKey={x.key} filters={filters} onClick={() => { setActiveKey(x.key); }}/></li>)}
-    </ul>
+    <DataTable {...{first, prev, next, size, from, total: noOfDatasets, loading}}>
+      <tbody>
+        <tr>
+          <td>
+            <ul css={style.datasetList}>
+              {datasets.map(x => <li style={{ marginBottom: 12 }} key={x.key}><Dataset {...x} datasetKey={x.key} filters={filters} onClick={() => { setActiveKey(x.key); }}/></li>)}
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </DataTable>
   </div>
 }
 
@@ -220,7 +228,7 @@ function Dataset({ datasetKey, datasetTitle, count, occurrenceCount, extensions,
     let levels = Array("kingdom", "phylum", "class", "order", "family", "genus");
     let result = occurrenceFacet[levels[0]];
     for (var i = 1; i < levels.length; i++){
-      if (occurrenceFacet[levels[i]] && occurrenceFacet[levels[i]].length < 25){
+      if (occurrenceFacet[levels[i]] && occurrenceFacet[levels[i]].length < 20){
         result = occurrenceFacet[levels[i]];
       } else {
         break;
