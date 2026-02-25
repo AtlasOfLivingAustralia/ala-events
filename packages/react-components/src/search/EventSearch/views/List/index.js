@@ -4,7 +4,7 @@ import { List } from './List';
 import { ErrorBoundary} from '../../../../components';
 
 const DATASETS_QUERY = `
-query list($predicate: Predicate, $limit: Int, $offset: Int){
+query list($predicate: Predicate, $limit: Int){
   eventSearch(
     predicate:$predicate,
     ) {
@@ -12,7 +12,7 @@ query list($predicate: Predicate, $limit: Int, $offset: Int){
       datasetKey
     }
     facet {
-      datasetKey(size: $limit, offset: $offset) {
+      datasetKey(size: $limit) {
         datasetTitle
         count
         key
