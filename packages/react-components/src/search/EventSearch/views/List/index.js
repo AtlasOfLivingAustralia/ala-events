@@ -4,7 +4,7 @@ import { List } from './List';
 import { ErrorBoundary} from '../../../../components';
 
 const DATASETS_QUERY = `
-query list($predicate: Predicate, $limit: Int){
+query list($predicate: Predicate, $limit: Int, $offset: Int){
   eventSearch(
     predicate:$predicate,
     ) {
@@ -12,12 +12,12 @@ query list($predicate: Predicate, $limit: Int){
       datasetKey
     }
     facet {
-      datasetKey(size: $limit) {
+      datasetKey(size: $limit, offset: $offset) {
         datasetTitle
         count
         key
-        occurrenceCount   
-        extensions     
+        occurrenceCount
+        extensions
         events {
           documents(size: 3) {
             total
@@ -44,7 +44,7 @@ function Table() {
     queryProps={{throwAllErrors: true}}
     graphQuery={DATASETS_QUERY}
     queryTag='datasets'
-    limit={50}
+    limit={20}
     presentation={List}
   />
 }
