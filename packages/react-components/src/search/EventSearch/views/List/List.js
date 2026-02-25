@@ -220,7 +220,7 @@ function Dataset({ datasetKey, datasetTitle, count, occurrenceCount, extensions,
     let levels = Array("kingdom", "phylum", "class", "order", "family", "genus");
     let result = occurrenceFacet[levels[0]];
     for (var i = 1; i < levels.length; i++){
-      if (occurrenceFacet[levels[i]] && occurrenceFacet[levels[i]].length < 20){
+      if (occurrenceFacet[levels[i]] && occurrenceFacet[levels[i]].length < 25){
         result = occurrenceFacet[levels[i]];
       } else {
         break;
