@@ -25,6 +25,7 @@ export function IconFeatures({
   isSamplingEvent,
   formattedCoordinates,
   eventDate,
+  temporalCoverage,
   stillImageCount,
   movingImageCount,
   soundCount,

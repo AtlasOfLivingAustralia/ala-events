@@ -2,6 +2,14 @@ import { css } from '@emotion/react';
 
 export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }) => css`
 
+.sites {
+  flex: 1 1 100%;
+  display: flex;
+  height: 100%;
+  max-height: 100vh;
+  flex=direction: column;
+}
+
 .grid-container {
   padding: 0;
   margin: 0;
@@ -11,7 +19,7 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
   display: inline-grid;
   grid-template-areas: "legend header"
     "sidebar main-grid";
-  grid-template-columns: 150px auto;
+  grid-template-columns: 165px auto;
   grid-column-gap: 0px;
 }
 
@@ -36,6 +44,7 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
 
 .sidebar {
   grid-area: sidebar;
+  // width: 220px;
   list-style-type: none; 
   list-style-position: outside;  
   display: inline-block;  
@@ -50,6 +59,7 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
 
 .legend {
   grid-area: legend;
+  // width: 220px;
   padding: 15px 5px 5px 10px; 
   position: sticky;
   top: 0;
@@ -65,7 +75,7 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
 
 .header-grid {
   display: grid;
-  grid-template-columns: repeat(${noOfYears}, ${showMonth ? '150px': '16px'} );
+  grid-template-columns: repeat(${noOfYears}, ${showMonth ? '165px': '16px'} );
   grid-column-gap: 0px;
   padding: 15px 5px 5px 5px;
 }
@@ -84,7 +94,7 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
 
 .sidebar-grid {
   display: grid;
-  grid-template-columns: repeat(1, 150px);
+  grid-template-columns: repeat(1, 165px);
   grid-column-gap: 0px;
   padding: 5px;
 }
@@ -98,14 +108,16 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
 
 .sidebar-grid li {
   display: inline-block;
-
+  > span {
+    font-weight: bold;
+  }
 }
 
 .sidebar-grid li:hover { cursor: pointer; }
 
 .data-grid {
   display: grid;
-  grid-template-columns: repeat(${noOfYears}, ${showMonth ? '150px': '16px'});
+  grid-template-columns: repeat(${noOfYears}, ${showMonth ? '165px': '16px'});
   grid-column-gap: 0;
   padding: 5px;
   grid-auto-columns: 3px;  
@@ -164,6 +176,7 @@ export const sites = ({ noOfSites=10, noOfYears=10, showMonth, theme, ...props }
 
 .year-grid li:hover .tooltiptext {
   visibility: visible;
+  z-index: 9999;
 } 
 
 `;

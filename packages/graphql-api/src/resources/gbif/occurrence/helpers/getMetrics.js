@@ -150,8 +150,8 @@ const getAutoDateHistogram =
     return dataSources.occurrenceAPI
       .searchOccurrences({ query })
       .then((data) => ({
-        bucketSize: buckets, 
-        ...data.aggregations.autoDateHistogram, 
+        bucketSize: buckets,
+        ...data.aggregations.autoDateHistogram,
         buckets: data.aggregations.autoDateHistogram.buckets.map(x => ({...x, date: x.key_as_string, count: x.doc_count})) }));
   };
 

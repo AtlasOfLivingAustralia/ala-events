@@ -83,7 +83,9 @@ async function initializeServer() {
   app.use(compression());
   app.use(
     cors({
-      methods: 'GET,POST,OPTIONS',
+      origin: '*',
+      methods: ['GET', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     }),
   );
   app.use(express.static('public'));

@@ -26,17 +26,17 @@ export function Header({
 
   return <Row wrap="no-wrap" css={css.header({ theme })} {...props}>
     <Col grow>
-      <h1>{item.eventType?.concept ? item.eventType.concept : 'Event'}</h1>
+      <h1>{item.eventType?.concept ? item.eventType?.concept : 'Event'}</h1>
       <div css={css.headline({ theme })}>
         <Eyebrow 
           style={{fontSize: '80%'}}
           prefix={<FormattedMessage id="eventDetails.dataset" />}
           suffix={data?.event?.datasetTitle}
-            />
+          />
       </div>
       <div css={css.entitySummary({ theme })}>
         <IconFeatures css={css.features({ theme })}
-                      eventDate={item.eventDate}
+                      temporalCoverage={item.temporalCoverage}
                       countryCode={item.countryCode}
                       locality={item.locality}
         />

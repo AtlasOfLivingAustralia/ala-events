@@ -1,0 +1,183 @@
+{
+    "pipelineName": "lists-frontend-118-merge-build-a-deploy",
+    "pipelineVersion": 1,
+    "stageStates": [
+        {
+            "stageName": "Checkout_Source",
+            "inboundExecutions": [],
+            "inboundTransitionState": {
+                "enabled": true
+            },
+            "actionStates": [
+                {
+                    "actionName": "CheckoutSrc",
+                    "currentRevision": {
+                        "revisionId": "a144682f2052bad7290256706428c283f2ccfe13"
+                    },
+                    "latestExecution": {
+                        "actionExecutionId": "a25995e2-ff5f-4595-8eb3-7bd72cd62c63",
+                        "status": "Succeeded",
+                        "summary": "{\"ProviderType\":\"GitHub\",\"CommitMessage\":\"CICD - migrated build code build spec backend component, added teardown of ECR stack\"}",
+                        "lastStatusChange": "2024-11-01T18:12:20.995000+11:00",
+                        "externalExecutionId": "a144682f2052bad7290256706428c283f2ccfe13"
+                    },
+                    "entityUrl": "https://ap-southeast-2.console.aws.amazon.com/codesuite/settings/connections/redirect?connectionArn=arn:aws:codestar-connections:ap-southeast-2:748909248546:connection/f4f3b35a-5a45-4baa-b6c9-ddd2d0a6326b&referenceType=BRANCH&FullRepositoryId=AtlasOfLivingAustralia/species-lists&Branch=feature/118-merge-build-a-deploy-cicd-pipelines",
+                    "revisionUrl": "https://ap-southeast-2.console.aws.amazon.com/codesuite/settings/connections/redirect?connectionArn=arn:aws:codestar-connections:ap-southeast-2:748909248546:connection/f4f3b35a-5a45-4baa-b6c9-ddd2d0a6326b&referenceType=COMMIT&FullRepositoryId=AtlasOfLivingAustralia/species-lists&Commit=a144682f2052bad7290256706428c283f2ccfe13"
+                }
+            ],
+            "latestExecution": {
+                "pipelineExecutionId": "fbcec0b1-c1ad-4810-b871-a41124b81bd3",
+                "status": "Succeeded"
+            }
+        },
+        {
+            "stageName": "Deploy_Infrastructure",
+            "inboundExecutions": [],
+            "inboundTransitionState": {
+                "enabled": true
+            },
+            "actionStates": [
+                {
+                    "actionName": "ExportConfig",
+                    "latestExecution": {
+                        "actionExecutionId": "f02138e4-4fcd-48b6-bfd1-47eeb06a07e2",
+                        "status": "Succeeded",
+                        "lastStatusChange": "2024-11-01T18:13:23.449000+11:00",
+                        "externalExecutionId": "lists-frontend-export-config-118-merge-build-a-deploy:bfa02816-136c-441b-bc73-0e16d7e1c71e",
+                        "externalExecutionUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/builds/lists-frontend-export-config-118-merge-build-a-deploy:bfa02816-136c-441b-bc73-0e16d7e1c71e/view/new"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/projects/lists-frontend-export-config-118-merge-build-a-deploy/view"
+                },
+                {
+                    "actionName": "DeployWafCFStack",
+                    "latestExecution": {
+                        "actionExecutionId": "f53e8dd4-06db-4013-8bdf-1aa37787c163",
+                        "status": "Succeeded",
+                        "summary": "Stack ala-lists-waf-118-merge-build-a-deploy was updated.",
+                        "lastStatusChange": "2024-11-01T18:13:59.894000+11:00",
+                        "externalExecutionId": "stack/detail?stackId=arn:aws:cloudformation:us-east-1:748909248546:stack/ala-lists-waf-118-merge-build-a-deploy/9a99fd20-980b-11ef-8e47-0e74d718cccb",
+                        "externalExecutionUrl": "https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stack/detail?stackId=arn:aws:cloudformation:us-east-1:748909248546:stack/ala-lists-waf-118-merge-build-a-deploy/9a99fd20-980b-11ef-8e47-0e74d718cccb"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/"
+                },
+                {
+                    "actionName": "DeploySiteCFStack",
+                    "latestExecution": {
+                        "actionExecutionId": "ad6342b9-6ae9-4747-9410-ca7621da5f76",
+                        "status": "Succeeded",
+                        "summary": "Stack ala-lists-frontend-118-merge-build-a-deploy was updated.",
+                        "lastStatusChange": "2024-11-01T18:14:33.779000+11:00",
+                        "externalExecutionId": "stack/detail?stackId=arn:aws:cloudformation:ap-southeast-2:748909248546:stack/ala-lists-frontend-118-merge-build-a-deploy/af0cf960-980b-11ef-8b6f-0adb3d596a47",
+                        "externalExecutionUrl": "https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stack/detail?stackId=arn:aws:cloudformation:ap-southeast-2:748909248546:stack/ala-lists-frontend-118-merge-build-a-deploy/af0cf960-980b-11ef-8b6f-0adb3d596a47"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/"
+                }
+            ],
+            "latestExecution": {
+                "pipelineExecutionId": "fbcec0b1-c1ad-4810-b871-a41124b81bd3",
+                "status": "Succeeded"
+            }
+        },
+        {
+            "stageName": "Publish_Website",
+            "inboundExecutions": [],
+            "inboundTransitionState": {
+                "enabled": true
+            },
+            "actionStates": [
+                {
+                    "actionName": "BuildCode",
+                    "latestExecution": {
+                        "actionExecutionId": "5e370362-210e-435a-972e-f5cef26ebd56",
+                        "status": "Succeeded",
+                        "lastStatusChange": "2024-11-01T18:15:36.998000+11:00",
+                        "externalExecutionId": "lists-frontend-build-site-118-merge-build-a-deploy:3f6d62e0-823e-4d73-a266-c36dfa62d555",
+                        "externalExecutionUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/builds/lists-frontend-build-site-118-merge-build-a-deploy:3f6d62e0-823e-4d73-a266-c36dfa62d555/view/new"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/projects/lists-frontend-build-site-118-merge-build-a-deploy/view"
+                },
+                {
+                    "actionName": "EmptyBucket",
+                    "latestExecution": {
+                        "actionExecutionId": "677ee51d-1019-4f5f-8ba5-9de02fd0cb75",
+                        "status": "Succeeded",
+                        "lastStatusChange": "2024-11-01T18:16:09.291000+11:00",
+                        "externalExecutionId": "lists-frontend-empty-bucket-118-merge-build-a-deploy:da9b37b9-2d39-4df6-9cd7-6e4d44727fa9",
+                        "externalExecutionUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/builds/lists-frontend-empty-bucket-118-merge-build-a-deploy:da9b37b9-2d39-4df6-9cd7-6e4d44727fa9/view/new"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/projects/lists-frontend-empty-bucket-118-merge-build-a-deploy/view"
+                },
+                {
+                    "actionName": "UploadFilesToS3",
+                    "latestExecution": {
+                        "actionExecutionId": "c5f1c529-575c-4dce-8513-0d50cdcb0866",
+                        "status": "Succeeded",
+                        "summary": "Deployment Succeeded",
+                        "lastStatusChange": "2024-11-01T18:16:11.167000+11:00",
+                        "externalExecutionId": "ala-lists-site-118-merge-build-a-deploy/www"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/s3/buckets/#{ExportConfigNS.SOURCE_BUCKET}/?region=ap-southeast-2&tab=overview"
+                },
+                {
+                    "actionName": "DeployNotification",
+                    "latestExecution": {
+                        "actionExecutionId": "e8bd1301-9c75-4fa2-89da-bcee8a82e252",
+                        "status": "Succeeded",
+                        "lastStatusChange": "2024-11-01T18:16:43.229000+11:00",
+                        "externalExecutionId": "lists-frontend-deploy-notification-118-merge-build-a-deploy:f06c39c5-ebca-4e8d-ab4f-78ef4fb3f923",
+                        "externalExecutionUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/builds/lists-frontend-deploy-notification-118-merge-build-a-deploy:f06c39c5-ebca-4e8d-ab4f-78ef4fb3f923/view/new"
+                    },
+                    "entityUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/projects/lists-frontend-deploy-notification-118-merge-build-a-deploy/view"
+                }
+            ],
+            "latestExecution": {
+                "pipelineExecutionId": "fbcec0b1-c1ad-4810-b871-a41124b81bd3",
+                "status": "Succeeded"
+            }
+        },
+        {
+            "stageName": "Teardown",
+            "inboundExecutions": [],
+            "inboundTransitionState": {
+                "enabled": true,
+                "lastChangedBy": "arn:aws:sts::748909248546:assumed-role/assume-ala-developer/botocore-session-1730445022",
+                "lastChangedAt": "2024-11-01T18:39:38.716000+11:00"
+            },
+            "actionStates": [
+                {
+                    "actionName": "Approval",
+                    "latestExecution": {
+                        "actionExecutionId": "02414181-0129-4741-8944-59cca95471d0",
+                        "status": "InProgress",
+                        "token": "02414181-0129-4741-8944-59cca95471d0"
+                    }
+                },
+                {
+                    "actionName": "EmptyBucket",
+                    "entityUrl": "https://console.aws.amazon.com/codebuild/home?region=ap-southeast-2#/projects/lists-frontend-empty-bucket-118-merge-build-a-deploy/view"
+                },
+                {
+                    "actionName": "TeardownListsSite",
+                    "entityUrl": "https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/"
+                },
+                {
+                    "actionName": "TeardownListsWaf",
+                    "entityUrl": "https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/"
+                },
+                {
+                    "actionName": "ApprovalForPipelineTeardown"
+                },
+                {
+                    "actionName": "TeardownCodePipeline",
+                    "entityUrl": "https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/"
+                }
+            ],
+            "latestExecution": {
+                "pipelineExecutionId": "fbcec0b1-c1ad-4810-b871-a41124b81bd3",
+                "status": "InProgress"
+            }
+        }
+    ],
+    "created": "2024-11-01T15:40:35.965000+11:00",
+    "updated": "2024-11-01T15:40:35.965000+11:00"
+}

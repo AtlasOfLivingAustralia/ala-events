@@ -1,0 +1,53 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{ include "ala-events.fullname" . }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certificateArn }}
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=180
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-3-2021-06
+    alb.ingress.kubernetes.io/success-codes: 200,404,301,302
+    {{- include "ala-events.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host:  {{ .Values.graphqlApi.ingress.hostname }}
+      http:
+        paths:
+        - pathType: Prefix
+          path: /
+          backend:
+            service:
+              name: {{ include "ala-events.fullname" . }}-graphql-api-service
+              port:
+                number: {{ .Values.graphqlApi.service.port }}
+    - host: {{ .Values.esApi.ingress.hostname }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: {{ include "ala-events.fullname" . }}-es-api-service
+                port:
+                  number: {{ .Values.esApi.service.port }}
+    - host: {{ .Values.es2vt.ingress.hostname }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: {{ include "ala-events.fullname" . }}-es2vt-service
+                port:
+                  number: {{ .Values.es2vt.service.port }}
+{{- end }}

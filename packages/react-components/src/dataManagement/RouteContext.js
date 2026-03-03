@@ -124,7 +124,7 @@ export const defaultContext = {
   eventKey: {
     // url: ({key}) => `/publisher/${key}`,
     // url: ({key, otherIds}) => `${gbifOrg}/dataset/${otherIds.datasetKey}/event/${key}`,
-    url: ({key, otherIds}) => `https://collections.ala.org.au/public/showDataResource/${otherIds.datasetKey}?event=${key}`,
+    url: ({key, otherIds}) => `https://collections.ala.org.au/public/showDataResource/${otherIds.datasetKey}`,
     isHref: true,
     route: '/event/:key'
   },
@@ -138,6 +138,12 @@ export const defaultContext = {
     url: ({ key }) => `https://bie.ala.org.au/species/${key}`,
     isHref: true,
     route: '/taxon/:key'
+  },
+  occurrenceKey: {
+    // url: ({ key }) => `https://gbif.org/occurrence/${key}`,
+    url: ({ key }) => `https://biocache-dev.ala.org.au/occurrences/${key}`,
+    isHref: true,
+    route: '/occurrence/:key'
   }
 };
 

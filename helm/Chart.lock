@@ -1,0 +1,6 @@
+dependencies:
+- name: elasticsearch
+  repository: file://charts/elasticsearch
+  version: 1.0.0
+digest: sha256:933926a18b40550be7bb6b57ffcfa8a184b46717487c013860cb820ca8728049
+generated: "2025-04-03T16:41:39.128512+11:00"

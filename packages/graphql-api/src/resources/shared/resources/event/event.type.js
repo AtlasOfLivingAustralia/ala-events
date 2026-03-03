@@ -244,6 +244,13 @@ export default gql`
     _predicate: JSON
   }
 
+  type EventMultiFacetResult_string {
+    keys: [String]
+    count: Int!
+    events(size: Int, from: Int): EventSearchResult!
+    _predicate: JSON
+  }
+
   type EventFacetResult_float {
     key: Float!
     count: Int!

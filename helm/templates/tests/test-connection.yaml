@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "ala-events.fullname" . }}-test-connection"
+  labels:
+    {{- include "ala-events.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "ala-events.fullname" . }}:{{ .Values.graphqlApi.service.port }}']
+  restartPolicy: Never

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useCallback } from 'react';
 import EventContext from '../../../SearchContext';
 import SiteContext from '../../../../dataManagement/SiteContext'
 import { useDialogState } from "reakit/Dialog";
-import * as styles from './downloadPresentation.styles';
+import * as styles from './styles';
 import {Button, Popover, Progress, Skeleton} from '../../../../components';
 import env from '../../../../../.env.json';
 import {FilterContext} from "../../../../widgets/Filter/state";
@@ -11,28 +11,41 @@ import {FormattedNumber} from "react-intl";
 import {useQuery} from "../../../../dataManagement/api";
 import * as style from "../List/style";
 
-export const DownloadPresentation = ({ more, size, data, total, loading }) => {
+
+function DownloadSkeleton() {
+  return <div css={style.datasetSkeleton}>
+    <Skeleton width="random" style={{ height: '1.5em' }} />
+    <Skeleton width="random" />
+    <Skeleton width="random" />
+    <Skeleton width="random" />
+  </div>
+}
+
+
+export const List = ({query, first, prev, next, size, from, data, total, loading }) => {
 
   const dialog = useDialogState({ animated: true, modal: false });
-  const items = data?.eventSearch?.facet?.datasetKey || [];
+  const items = data?.downloadsList?.facet?.datasetKey || [];
 
   if (loading){
-    return <>Loading...</>;
+    return <><DownloadSkeleton /><DownloadSkeleton /><DownloadSkeleton /></>;
   }
 
   if (!items || items.length == 0){
     return <>No datasets matching this search are available for download</>;
   }
 
+  const datasets = data?.downloadsList?.facet?.datasetKey;
+
   return <>
     <div>
-        <ul key={`dataset_results`} style={{ padding: 0, margin: 0 }}>
-          {items.length > 0 && items.map((item, index) => <li key={`dataset_results_${item.key}`}>
+        <ul key={`dataset_results`} style={{ padding: 0, margin: 0, listStyle: 'none' }}>
+          {datasets.length > 0 && datasets.map((dataset, index) => <li key={`dataset_results_${dataset.key}`}>
             <DatasetResult
                 index={index}
                 dialog={dialog}
-                key={item.key}
-                item={item}
+                key={dataset.key}
+                item={dataset}
                 largest={items[0].count}
             />
           </li>)}
@@ -40,6 +53,14 @@ export const DownloadPresentation = ({ more, size, data, total, loading }) => {
     </div>
   </>
 }
+
+
+function DatasetSkeleton() {
+  return <div css={style.datasetSkeleton}>
+    <Skeleton width="random" style={{ height: '1.5em' }} />
+  </div>
+}
+
 
 const DATASET_QUERY = `
 query list($datasetKey: JSON){
@@ -53,12 +74,6 @@ query list($datasetKey: JSON){
   }
 }
 `;
-
-function DatasetSkeleton() {
-  return <div css={style.datasetSkeleton}>
-    <Skeleton width="random" style={{ height: '1.5em' }} />
-  </div>
-}
 
 
 function DatasetResult({ largest, item, indicator, theme,  index, dialog,...props }) {
@@ -226,7 +241,7 @@ export function DownloadForm ({  hide, dataset, user }) {
            "eventQueryUrl": searchUrl.toString()
          }
 
-         const response = await fetch(env.DOWNLOADS_API_URL + '/event/download', {
+         const response = await fetch(env.DOWNLOADS_API_URL, {
            method: 'POST',
            mode: 'cors',
            headers: {

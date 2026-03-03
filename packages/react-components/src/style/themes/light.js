@@ -12,5 +12,8 @@ export default {
   borderRadius: 3,
   drawerZIndex: 1000,
   progressBar: '#68daa8',
-  stickyOffset: '0px'
+  stickyOffset: '0px',
+  colorRangeStart: '#000000',
+  colorRangeEnd: '#1ea7fd'
+
 }

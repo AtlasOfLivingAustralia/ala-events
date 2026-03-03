@@ -7,7 +7,7 @@ import { filter2predicate } from '../dataManagement/filterAdapter';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import hash from 'object-hash';
 
-function PredicateDataFetcher({graphQuery, graph, resultKey, offsetName = 'from', limit = 25, customVariables = {}, componentProps, presentation: Presentation, queryProps = {}, predicateMeddler, queryTag, ...props}) {
+function PredicateDataFetcher({graphQuery, graph, resultKey, offsetName = 'offset', limit = 25, customVariables = {}, componentProps, presentation: Presentation, queryProps = {}, predicateMeddler, queryTag, ...props}) {
   const [offset = 0, setOffset] = useQueryParam('offset', NumberParam);
   const currentFilterContext = useContext(FilterContext);
   const { rootPredicate, predicateConfig } = useContext(SearchContext);
@@ -22,6 +22,10 @@ function PredicateDataFetcher({graphQuery, graph, resultKey, offsetName = 'from'
         rootPredicate,
         filter2predicate(currentFilterContext.filter, predicateConfig)
       ].filter(x => x)
+    }
+
+    if (predicateMeddler){
+      predicateMeddler(predicate);
     }
 
     load({ keepDataWhileLoading: true, variables: { predicate, limit, offset, ...customVariables } });
@@ -39,16 +43,16 @@ function PredicateDataFetcher({graphQuery, graph, resultKey, offsetName = 'from'
 
   const next = useCallback(() => {
     setOffset(Math.max(0, offset + limit));
-  });
+  }, [offset, limit, setOffset]);
 
   const prev = useCallback(() => {
     const offsetValue = Math.max(0, offset - limit);
     setOffset(offsetValue !== 0 ? offsetValue : undefined);
-  });
+  }, [offset, limit, setOffset]);
 
   const first = useCallback(() => {
     setOffset(undefined);
-  });
+  }, [setOffset]);
 
   if (error) {
     return <div>Failed to fetch data</div>
