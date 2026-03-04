@@ -110,13 +110,13 @@ query list($datasetKey: JSON){
       surveyID
     }    
     facet {
-      measurementOrFactTypes {
+      measurementOrFactTypes (size: 10){
         key
       }
-      samplingProtocol {
+      samplingProtocol (size: 10){
         key
       }    
-      eventTypeHierarchy {
+      eventTypeHierarchy (size: 10){
         key
       }
     }   
