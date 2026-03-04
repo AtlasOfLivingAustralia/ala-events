@@ -130,16 +130,16 @@ query list($datasetKey: JSON){
       class {
         key
       } 
-      order {
+      order (size: 10){
         key
       }         
-      family {
+      family (size: 10){
         key
       }    
-      genus {
+      genus (size: 10){
         key
       }            
-      samplingProtocol {
+      samplingProtocol (size: 10){
         key
       }
     }
