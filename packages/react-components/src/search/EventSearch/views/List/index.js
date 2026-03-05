@@ -45,7 +45,6 @@ function Table() {
     graphQuery={DATASETS_QUERY}
     queryTag='datasets'
     limit={20}
-    from={0}
     presentation={List}
   />
 }
