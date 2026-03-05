@@ -199,7 +199,7 @@ export default gql`
     samplingProtocol(size: Int, include: String):         [EventFacetResult_string]
     measurementOrFactTypes(size: Int, include: String):   [EventFacetResult_string]
     stateProvince(size: Int, include: String):            [EventFacetResult_string]
-    datasetKey(size: Int, include: String):               [EventFacetResult_dataset]
+    datasetKey(size: Int, include: String, from: Int):    [EventFacetResult_dataset]
     measurementOfFactTypes(size: Int, include: String):   [EventFacetResult_dataset]
     locationID(size: Int, from: Int):                     [EventFacetResult_string]
     year(size: Int, from: Int):                           [EventFacetResult_float]
