@@ -4,19 +4,22 @@ import PredicateDataFetcher from "../../../PredicateDataFetcher";
 import {List} from "./List";
 
 const DOWNLOADS_QUERY = `
-query downloads($predicate: Predicate, $limit: Int){
+query downloads($predicate: Predicate, $limit: Int, $offset: Int){
   downloadsList: eventSearch(
     predicate:$predicate,
     ) {
+    cardinality {
+      datasetKey
+    }
     facet {
-      datasetKey(size: $limit) {
+      datasetKey(size: $limit, from: $offset) {
         datasetTitle
         count
         key
         archive {
           url
           fileSizeInMB
-          modified          
+          modified
         }
         events {
           documents(size: 3) {
