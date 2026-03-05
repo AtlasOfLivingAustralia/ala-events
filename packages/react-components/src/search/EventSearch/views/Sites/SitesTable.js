@@ -218,7 +218,7 @@ export const SitesTable = ({ query, first, prev, next, size, from, data, total, 
             <SitesTableSkeleton />
           }
           { !loading &&
-              <DataTable fixedColumn={fixed} {...{first, prev, next, size, from, total: totalPoints, loading}}>
+              <DataTable fixedColumn={fixed} {...{first, prev, next, size, from, total: data?.results?.temporal?.locationID?.cardinality, loading}}>
                 <tbody>
                 <tr>
                   <td className="grid-container">
