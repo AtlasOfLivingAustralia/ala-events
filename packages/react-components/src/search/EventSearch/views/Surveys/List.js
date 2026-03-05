@@ -1,7 +1,7 @@
 import React, {useEffect, useCallback, useContext, useState} from 'react';
 import { useUpdateEffect } from 'react-use';
 import SearchContext from '../../../SearchContext';
-import {Button, Col, DetailsDrawer, Row, Skeleton, Tag, Tags} from '../../../../components';
+import {Button, Col, DataTable, DetailsDrawer, Row, Skeleton, Tag, Tags} from '../../../../components';
 import { useQuery } from '../../../../dataManagement/api';
 import * as style from "../List/style";
 import { FilterContext } from "../../../../widgets/Filter/state";
@@ -118,11 +118,19 @@ export const List = ({query, first, prev, next, size, from, data, total, loading
 
         </DetailsDrawer>}
         <ResultsHeader loading={loading} total={noOfSurveys} />
-        <ul css={style.datasetList}>
-            {surveys.map(x => <li  key={x.key}>
-                <Survey eventID={x.key} filters={filters} setActiveEvent={setActiveEvent} />
-            </li>)}
-        </ul>
+        <DataTable {...{first, prev, next, size, from, total: noOfSurveys, loading}}>
+            <tbody>
+                <tr>
+                    <td>
+                        <ul css={style.datasetList}>
+                            {surveys.map(x => <li  key={x.key}>
+                                <Survey eventID={x.key} filters={filters} setActiveEvent={setActiveEvent} />
+                            </li>)}
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </DataTable>
     </div>
 }
 

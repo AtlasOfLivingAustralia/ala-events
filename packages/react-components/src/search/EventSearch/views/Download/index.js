@@ -36,7 +36,7 @@ function Table() {
       queryProps={{ throwAllErrors: true }}
       graphQuery={DOWNLOADS_QUERY}
       queryTag='download'
-      limit={50}
+      limit={20}
       presentation={List}
   />
 }

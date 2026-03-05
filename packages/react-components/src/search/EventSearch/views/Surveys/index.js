@@ -28,7 +28,7 @@ function Table() {
         queryProps={{ throwAllErrors: true }}
         graphQuery={SURVEYS_QUERY}
         queryTag='surveys'
-        limit={200}
+        limit={20}
         presentation={List}
     />
 }
