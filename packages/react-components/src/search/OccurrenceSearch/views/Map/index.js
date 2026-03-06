@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useCallback } from "react";
-import { FilterContext } from '../../../..//widgets/Filter/state';
+import { FilterContext } from '../../../../widgets/Filter/state';
 import OccurrenceContext from '../../../SearchContext';
 import { useQuery } from '../../../../dataManagement/api';
 import { filter2predicate } from '../../../../dataManagement/filterAdapter';
@@ -43,7 +43,7 @@ query point($predicate: Predicate){
 `;
 const wktBBoxTemplate = '((W S,E S,E N,W N,W S))';
 
-function Map() {
+function Map({style, className, mapProps}) {
   const currentFilterContext = useContext(FilterContext);
   const { labelMap, rootPredicate, predicateConfig, more } = useContext(OccurrenceContext);
   const { data, error, loading, load } = useQuery(OCCURRENCE_MAP, { lazyLoad: true, throwAllErrors: true, queryTag: 'map' });
@@ -109,6 +109,10 @@ function Map() {
     pointLoad({ variables: { predicate } });
   }, [currentFilterContext.filterHash, rootPredicate]);
 
+  const handleFeatureChange = useCallback(({features}) => {
+    currentFilterContext.setFullField('geometry', features ?? []);
+  }, [currentFilterContext]);
+
   const q = currentFilterContext.filter?.must?.q?.[0];
   
   const options = {
@@ -126,11 +130,12 @@ function Map() {
     pointError,
     labelMap,
     q,
-    defaultMapSettings: more?.mapSettings
+    defaultMapSettings: more?.mapSettings,
+    onFeaturesChange: handleFeatureChange
   }
 
   if (typeof window !== 'undefined') {
-    return <MapPresentation {...options} />
+    return <MapPresentation {...options} {...{style, className, mapProps}} />
   } else {
     return <h1>Map placeholder</h1>
   }

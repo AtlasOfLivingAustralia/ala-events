@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
 const { validatePredicate } = require('./validatePredicate');
-const { wktPolygonToCoordinates } = require('../util/geoHelper');
+const { wktPolygonToCoordinates, wktToGeoJson } = require('../util/geoHelper');
 const { ResponseError } = require('../../resources/errorHandler');
 
 function predicate2esQuery(predicate, config) {
@@ -47,7 +47,7 @@ function groupPredicates(predicates, isRootQuery) {
 }
 
 function transform(p, config, isRootQuery) {
-  const fieldName = getFieldName(p.key, config);
+  const fieldName = getFieldName(p.key, p.type, config);
 
   // for handling joins records
   if (config?.options?.[p.key]?.join) {
@@ -157,14 +157,29 @@ function transform(p, config, isRootQuery) {
       }
     }
     case 'within': {
+      const geojson = wktToGeoJson(p.value);
+      if (!['MultiPolygon', 'Polygon'].includes(geojson.type)) {
+        throw new ResponseError(400, 'BAD_REQUEST', 'Only WKT polygons, and multipolygons are supported');
+      }
       return {
         geo_shape: {
           [fieldName]: {
             shape: {
-              type: "polygon",
-              coordinates: wktPolygonToCoordinates(p.value)
+              type: geojson.type,
+              coordinates: geojson.coordinates
             },
             relation: 'within'
+          }
+        }
+      }
+    }
+    case 'geoDistance': {
+      return {
+        geo_distance: {
+          distance: p.distance,
+          [fieldName]: {
+            lat: p.latitude,
+            lon: p.longitude
           }
         }
       }
@@ -200,9 +215,11 @@ function transform(p, config, isRootQuery) {
   }
 }
 
-function getFieldName(key, config) {
-  if (!key) return;
-  return config.prefix ? `${config.prefix}.${config.options[key].field}` : config.options[key].field;
+function getFieldName(key, type, config) {
+  if (!key && !['geoDistance'].includes(type)) return;
+  
+  const fieldKey = key || type;
+  return config.prefix ? `${config.prefix}.${config.options[fieldKey].field}` : config.options[fieldKey].field;
 }
 
 module.exports = {

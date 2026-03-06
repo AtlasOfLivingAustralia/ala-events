@@ -1,4 +1,4 @@
-import { getHtml } from '#/helpers/utils';
+import { getHtml, excerpt } from '#/helpers/utils';
 import { getContributors } from './helpers/contributors';
 /**
  * Convinent wrapper to generate the facet resolvers.
@@ -7,27 +7,27 @@ import { getContributors } from './helpers/contributors';
  */
 const getDatasetFacet =
   (facetKey) =>
-  (parent, { limit = 10, offset = 0 }, { dataSources }) => {
-    // generate the species search query, by inherting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      ...parent._query,
-      limit: 0,
-      facet: facetKey,
-      facetLimit: limit,
-      facetOffset: offset,
+    (parent, { limit = 10, offset = 0 }, { dataSources }) => {
+      // generate the species search query, by inherting from the parent query, and map limit/offset to facet equivalents
+      const query = {
+        ...parent._query,
+        limit: 0,
+        facet: facetKey,
+        facetLimit: limit,
+        facetOffset: offset,
+      };
+      // query the API, and throw away anything but the facet counts
+      return dataSources.datasetAPI.searchDatasets({ query }).then((data) => [
+        ...data.facets[0].counts.map((facet) => ({
+          ...facet,
+          // attach the query, but add the facet as a filter
+          _query: {
+            ...parent._query,
+            [facetKey]: facet.name,
+          },
+        })),
+      ]);
     };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.datasetAPI.searchDatasets({ query }).then((data) => [
-      ...data.facets[0].counts.map((facet) => ({
-        ...facet,
-        // attach the query, but add the facet as a filter
-        _query: {
-          ...parent._query,
-          [facetKey]: facet.name,
-        },
-      })),
-    ]);
-  };
 
 /**
  * fieldName: (parent, args, context, info) => data;
@@ -42,6 +42,7 @@ export const Query = {
   dataset: (parent, { key }, { dataSources }) =>
     dataSources.datasetAPI.getDatasetByKey({ key }),
 };
+
 export const DatasetSearchStub = {
   dataset: ({ key }, args, { dataSources }) =>
     dataSources.datasetAPI.getDatasetByKey({ key }),
@@ -63,25 +64,33 @@ export const DatasetSearchStub = {
   },
   occurrenceCount: ({ key }, args, { dataSources }) => {
     if (typeof key === 'undefined') return null;
+
     return dataSources.occurrenceAPI
       .searchOccurrenceDocuments({
         query: {
+          size: 0,
           predicate: { type: 'equals', key: 'datasetKey', value: key },
         },
-      })
-      .then((response) => response.total);
+      }).then((documents) => documents.total);
   },
   literatureCount: ({ key }, args, { dataSources }) => {
     if (typeof key === 'undefined') return null;
     return dataSources.literatureAPI
-      .searchLiterature({ query: { gbifDatasetKey: key } })
+      .searchLiterature({ query: { gbifDatasetKey: key, size: 0 } })
       .then((response) => response.documents.total);
   },
+  excerpt: src => excerpt({ body: src.description }),
+  mapCapabilities: ({ key }, args, { dataSources }) => {
+    if (typeof key === 'undefined') return null;
+    return dataSources.occurrenceAPI.getMapCapabilities({ datasetKey: key });
+  }
 };
+
 export const Dataset = {
   logInterfaceUrl: ({ key }) => {
     return `https://logs.gbif.org/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-7d,mode:quick,to:now))&_a=(columns:!(_source),index:AWyLao3iHCKcR6PFXuPR,interval:auto,query:(query_string:(analyze_wildcard:!t,query:'datasetKey:%22${key}%22')),sort:!('@timestamp',desc))`;
   },
+  excerpt: src => excerpt({ body: src.description }),
   installation: ({ installationKey: key }, args, { dataSources }) =>
     dataSources.installationAPI.getInstallationByKey({ key }),
   duplicateOfDataset: (
@@ -123,15 +132,33 @@ export const Dataset = {
   networks: ({ key }, args, { dataSources }) => {
     return dataSources.datasetAPI.getNetworks({ key });
   },
-  metrics: ({ key }, args, { dataSources }) => {
+  metrics: ({ type, key }, args, { dataSources }) => {
+    if (type !== 'CHECKLIST') return null;
     return dataSources.datasetAPI.getMetrics({ key });
   },
-  gridded: ({ key }, args, { dataSources }) => {
-    return dataSources.datasetAPI.getGridded({ key });
+  gridded: ({ key }, { limit = 1000 }, { dataSources }) => {
+    return dataSources.datasetAPI.getGridded({ key })
+      .then(response => response.slice(0, limit));
   },
   description: ({ description }) => getHtml(description),
   purpose: ({ purpose }) => getHtml(purpose),
+  checklistBankDataset: ({ key }, args, { dataSources }) => {
+    return dataSources.datasetAPI.getFromChecklistBank({ key });
+  },
+  mapCapabilities: ({ key }, args, { dataSources }) => {
+    if (typeof key === 'undefined') return null;
+    return dataSources.occurrenceAPI.getMapCapabilities({ datasetKey: key });
+  }
 };
+
+export const ChecklistBankDataset = {
+  import: ({ key }, args, { dataSources }) => {
+    const query = Object.keys(args).length > 0 ? args : undefined;
+    return dataSources.datasetAPI.getChecklistBankImport({ key, query })
+      .then(response => response?.[0]);
+  }
+};
+
 export const DatasetSearchResults = {
   // this looks odd. I'm not sure what is the best way, but I want to transfer the current query to the child, so that it can be used when asking for the individual facets
   facet: (parent) => ({

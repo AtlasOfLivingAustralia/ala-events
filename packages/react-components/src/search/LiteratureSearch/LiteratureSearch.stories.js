@@ -66,8 +66,8 @@ const config = {
   labels,
   getSuggests,
   filters,
-  includedFilters: ['vceDatasetFilter'],
-  highlightedFilters: ['vceDatasetFilter'],
+  // includedFilters: ['vceDatasetFilter'],
+  // highlightedFilters: ['vceDatasetFilter'],
   // rootFilter: {predicate: {type: 'or', predicates: [
   //   {
   //     type: 'in', 
@@ -87,7 +87,7 @@ const config = {
 export const Example = () => <Router initialEntries={[`/literature/search`]}>
   <QueryParamProvider ReactRouterRoute={Route}>
     <AddressBar />
-    <LiteratureSearch pageLayout config={config} style={{ margin: 'auto', height: 'calc(100vh - 60px)' }} />;
+    <LiteratureSearch pageLayout config={config} style={{ margin: 'auto', height: 'calc(100vh - 60px)' }} />
   </QueryParamProvider>
 </Router>
 
@@ -96,4 +96,10 @@ Example.story = {
   name: 'Literature search',
 };
 
-export const StandaloneExample = () => <Standalone style={{ height: 'calc(100vh - 50px)' }}></Standalone>;
+export const StandaloneExample = () => <Standalone siteConfig={{
+  routes: {
+    literatureSearch: {
+      route: '/',
+    }
+  },
+}} style={{ height: 'calc(100vh - 50px)' }}></Standalone>;

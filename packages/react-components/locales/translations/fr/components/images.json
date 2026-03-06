@@ -1,0 +1,11 @@
+{
+  "identifier": "ID",
+  "type": "Type ",
+  "title": "Titre",
+  "rights": "Droits",
+  "providerLiteral": "Fournisseur",
+  "description": "Description",
+  "accessURI": "URL",
+  "format": "Format",
+  "pixelXDimension": "Largeur"
+}

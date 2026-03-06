@@ -15,7 +15,7 @@ export const GalleryTileSkeleton = ({ height = 150, ...props }) => {
   return <div css={styles.skeletonTile({ height })} {...props}></div>
 };
 
-export const GalleryTile = ({ src, onSelect, height = 150, minWidth, children, style, ...props }) => {
+export const GalleryTile = ({ src, onSelect, height = 150, minWidth, getSrc, children, style, ...props }) => {
   const theme = useContext(ThemeContext);
   const [ratio, setRatio] = useState(1);
   const [isValid, setValid] = useState(false);
@@ -30,7 +30,7 @@ export const GalleryTile = ({ src, onSelect, height = 150, minWidth, children, s
     width: ratio * height,
   };
   const imageStyle = {
-    backgroundImage: `url('${Image.getImageSrc({ src, h: height })}')`
+    backgroundImage: `url('${src}')`
   }
   if (ratio > 3) sizeStyle.width = height * 3;
   if (ratio < .3) sizeStyle.width = height * .3;
@@ -44,8 +44,6 @@ export const GalleryTile = ({ src, onSelect, height = 150, minWidth, children, s
       title="View details"
     >
       <Image src={src}
-        width={height}
-        h={height}
         onLoad={onLoad}
         alt="Occurrence evidence"
       />

@@ -1,31 +1,17 @@
 
-import React, { useContext, useState, useEffect } from 'react';
-import ThemeContext from '../../style/themes/ThemeContext';
+import React, { useContext, useEffect } from 'react';
 import SiteContext from '../../dataManagement/SiteContext';
 import { useQuery } from '../../dataManagement/api';
 import { DatasetPresentation } from './DatasetPresentation';
-
-import { MemoryRouter, useRouteMatch } from 'react-router-dom';
-
-function EnsureRouter({children}) {
-  let hasRouter;
-  try {
-    const forTestOnly = useRouteMatch();
-    hasRouter = true;
-  } catch(err) {
-    console.log('No router context found, so creating a MemoryRouter for the component');
-    hasRouter = false;
-  }
-  return hasRouter ? <>{children}</> : <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
-}
+import { ErrorBoundary } from '../../components';
 
 export function Dataset({
   id,
+  useMemoryRouter,
   ...props
 }) {
   const { data, error, loading, load } = useQuery(DATASET, { lazyLoad: true });
   const { data: insights, error: insightsError, loading: insightsLoading, load: loadInsights } = useQuery(DATASET_SECONDARY, { lazyLoad: true });
-  const theme = useContext(ThemeContext);
   const siteContext = useContext(SiteContext);
   const sitePredicate = siteContext?.occurrence?.rootPredicate;
 
@@ -55,43 +41,43 @@ export function Dataset({
           datasetPredicate,
           imagePredicate: {
             type: 'and',
-            predicates: [datasetPredicate, {type: 'equals', key: 'mediaType', value: 'StillImage'}]
+            predicates: [datasetPredicate, { type: 'equals', key: 'mediaType', value: 'StillImage' }]
           },
           coordinatePredicate: {
             type: 'and',
             predicates: [
-              datasetPredicate, 
-              {type: 'equals', key: 'hasCoordinate', value: 'true'},
-              {type: 'equals', key: 'hasGeospatialIssue', value: 'false'}
+              datasetPredicate,
+              { type: 'equals', key: 'hasCoordinate', value: 'true' },
+              { type: 'equals', key: 'hasGeospatialIssue', value: 'false' }
             ]
           },
           taxonPredicate: {
             type: 'and',
-            predicates: [datasetPredicate, {type: 'equals', key: 'issue', value: 'TAXON_MATCH_NONE'}]
+            predicates: [datasetPredicate, { type: 'equals', key: 'issue', value: 'TAXON_MATCH_NONE' }]
           },
           yearPredicate: {
             type: 'and',
-            predicates: [datasetPredicate, {type: 'isNotNull', key: 'year'}]
+            predicates: [datasetPredicate, { type: 'isNotNull', key: 'year' }]
           },
           eventPredicate: {
             type: 'and',
-            predicates: [datasetPredicate, {type: 'isNotNull', key: 'eventID'}]
+            predicates: [datasetPredicate, { type: 'isNotNull', key: 'eventId' }]
           }
         }
       });
     }
   }, [id]);
 
-  return <EnsureRouter>
-    <DatasetPresentation {...{ data, error, loading: loading || !data, id }} insights={{data: insights, loading: insightsLoading, error: insightsError}} />
-  </EnsureRouter>
+  return <ErrorBoundary>
+    <DatasetPresentation {...{ data, error, loading: loading || !data, id }} insights={{ data: insights, loading: insightsLoading, error: insightsError }} {...props} />
+  </ErrorBoundary>
 };
 
 const DATASET_SECONDARY = `
 query ($datasetPredicate: Predicate, $imagePredicate: Predicate, $coordinatePredicate: Predicate, $taxonPredicate: Predicate, $yearPredicate: Predicate, $eventPredicate: Predicate){
   unfiltered: occurrenceSearch(predicate: $datasetPredicate) {
     cardinality {
-      eventID
+      eventId
     }
     facet {
       dwcaExtension {
@@ -106,7 +92,7 @@ query ($datasetPredicate: Predicate, $imagePredicate: Predicate, $coordinatePred
       results {
         key
         stillImages {
-          identifier
+          identifier: thumbor(height: 400)
         }
       }
     }
@@ -148,18 +134,38 @@ query dataset($key: ID!, $predicate: Predicate, $sitePredicate: Predicate){
   }
   literatureSearch(gbifDatasetKey: [$key]) {
     documents {
-      count
+      total
     }
   }
-  taxonSearch(datasetKey: [$key], origin: [SOURCE], status: [ACCEPTED]){
+  totalTaxa: taxonSearch(datasetKey: [$key], origin: [SOURCE]){
+    count
+  }
+  accepted: taxonSearch(datasetKey: [$key], origin: [SOURCE], status: [ACCEPTED]){
+    count
+  }
+  synonyms: taxonSearch(datasetKey: [$key], origin: [SOURCE], status: [SYNONYM, HETEROTYPIC_SYNONYM, PROPARTE_SYNONYM, HOMOTYPIC_SYNONYM]){
     count
   }
   dataset(key: $key) {
     key
+    checklistBankDataset {
+      key
+    }
     type
     title
     created
     modified
+    deleted
+    duplicateOfDataset {
+      key
+      title
+    }
+    metrics {
+      colCoveragePct
+      nubCoveragePct
+      nubMatchingCount
+      colMatchingCount
+    }
     pubDate
     description
     purpose
@@ -288,4 +294,3 @@ query dataset($key: ID!, $predicate: Predicate, $sitePredicate: Predicate){
   }
 }
 `;
-

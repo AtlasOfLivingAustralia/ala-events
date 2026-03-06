@@ -1,20 +1,29 @@
 import env from '../.env.json';
+const gbifOrg = 'https://www.gbif.org';
 
 const routeConfig = {
+  enabledRoutes: ['datasetSearch', 'occurrenceSearch', 'institutionKey', 'institutionSearch', 'publisherSearch', 'collectionSearch', 'collectionKey', 'datasetKey'],
   occurrenceSearch: {
     url: ({ queryString }) => {
-      return `/?path=/story/search-occurrencesearch--example&viewMode=story`;
+      return `/iframe.html?args=&id=search-occurrencesearch--standalone-example&viewMode=story${queryString}`;
     },
+    // url: ({route, queryString, basename}) => `${basename ? `/${basename}` : ''}${route}${queryString ? `?${queryString}` : ''}`,
     isHref: true,
     route: '/occurrence/search',
   },
 
+  speciesSearch: {
+    url: ({ queryString }) => `${gbifOrg}/species/search?${queryString}`,
+    isHref: true,
+    route: '/species/search',
+  },
+
   collectionKey: {
-    route: '/',
     isHref: true,
     url: ({ key }) => {
       return `/?path=/story/entities-collection-page--example&knob-collectionUUID=${key}`;
-    }
+    },
+    route: '/'
   },
   collectionSearch: {
     // url: () => `/collection/`,
@@ -25,21 +34,31 @@ const routeConfig = {
     route: '/collection/search',
   },
   collectionKeySpecimens: {
-    url: ({ key }) => `/collection/${key}/specimens`
+    parent: 'collectionKey',
+    // url: ({ key }) => `/collection/${key}/specimens`
+    url: ({ route, queryString, basename, key }) => `${basename ? `/${basename}` : ''}/collection/${key}/specimens${queryString ? `?${queryString}` : ''}`,
+    route: '/specimens',
+  },
+  collectionKeyDashboard: {
+    parent: 'collectionKey',
+    // url: ({ key }) => `/collection/${key}/specimens`
+    url: ({ route, queryString, basename, key }) => `${basename ? `/${basename}` : ''}/collection/${key}/specimens${queryString ? `?${queryString}` : ''}`,
+    route: '/dashboard',
   },
 
   institutionKey: {
     isHref: true,
     url: ({ key }) => {
       return `/?path=/story/entities-institution-page--example&knob-institutionUUID=${key}`;
-    }
+    },
+    route: '/institution/:key',
   },
   institutionKeySpecimens: {
-    url: ({key}) => `/specimens`,
+    url: ({ key }) => `/specimens`,
     isHref: false,
   },
   institutionKeyCollections: {
-    url: ({key}) => `/collections`,
+    url: ({ key }) => `/collections`,
     isHref: false,
   },
   institutionSearch: {
@@ -56,14 +75,22 @@ const routeConfig = {
     // url: ({key}) => `https://collections.ala.org.au/public/showDataResource/${key}`,
     url: ({ key }) => {
       // return `/iframe.html?id=entities-dataset-page--example&viewMode=story&knob-datasetUUID=${key}`;
-      return `/?path=/story/entities-dataset-page--example&knob-Choose%20Direction=ltr&knob-Choose%20Theme=gbif&knob-Choose%20locale=en-DK&knob-datasetUUID=${key}`;
+      return `/?path=/story/entities-dataset-page--example&knob-Choose%20Direction=ltr&knob-Choose%20locale=en-DK&knob-datasetUUID=${key}`;
     },
     route: '/'
+  },
+  datasetCitations: {
+    route: '/dataset/:key/citations',
+    url: ({ key }) => `/dataset/${key}/citations`
+  },
+  datasetDownload: {
+    route: '/dataset/:key/download',
+    url: ({ key }) => `/dataset/${key}/download`
   },
   datasetSearch: {
     // url: () => `/dataset-search/`,
     url: ({ queryString }) => {
-      return `/iframe.html?id=search-datasetsearch--example&viewMode=story`;
+      return `/iframe.html?id=search-datasetsearch--example&viewMode=story&${queryString}`;
       // return `/?path=/story/search-datasetsearch--example`;
     },
     isHref: true,
@@ -73,15 +100,15 @@ const routeConfig = {
   publisherKey: {
     isHref: true,
     url: ({ key }) => {
-      // return `/iframe.html?id=entities-publisher-page--example&viewMode=story&knob-publisherUUID=${key}`;
-      return `https://www.gbif.org/publisher/${key}`;
+      return `/iframe.html?id=entities-publisher-page--example&viewMode=story&knob-publisherUUID=${key}`;
+      // return `https://www.gbif.org/publisher/${key}`;
     },
     route: '/publisher/:key'
   },
   publisherSearch: {
     // url: () => `/publisher-search/`,
     url: ({ queryString }) => {
-      return `/iframe.html?id=search-publishersearch--example&viewMode=story`;
+      return `/iframe.html?id=search-publishersearch--example&viewMode=story&${queryString}`;
     },
     isHref: true,
     route: '/publisher/search',
@@ -98,18 +125,17 @@ const routeConfig = {
   eventKey: {
     // url: ({key}) => `/publisher/${key}`,
     // url: ({key, otherIds}) => `${gbifOrg}/dataset/${otherIds.datasetKey}/event/${key}`,
-    url: ({key, otherIds}) => `https://collections.ala.org.au/public/showDataResource/${otherIds.datasetKey}?event=${key}`,
+    url: ({ key, otherIds }) => `https://collections.ala.org.au/public/showDataResource/${otherIds.datasetKey}?event=${key}`,
     isHref: true,
     route: '/event/:key'
   },
   eventSearch: {
-    url: ({queryString, basename}) => `${basename ? `/${basename}` : ''}/event/search`,
+    url: ({ queryString, basename }) => `${basename ? `/${basename}` : ''}/event/search`,
     isHref: true,
     route: '/publisher/search'
   },
   taxonKey: {
-    // url: ({ key }) => `https://gbif.org/species/${key}`,
-    url: ({ key }) => `https://bie.ala.org.au/species/${key}`,
+    url: ({ key }) => `https://gbif.org/species/${key}`,
     isHref: true,
     route: '/taxon/:key'
   },
@@ -118,26 +144,77 @@ const routeConfig = {
     url: ({ key }) => `https://biocache-dev.ala.org.au/occurrences/${key}`,
     isHref: true,
     route: '/occurrence/:key'
-  }
+  },
+  occurrenceEventSearch: {
+    // https://biocache-test.ala.org.au/occurrences/search?fq=eventHierarchy:${eventID}&fq=dataResourceUid:${datasetKey}`
+    // url: ({ key }) => `https://gbif.org/occurrence/${key}`,
+    url: ({ key, otherIds }) => `https://biocache-dev.ala.org.au/occurrences/search?fq=eventHierarchy:${key}&fq=dataResourceUid:${otherIds.datasetKey}`,
+    isHref: true,
+    route: '/occurrences/search'
+  },
+  occurrenceDatasetSearch: {
+    // https://biocache-test.ala.org.au/occurrences/search?fq=eventHierarchy:${eventID}&fq=dataResourceUid:${datasetKey}`
+    // url: ({ key }) => `https://gbif.org/occurrence/${key}`,
+    url: ({ key }) => `https://biocache-dev.ala.org.au/occurrences/search?fq=dataResourceUid:${key}`,
+    isHref: true,
+    route: '/occurrences/search'
+  },
+  occurrenceLocationSearch: {
+    // https://biocache-test.ala.org.au/occurrences/search?fq=eventHierarchy:${eventID}&fq=dataResourceUid:${datasetKey}`
+    // url: ({ key }) => `https://gbif.org/occurrence/${key}`,
+    url: ({ key, otherIds }) => {
+      if (!otherIds.month && !otherIds.year){
+        return `https://biocache-dev.ala.org.au/occurrences/search?fq=locationID:${key}`;
+      }
+      if (!otherIds.month && otherIds.year){
+        return `https://biocache-dev.ala.org.au/occurrences/search?fq=locationID:${key}&fq=year:${otherIds.year}`;
+      }
+      if (otherIds.month && !otherIds.year){
+        return `https://biocache-dev.ala.org.au/occurrences/search?fq=locationID:${key}&fq=month:${otherIds.month}`;
+      }
+      return `https://biocache-dev.ala.org.au/occurrences/search?fq=locationID:${key}&fq=month:${otherIds.month}&fq=year:${otherIds.year}`;
+    },
+    isHref: true,
+    route: '/occurrences/search'
+  },
+  networkKey: {
+    isHref: true,
+    url: ({ key }) => `${env.GBIF_ORG}/network/${key}`,
+    route: '/'
+  },
 };
 
 export const siteConfig = {
-  routeConfig,
-  occurrence: {},
+  routes: routeConfig,
+  occurrence: {
+    mapSettings: {
+      userLocationEnabled: true,
+    }
+  },
   dataset: {},
   event: {
     enableGraphQLAPI: true,
     enableResetFilter: true
   },
   literature: {},
-  institution: {},
-  collection: {},
+  institution: {
+    mapSettings: {
+      enabled: true,
+      lat: 54.89,
+      lng: -3.86,
+      zoom: 5.4
+    },
+  },
+  collection: {
+    //availableOccurrenceSearchTabs: ['TABLE', 'GALLERY', 'MAP'],
+  },
   publisher: {},
   apiKeys: {
     mapbox: env._FOR_STORYBOOK_BUT_PUBLIC?.apiKeys?.mapbox,
     bing: 'need to make a call to register',
     maptiler: env._FOR_STORYBOOK_BUT_PUBLIC?.apiKeys?.maptiler
   },
+  // availableCatalogues: ['OCCURRENCE', 'DATASET', 'PUBLISHER', 'LITERATURE', 'COLLECTION', 'INSTITUTION'],
   maps: {
     // locale: 'ja',
     defaultProjection: 'MERCATOR',

@@ -13,9 +13,16 @@ class TaxonMediaAPI extends RESTDataSource {
     request.headers.set('Accept', 'application/json');
   }
 
-  async getRepresentativeImages({ taxon, size, from }) {
-    const params = new URLSearchParams({
-      q: `taxonConceptID:${taxon}`,
+  async getRepresentativeImages({ taxon, size, from, params }) {
+    let query = `taxonConceptID:${taxon}`;
+
+    // Append any additional filters to the query string
+    Object.entries(params?.query || {}).forEach(([key, value]) => {
+      query += ` AND ${key}:${value}`;
+    });
+
+    const searchParams = new URLSearchParams({
+      q: query,
       fq: 'multimedia:"Image"',
       facet: 'off',
       sort: 'identificationQualifier',
@@ -25,20 +32,27 @@ class TaxonMediaAPI extends RESTDataSource {
       pageSize: size || 10,
     });
 
+    // Append any additional filters to the search params
+    Object.entries(params?.search || {}).forEach(([key, value]) => {
+      searchParams.append(key, value);
+    });
+
     // Append filter queries
     [
       '-typeStatus:*',
-      '-basisOfRecord:PreservedSpecimen',
       '-identificationQualifier:"Uncertain"',
-      'spatiallyValid:true',
       '-userAssertions:50001',
       '-userAssertions:50005',
-    ].forEach((filter) => params.append('fq', filter));
+      ...Object.entries(params?.filter || {}).map(
+        ([key, value]) => `${key}:${value}`,
+      ),
+    ].forEach((filter) => searchParams.append('fq', filter));
 
     // Perform the occurrence search
     const { occurrences } = await this.get(
-      `/occurrences/search?${params.toString()}`,
+      `/occurrences/search?${searchParams.toString()}`,
     );
+    if (occurrences.length < 1) return [];
 
     const { results: images } = await this.post(
       `${this.config.ala.images}/getImageInfoForIdList`,
@@ -60,6 +74,8 @@ class TaxonMediaAPI extends RESTDataSource {
           scientificName,
           speciesGroups,
           occurrenceDetails,
+          dataResourceUid,
+          dataResourceName,
           imageMetadata,
         }) => {
           return {
@@ -77,7 +93,8 @@ class TaxonMediaAPI extends RESTDataSource {
               imageMetadata.license?.includes('http') && imageMetadata.license,
             credit: imageMetadata.rights,
             creator: imageMetadata.creator,
-            // providerLiteral: null,
+            provider: dataResourceUid,
+            providerLiteral: dataResourceName,
             description: imageMetadata.description || occurrenceDetails,
             tag: speciesGroups.join(', '),
             createDate: imageMetadata.created,

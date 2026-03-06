@@ -4,14 +4,46 @@
     "gallery": "Galeria",
     "map": "Mapa",
     "datasets": "Conjuntos de dados",
-    "download": "Transferir"
+    "events": "Eventos",
+    "download": "Transferir",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "Uma breve descrição do componente deve ser colocada aqui"
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "Pesquisa",
-    "range": ""
+    "range": "",
+    "locationID": ""
   },
-  "loadMore": "Mais"
+  "ternary": {
+    "yes": "Sim",
+    "no": "Não",
+    "either": "Uma breve descrição do componente deve ser colocada aqui"
+  },
+  "loadMore": "Mais",
+  "occurrenceClustersView": {
+    "about": "Sobre",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "Imagem",
+      "TYPE": "",
+      "TREATMENT": "Tratamento",
+      "OBSERVATION": "Observação",
+      "SPECIMEN": "Espécime",
+      "SEQUENCE": ""
+    }
+  }
 }

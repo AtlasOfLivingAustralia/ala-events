@@ -1,7 +1,7 @@
 {
   "dwcaExtension": {
     "name": "Extension DWCA",
-    "count": "",
+    "count": "{num, plural, one { extension DWCA } other {# extensions DWCA}}",
     "description": "Une courte description de la composante devrait apparaître ici"
   },
   "locationId": {
@@ -9,64 +9,163 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "A des coordonnées",
+    "count": "A des coordonnées",
+    "description": "Archive annotée par GBIF"
+  },
+  "hasGeospatialIssues": {
+    "name": "Présente des problèmes géospatiaux",
+    "count": "Présente des problèmes géospatiaux",
+    "description": "Archive annotée par GBIF"
+  },
   "collectionKey": {
     "name": "Collection",
-    "count": "",
-    "description": ""
+    "count": "{num, plural, one {# collection } other {# collections}}",
+    "description": "La collection de GrSciColl à laquelle cet enregistrement a été associé"
   },
   "numberSpecimens": {
     "name": "Nombre de spécimens",
     "count": "",
     "description": "Le nombre de spécimens détenus indiqué dans la description. Ce nombre ne correspond pas au nombre d'enregistrements qui ont été numérisés et partagés."
   },
+  "specimensInGbif": {
+    "name": "Spécimens sur GBIF",
+    "count": "{num, plural, one {comptage des spécimens GBIF} other {# spécimens sur GBIF}}",
+    "description": "Archive annotée par GBIF"
+  },
+  "iucnRedListCategory": {
+    "name": "",
+    "count": "Archive annotée par GBIF",
+    "description": "La Liste rouge des espèces menacées de l'UICN regroupe les taxons selon le niveau de menaces auxquels ils font face."
+  },
+  "geoDistance": {
+    "name": "Distance par rapport aux coordonnées",
+    "count": "{num, plural, one { filtre } other {# filtres }}",
+    "description": "Filtrer les enregistrements à une distance donnée d'un point",
+    "placeholderLat": "Latitude",
+    "placeholderLon": "Longitude",
+    "placeholderDist": "Distance"
+  },
+  "geometry": {
+    "name": "Lieu",
+    "count": "{num, plural, one { filtre } other {# filtres }}",
+    "description": "Archive annotée par GBIF",
+    "placeholderLat": "Latitude",
+    "placeholderLon": "Longitude",
+    "placeholderDist": "Distance"
+  },
+  "relevance": {
+    "name": "Pertinence",
+    "count": "{num, plural, one { pertinence } other {# filtres de pertinence}}",
+    "description": "Comment le GBIF est-il utilisé dans la littérature."
+  },
+  "topics": {
+    "name": "Thème",
+    "count": "{num, plural, one { sujet } other {# sujets}}",
+    "description": "Quels sont les sujets de l'enregistrement."
+  },
+  "audiences": {
+    "name": "Public",
+    "count": "{num, plural, one { audience } other {# audiences}}",
+    "description": "Quelle est l'audience de la ressource. "
+  },
+  "purposes": {
+    "name": "Thème",
+    "count": "{num, plural, one { but } other {# buts}}",
+    "description": "Quels sont les buts de la ressource."
+  },
+  "eventDate": {
+    "name": "Date de l'événement",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
+  },
+  "alternativeCode": {
+    "name": "Archive annotée par GBIF",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
+  },
+  "identifier": {
+    "name": "Identifiant",
+    "count": "Archive annotée par GBIF",
+    "description": "Une courte description de la composante devrait apparaître ici"
+  },
+  "institutionType": {
+    "name": "Type ",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
+  },
+  "discipline": {
+    "name": "Archive annotée par GBIF",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
+  },
+  "collectionContentType": {
+    "name": "Archive annotée par GBIF",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
+  },
+  "preservationType": {
+    "name": "Archive annotée par GBIF",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
+  },
   "taxonKey": {
     "name": "Nom scientifique du taxon",
-    "count": "",
+    "count": "{num, plural, one {nom scientifique} other {# noms scientifiques}}",
     "description": "Le nom scientifique tel qu'il apparaît dans le squelette taxonomique du GBIF. Ces noms sont normalisés pour faciliter la recherche dans tous les jeux de données. Il est possible qu'un nom fourni à l'origine soit mal interprété ou inconnu. Pour rechercher les noms tels que fournis, utilisez le filtre \"Verbatim du nom scientifique\"."
   },
   "basisOfRecord": {
     "name": "Base de registre",
-    "count": "",
-    "isNotNull": "",
-    "isNull": "",
+    "count": "{num, plural, one {base d'enregistrement} other {# bases d'enregistrements}}",
+    "isNotNull": "A une base d'enregistrement",
+    "isNull": "N'a pas une base d'enregistrement",
     "description": "La nature des preuves sur lesquelles se fonde l'enregistrement."
   },
   "institutionCode": {
     "name": "Code de l'institution",
     "count": "",
-    "description": ""
+    "description": "Code (ou acronyme) de l'institution a l'autorité sur des objet(s) ou sur les informations visées dans l'enregistrement."
   },
   "catalogNumber": {
     "name": "Numéro de catalogue",
     "count": "",
-    "description": ""
+    "description": "L'identifiant de l'enregistrement dans un catalogue ou une collection."
   },
   "mediaType": {
     "name": "Type de média",
     "count": "",
-    "description": ""
+    "description": "Les types de médias accessibles pour cet enregistrement."
   },
   "occurrenceIssue": {
     "name": "Problèmes et drapeaux",
     "count": "",
-    "isNotNull": "",
-    "isNull": "",
-    "description": ""
+    "isNotNull": "A des problèmes",
+    "isNull": "N'a aucun problème",
+    "description": "Les types de problèmes ou balises d'intérêt potentiel découverts dans le traitement des données."
   },
   "occurrenceCountry": {
     "name": "Pays",
     "count": "",
-    "description": ""
+    "description": "Pays ou territoire où l'événement s'est produit"
+  },
+  "grsciCollCountry": {
+    "description": "Archive annotée par GBIF"
+  },
+  "preparations": {
+    "name": "Préparations",
+    "count": "Archive annotée par GBIF",
+    "description": "Archive annotée par GBIF"
   },
   "publishingCountryCode": {
-    "name": "",
+    "name": "Pays ou région qui publie",
     "count": "",
-    "description": ""
+    "description": "Le code ISO du pays ou du territoire où se trouve l'éditeur de données"
   },
   "q": {
-    "name": "",
+    "name": "Recherche textuelle",
     "count": "",
-    "description": ""
+    "description": "Archive annotée par GBIF"
   },
   "coordinates": {
     "name": "Coordonnées"
@@ -74,156 +173,166 @@
   "elevation": {
     "name": "Altitude",
     "count": "",
-    "description": ""
+    "description": "La distance au-dessus d'un point de référence vertical (généralement niveau moyen de la mer ou un géoïde) en mètres."
   },
   "license": {
     "name": "Licence",
     "count": "",
-    "description": ""
+    "description": "La licence légale ou la renonciation sous laquelle l'enregistrement est partagé."
   },
   "datasetKey": {
     "name": "Ensemble de données",
     "count": "",
-    "description": ""
+    "description": "Le titre du jeu de données sous lequel l'enregistrement est partagé."
   },
   "publisherKey": {
     "name": "Fournisseurs de données",
     "count": "",
-    "description": ""
+    "description": "Le nom de l'organisation responsable du partage du jeu de données dans lequel l'enregistrement est inclus."
+  },
+  "gbifPublisherKey": {
+    "name": "Éditeur GBIF",
+    "count": "{num, plural, one {éditeur GBIF} other {# éditeurs GBIF}}",
+    "description": "Le nom de l'organisation responsable du partage du jeu de données dans lequel l'enregistrement est inclus."
   },
   "hostingOrganizationKey": {
     "name": "Organisation hôte",
     "count": "",
-    "description": ""
+    "description": "Le nom de l'organisation hébergeant le jeu de données dans lequel l'enregistrement est publié."
   },
   "country": {
     "name": "Pays",
     "count": ""
   },
   "countriesOfCoverage": {
-    "name": "",
+    "name": "Pays ou région de couverture",
     "count": ""
   },
   "countriesOfResearcher": {
-    "name": "",
+    "name": "Pays ou région du chercheur",
     "count": ""
   },
   "typeStatus": {
     "name": "Statut du type",
     "count": "",
-    "isNotNull": "",
-    "isNull": "",
-    "description": ""
+    "isNotNull": "A un statut de type",
+    "isNull": "Le statut du type",
+    "description": "La désignation du type d'un spécimen."
   },
   "year": {
     "name": "Année",
     "count": "",
-    "description": ""
+    "description": "L'année au cours de laquelle l'événement s'est produit."
   },
   "sampleSizeUnit": {
     "name": "Unité de la taille d'échantillonnage",
     "count": "",
-    "description": ""
+    "description": "L'unité de mesure pour la \"valeur de la taille de l'échantillon\"."
   },
   "coordinateUncertainty": {
     "name": "Incertitude des coordonnées",
     "count": "",
-    "description": ""
+    "description": "Mesure de la distance minimale en mètres d'une coordonnée à l'intérieur de laquelle une localité peut être interprétée."
   },
   "depth": {
     "name": "Profondeur",
     "count": "",
-    "description": ""
+    "description": "La distance en dessous d'une surface locale, en mètres."
   },
   "organismQuantity": {
     "name": "Quantité de l’organisme",
     "count": "",
-    "description": ""
+    "description": "La valeur pour la quantité des organismes, où le type de mesures est donné dans le \"type  de quantité d'organismes\". "
   },
   "sampleSizeValue": {
     "name": "Valeur de la taille d'échantillonnage",
     "count": "",
-    "description": ""
+    "description": "La valeur pour la taille de l'échantillon, où les unités de mesure sont données dans \"Unité de la taille de l'échantillon\". "
   },
   "relativeOrganismQuantity": {
     "name": "Quantité relative de l'organisme",
     "count": "",
-    "description": ""
+    "description": "La quantité de matière biologique relative à la taille d'un échantillon, calculée en tant qu'organismQuantity per sampleSize lorsque l'organismeQuantityType et sampleSizeUnit sont sans ambiguïté."
   },
   "month": {
     "name": "Mois",
     "count": "",
-    "description": ""
+    "description": "L' entier du mois au cours duquel l'événement s'est produit."
   },
   "continent": {
     "name": "Continent",
     "count": "",
-    "description": ""
+    "description": "Le nom du continent dans lequel se trouve la localité. Ce champ n'est pas inféré, mais seulement rempli si fourni par l'éditeur du jeu de données. L'application de ce filtre peut exclure les enregistrements pertinents."
   },
   "protocol": {
-    "name": "",
+    "name": "Protocole de publication",
     "count": "",
-    "description": ""
+    "description": "Le protocole technique par lequel le jeu de données est partagé."
   },
   "establishmentMeans": {
     "name": "Mode d'établissement",
     "count": "",
-    "description": ""
+    "description": "Les moyens par lesquels l'organisme a été introduit à un endroit donné à un moment donné."
   },
   "recordedBy": {
     "name": "Enregistré par",
     "count": "",
-    "description": ""
+    "description": "Les noms de la personne, des personnes, des groupes ou des organisations responsables de l'enregistrement de l'occurrence originale."
   },
   "recordNumber": {
     "name": "Numéro d'enregristrement",
     "count": "",
-    "description": ""
+    "description": "Un identifiant donné à l'occurrence au moment où elle a été enregistrée."
   },
   "collectionCode": {
     "name": "Code de la collection",
     "count": "",
-    "description": ""
+    "description": "Une courte description du composant devrait être placée ici"
+  },
+  "projectId": {
+    "name": "Identifiant du projet",
+    "count": "Une courte description du composant devrait être placée ici",
+    "description": "Une courte description du composant devrait être placée ici"
   },
   "recordedById": {
     "name": "ID de Enregistré par",
     "count": "",
-    "description": ""
+    "description": "L'identifiant de la personne, des personnes, des groupes ou des organisations responsables de l'enregistrement de l'occurrence originale."
   },
   "identifiedById": {
     "name": "ID de Identifié par",
     "count": "",
-    "description": ""
+    "description": "L'identifiant de la personne, des personnes, des groupes ou des organisations responsables de la détermination du nom scientifique de l'organisme."
   },
   "occurrenceId": {
     "name": "ID de l'occurence",
     "count": "",
-    "description": ""
+    "description": "L'identifiant unique pour l'enregistrement de l'occurrence."
   },
   "organismId": {
     "name": "ID de l’organisme",
     "count": "",
-    "description": ""
+    "description": "L'identifiant unique pour l'organisme dans l'enregistrement."
   },
   "locality": {
     "name": "Localité",
     "count": "",
-    "description": ""
+    "description": "La partie spécifique de la description du lieu."
   },
   "waterBody": {
     "name": "Étendue d'eau",
     "count": "",
-    "description": ""
+    "description": "Le nom du plan d'eau dans lequel se trouve la localité."
   },
   "stateProvince": {
     "name": "État/Province",
     "count": "",
-    "description": ""
+    "description": "Le nom de la région administrative la plus proche plus petite que le pays dans lequel se trouve l'emplacement."
   },
   "eventId": {
     "name": "ID de l'événement",
     "count": "",
-    "description": ""
+    "description": "L'identifiant unique pour l'événement dans l'enregistrement."
   },
   "eventID": {
     "name": "ID de l'événement",
@@ -268,76 +377,82 @@
   "samplingProtocol": {
     "name": "Protocole d'échantillonnage",
     "count": "",
-    "description": ""
+    "description": "Le nom, la référence ou la description de la méthode ou du protocole utilisé pendant un événement."
   },
   "occurrenceStatus": {
     "name": "Statut de l'occurrence",
     "count": "",
-    "description": ""
+    "description": "La présence ou l'absence d'organismes du taxon donné."
   },
   "gadmGid": {
-    "name": "",
+    "name": "Zone administrative",
     "count": "",
-    "description": ""
+    "description": "Le nom de toute zone administrative de GADM.org déterminée lors du traitement des enregistrements."
   },
   "identifiedBy": {
     "name": "Identifié par",
     "count": "",
-    "description": ""
+    "description": "La personne, les personnes, les groupes ou les organisations responsables de la détermination du nom scientifique de l'Organisme."
   },
   "isInCluster": {
     "name": "Est dans le regroupement",
     "count": "",
-    "description": ""
+    "description": "Est-ce que l'enregistrement a été déterminé à avoir des enregistrements liés."
   },
   "active": {
     "name": "Activé",
     "count": "Activé",
-    "description": ""
+    "description": "Archive annotée par GBIF"
+  },
+  "personalCollection": {
+    "name": "Collection personnelle",
+    "count": "Collection personnelle",
+    "description": "Archive annotée par GBIF"
   },
   "datasetType": {
     "name": "Type de jeu de données",
     "count": "",
-    "description": ""
+    "description": "Une courte description du composant devrait être placée ici"
   },
   "datasetSubtype": {
-    "name": "",
+    "name": "Sous-type du jeu de données",
     "count": "",
-    "description": ""
+    "description": "Une courte description du composant devrait être placée ici"
   },
   "institutionKey": {
     "name": "Institution",
     "count": "",
-    "description": ""
+    "description": "Le nom de l'institution ayant l'autorité sur les objet(s) ou des informations visées dans l'enregistrement."
   },
   "name": {
     "name": "Nom",
     "count": "",
-    "description": ""
+    "description": "Archive annotée par GBIF",
+    "searchPlaceholder": "Archive annotée par GBIF"
   },
   "city": {
     "name": "Ville",
     "count": "",
-    "description": ""
+    "description": "Archive annotée par GBIF"
   },
   "code": {
     "name": "Code",
     "count": "",
-    "description": ""
+    "description": "Archive annotée par GBIF"
   },
   "verbatimScientificName": {
     "name": "Verbatim du nom scientifique",
     "count": "",
-    "description": ""
+    "description": "Le nom scientifique comme fourni par l'éditeur de données sans aucune normalisation."
   },
   "networkKey": {
-    "name": "",
-    "count": "",
-    "description": ""
+    "name": "Réseau",
+    "count": "Archive annotée par GBIF",
+    "description": "Une courte description du composant devrait être placée ici"
   },
   "literatureType": {
     "name": "Type de littérature",
     "count": "",
-    "description": ""
+    "description": "De quel type de littérature provient la citation."
   }
 }

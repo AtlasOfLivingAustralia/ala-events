@@ -10,9 +10,11 @@ export const Image = React.forwardRef(({
   src,
   w = '',
   h = '',
+  getSrc,
   ...props
 }, ref) => {
-  return <img src={getImageSrc({ src, w, h })} ref={ref} {...props} />
+  const getSource = getSrc ?? getImageSrc;
+  return <img src={getSource({ src, w, h })} ref={ref} {...props} />
 });
 
 Image.propTypes = {
@@ -38,10 +40,10 @@ const failedStyle = {
 };
 
 export const OptImage = React.forwardRef(({
-  src,
-  w = '',
-  h = '',
   wrapperProps,
+  onLoad,
+  style = {},
+  src,
   ...props
 }, ref) => {
   const [failed, markAsFailed] = useState();
@@ -57,13 +59,18 @@ export const OptImage = React.forwardRef(({
     {loading && <>
       <div style={{ width: '100%', height: 100, fontSize: '24px' }}></div>
       </>}
-    {failed && <div style={{ margin: 'auto', padding: '24px 50px', fontSize: '24px', color: 'var(--color100)' }}>
-      <MdBrokenImage />
+    {failed && <div className="gb-image-failed">
+      <div>
+        <MdBrokenImage />
+      </div>
     </div>}
-    {!failed && <Image {...{ src, w, h }} ref={ref} onError={() => {
+    {!failed && <img src={src} {...props} style={{...style, display: loading ? 'none' : null}} ref={ref} onError={() => {
       markAsFailed(true);
       setLoading(false);
-    }} onLoad={() => setLoading(false)} {...props} />}
+    }} onLoad={(e) => {
+      setLoading(false);
+      onLoad && onLoad(e);
+    }} {...props} />}
   </div>
 });
 OptImage.getImageSrc = getImageSrc;

@@ -15,6 +15,7 @@ const typeDef = gql`
       topics: [String]
       gbifDatasetKey: [ID]
       publishingOrganizationKey: [ID]
+      gbifNetworkKey: [ID]
       peerReview: Boolean
       openAccess: Boolean
       gbifDownloadKey: [ID]
@@ -30,6 +31,23 @@ const typeDef = gql`
     The literature that match the filter
     """
     documents(size: Int, from: Int): LiteratureDocuments!
+    """
+    Get number of literature items per distinct values in a field. E.g. how many citations per year.
+    """
+    facet: LiteratureFacet
+    """
+    Get statistics for a numeric field. Minimimum value, maximum etc.
+    """
+    stats: LiteratureStats
+    """
+    Get number of distinct values for a field. E.g. how many distinct datasetKeys in this result set
+    """
+    cardinality: LiteratureCardinality
+    """
+    Get histogram for a numeric field with the option to specify an interval size
+    """
+    histogram: LiteratureHistogram
+    autoDateHistogram: LiteratureAutoDateHistogram
     _predicate: JSON
     _meta: JSON
   }
@@ -41,9 +59,66 @@ const typeDef = gql`
     total: Long!
   }
 
+  type LiteratureFacet {
+    publisher(size: Int, from: Int): [GenericFacetResult_string]
+    year(size: Int, from: Int): [GenericFacetResult_float]
+    topics(size: Int, from: Int): [GenericFacetResult_string]
+    peerReview(size: Int, from: Int): [GenericFacetResult_boolean]
+    openAccess(size: Int, from: Int): [GenericFacetResult_boolean]
+    source(size: Int, from: Int): [GenericFacetResult_string]
+    literatureType(size: Int, from: Int): [GenericFacetResult_string]
+    relevance(size: Int, from: Int): [GenericFacetResult_string]
+    countriesOfCoverage(size: Int, from: Int): [GenericFacetResult_string]
+    countriesOfResearcher(size: Int, from: Int): [GenericFacetResult_string]
+  }
+
+  type LiteratureStats {
+    year: Stats!
+  }
+
+  type LiteratureHistogram {
+    year(interval: Float): JSON
+  }
+
+  type LiteratureAutoDateHistogram {
+    createdAt(buckets: Float, minimum_interval: String): AutoDateHistogramResult!
+  }
+
+  type LiteratureCardinality {
+    publisher: Int!
+    year: Int!
+    topics: Int!
+    peerReview: Int!
+    openAccess: Int!
+    source: Int!
+    literatureType: Int!
+    relevance: Int!
+    countriesOfCoverage: Int!
+    countriesOfResearcher: Int!
+  }
+
+  type GenericFacetResult_string {
+    key: String!
+    count: Int!
+    _predicate: JSON
+  }
+
+  type GenericFacetResult_boolean {
+    key: Boolean!
+    count: Int!
+    _predicate: JSON
+  }
+
+  type GenericFacetResult_float {
+    key: Float!
+    count: Int!
+    _predicate: JSON
+  }
+
   type Literature {
-    id: ID
+    id: ID!
     abstract: String
+    excerpt: String
     authors: [Author]
     countriesOfCoverage: [String]
     countriesOfResearcher: [String]
@@ -62,7 +137,7 @@ const typeDef = gql`
     relevance: [String]
     source: String
     tags: [String]
-    title: String
+    title: String!
     topics: [String]
     websites: [String]
     year: Int

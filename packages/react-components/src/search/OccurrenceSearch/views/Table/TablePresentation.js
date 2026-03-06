@@ -1,13 +1,13 @@
 import { jsx } from '@emotion/react';
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { useUpdateEffect } from 'react-use';
-import { MdFilterList } from "react-icons/md";
+import { MdFilterList, MdMoreVert } from "react-icons/md";
 import { FormattedMessage } from 'react-intl';
 import useBelow from '../../../../utils/useBelow';
 import get from 'lodash/get';
 // import { FilterContext } from '../../../../widgets/Filter/state';
 import OccurrenceContext from '../../../SearchContext';
-import { Button, Row, Col, DataTable, Th, Td, TBody, DetailsDrawer } from '../../../../components';
+import { Button, Row, Col, DataTable, Th, Td, TBody, DetailsDrawer, Tooltip, TextButton, Menu, MenuAction, Switch } from '../../../../components';
 import { OccurrenceSidebar } from '../../../../entities';
 import { useDialogState } from "reakit/Dialog";
 import { ViewHeader } from '../ViewHeader';
@@ -21,7 +21,7 @@ function isEmpty(e) {
   return e === null || typeof e === 'undefined' || (Array.isArray(e) && e.length === 0);
 }
 
-export const TablePresentation = ({ first, prev, next, size, from, data, total, loading, columns = [] }) => {
+export const TablePresentation = ({ first, prev, next, size, from, data, total, loading, dataTableProps, style = {}, className, visibleColumns = [], availableColumns = [], toggleColumn }) => {
   // const [activeKey, setActiveKey] = useUrlState({ param: 'entity' });
   const [activeKey, setActiveKey] = useQueryParam('entity', NumberParam);
   const noColumnLock = useBelow(1000);
@@ -65,12 +65,41 @@ export const TablePresentation = ({ first, prev, next, size, from, data, total, 
   }, [activeKey, items]);
 
   const fixed = fixedColumn && !noColumnLock;// && !dialog.visible;
-  const headerss = columns.map((col, index) => {
-    const options = index === 0 ? { locked: fixed, toggle: noColumnLock ? null: () => setFixed(!fixedColumn) } : null;
+  const visibleColumnNames = visibleColumns.map(x => x.name);
+
+  const menuItems = menuState => {
+    const items = availableColumns.map((col, index) => {
+      const { trKey, name } = col;
+      return <MenuAction>
+        <label>
+          <Switch disabled={index == 0} checked={visibleColumnNames.includes(name)} onChange={e => toggleColumn(name)} /> <FormattedMessage id={trKey} />
+        </label>
+      </MenuAction>
+    });
+    items.push(<MenuAction onClick={() => {toggleColumn(); menuState.hide();}}>
+      Reset
+    </MenuAction>)
+    return items;
+  }
+
+  const headerss = visibleColumns.map((col, index) => {
+    const options = index === 0 ? {
+      locked: fixed,
+      toggle: noColumnLock ? null : () => setFixed(!fixedColumn),
+      prefix: <Menu
+        aria-label="Settings"
+        trigger={<TextButton as="span" look="textHoverLinkColor" style={{ display: 'inline-flex' }}>
+          <MdMoreVert style={{ fontSize: '1.5em', marginRight: '.75em' }} onClick={(e) => {
+            // e.stopPropagation();
+          }} />
+        </TextButton>}
+        items={menuItems}
+      />
+    } : {};
     const FilterPopover = col.filterKey ? filters[col.filterKey]?.Popover : null;
     return <Th key={col.trKey} width={col.width} {...options}>
       <Row wrap="nowrap">
-        <Col grow={false} style={{whiteSpace: 'nowrap'}}><FormattedMessage id={col.trKey}/></Col>
+        <Col grow={false} style={{ whiteSpace: 'nowrap' }}><FormattedMessage id={col.trKey} /></Col>
         {FilterPopover && <Col>
           <FilterPopover modal placement="auto">
             <Button appearance="text" style={{ display: 'flex' }}>
@@ -92,14 +121,15 @@ export const TablePresentation = ({ first, prev, next, size, from, data, total, 
       height: "100%",
       maxHeight: "100vh",
       flexDirection: "column",
-    }}>
-      <ViewHeader loading={loading} total={total}/>
-      <DataTable fixedColumn={fixed} {...{ first, prev, next, size, from, total, loading }} css={css.table()} >
+      ...style
+    }} className={className}>
+      <ViewHeader loading={loading} total={total} />
+      <DataTable fixedColumn={fixed} {...{ first, prev, next, size, from, total, loading }} css={css.table()} {...dataTableProps} >
         <thead>
           <tr>{headerss}</tr>
         </thead>
         <TBody rowCount={size} columnCount={7} loading={loading}>
-          {getRows({ columns, labelMap, data, setActiveKey, dialog, filters })}
+          {getRows({ columns: visibleColumns, labelMap, data, setActiveKey, dialog, filters })}
         </TBody>
       </DataTable>
     </div>
@@ -123,15 +153,15 @@ const getRows = ({ columns, labelMap, data, setActiveKey, dialog, filters }) => 
         if (!val && field.value.hideFalsy === true) {
           formattedVal = '';
         } else if (field.value.formatter) {
-          formattedVal = field.value.formatter(val, row, {openInSideBar});
+          formattedVal = field.value.formatter(val, row, { openInSideBar });
         } else if (field.value.labelHandle) {
           const Label = labelMap[field.value.labelHandle];
           formattedVal = <Label id={val} />
         }
-        if (!isEmpty(val) &&  hasFilter && field?.cellFilter) {
+        if (!isEmpty(val) && hasFilter && field?.cellFilter) {
           let filterValue = [get(row, field.cellFilter, val)];
           if (typeof field.cellFilter === 'function') {
-            filterValue = field.cellFilter({row, val})
+            filterValue = field.cellFilter({ row, val })
           }
           formattedVal = <InlineFilterChip filterName={field?.filterKey} values={filterValue}>{formattedVal}</InlineFilterChip>
         }
@@ -146,7 +176,7 @@ const getRows = ({ columns, labelMap, data, setActiveKey, dialog, filters }) => 
         // }
       }
     );
-    return <tr key={row.key} onClick={openInSideBar} style={{cursor: 'pointer'}}>{cells}</tr>;
+    return <tr key={row.key} onClick={openInSideBar} style={{ cursor: 'pointer' }}>{cells}</tr>;
   });
   return rows;
 }

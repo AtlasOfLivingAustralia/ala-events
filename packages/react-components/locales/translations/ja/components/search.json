@@ -4,14 +4,46 @@
     "gallery": "ギャラリー",
     "map": "マップ",
     "datasets": "データセット",
-    "download": "ダウンロード"
+    "events": "イベント",
+    "download": "ダウンロード",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "GBIFがアノーテーションしたアーカイブ"
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "検索",
-    "range": ""
+    "range": "範囲または単一値",
+    "locationID": ""
   },
-  "loadMore": "もっと読み込む"
+  "ternary": {
+    "yes": "はい",
+    "no": "いいえ",
+    "either": "GBIFがアノーテーションしたアーカイブ"
+  },
+  "loadMore": "もっと読み込む",
+  "occurrenceClustersView": {
+    "about": "・・・について",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "画像",
+      "TYPE": "タイプ標本",
+      "TREATMENT": "処理",
+      "OBSERVATION": "観察記録",
+      "SPECIMEN": "標本",
+      "SEQUENCE": ""
+    }
+  }
 }

@@ -1,12 +1,10 @@
 
 import { jsx, css } from '@emotion/react';
-import React, { useContext, useCallback, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import ThemeContext from '../../style/themes/ThemeContext';
 import { Prose, DataHeader as UnstyledDataHeader, ResourceSearchLink } from '../../components';
-import useBelow from '../../utils/useBelow';
 import * as styles from './styles';
-import { MdChevronLeft } from 'react-icons/md';
-import { FormattedDate as FormatDate, FormattedMessage } from 'react-intl';
+import { FormattedDate as FormatDate, FormattedDateTimeRange, FormattedMessage } from 'react-intl';
 
 const { H1 } = Prose;
 
@@ -35,19 +33,19 @@ export function HeaderWrapper({ children, ...props }) {
 
 export function HeaderInfoWrapper({ children, ...props }) {
   return <div css={styles.summary} {...props}>
-      {children}
+    {children}
   </div>
 }
 
 export function HeaderInfoMain({ children, ...props }) {
   return <div css={styles.summary_primary} {...props}>
-      {children}
+    {children}
   </div>
 }
 
 export function HeaderInfoEdit({ children, ...props }) {
   return <div css={styles.summary_secondary} {...props}>
-      {children}
+    {children}
   </div>
 }
 
@@ -58,11 +56,13 @@ export function ContentWrapper({ children, ...props }) {
 }
 
 export function DataHeader({ searchType, messageId, ...props }) {
+  const left = searchType ? <ResourceSearchLink type={searchType} discreet style={{ display: 'flex', alignItems: 'center' }}>
+    <FormattedMessage id={messageId} />
+  </ResourceSearchLink> : null;
+
   return <UnstyledDataHeader
-    style={{ borderBottom: '1px solid #ddd', background: 'white' }}
-    left={<ResourceSearchLink type={searchType} discreet style={{ display: 'flex', alignItems: 'center' }}>
-      <MdChevronLeft /> <FormattedMessage id={messageId} />
-    </ResourceSearchLink>}
+    style={{ background: 'white' }}
+    left={left}
     {...props}
   />;
 }

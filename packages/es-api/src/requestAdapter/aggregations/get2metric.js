@@ -8,22 +8,19 @@ function get2metric(query, config) {
     const firstPart = cur.split('.')[0];
     if (!allowedTypes.includes(firstPart)) return acc;
 
-    if (cur.includes('.')) {
-      return _.set(acc, cur, query[cur]);
-    } else {
-      // else assign value to a 'value' field
-      return _.set(acc, `${cur}.value`, query[cur]);
-    }
+    if (cur.includes('.')) return _.set(acc, cur, query[cur]);
+
+    // else assign value to a 'value' field
+    return _.set(acc, `${cur}.value`, query[cur]);
   }, {});
 
-  let metrics = {};
-  for (let [type, conf] of Object.entries(parsedQuery)) {
+  const metrics = {};
+  for (const [type, conf] of Object.entries(parsedQuery)) {
     const keys = Array.isArray(conf.value) ? conf.value : conf.value.split(",");
-    if (type == "multifacet"){
-      const size = parseInt(_.get(conf, `size.${keys[0]}`, 10));
-      const from = parseInt(_.get(conf, `from.${keys[0]}`, 0));
-      const include = _.get(conf, `include.${keys[0]}`);
-      const key = `${keys.join('-')}`;
+    const size = parseInt(_.get(conf, `size.${keys[0]}`, 10), 10);
+    const from = parseInt(_.get(conf, `from.${keys[0]}`, 0), 10);
+    const include = _.get(conf, `include.${keys[0]}`);
+    keys.filter(key => config.options[key]).forEach(key => {
       metrics[`${key}_${type}`] = {
         type,
         key,
@@ -31,22 +28,8 @@ function get2metric(query, config) {
         ...(size && { size }),
         ...(from && { from }),
         ...(include && { include }),
-      };
-
-    } else {
-      keys.filter(key => config.options[key]).forEach(key => {
-        const size = parseInt(_.get(conf, `size.${key}`, 10));
-        const from = parseInt(_.get(conf, `from.${key}`, 0));
-        const include = _.get(conf, `include.${key}`);
-        metrics[`${key}_${type}`] = {
-          type,
-          key,
-          ...(size && { size }),
-          ...(from && { from }),
-          ...(include && { include }),
-        }
-      });
-    }
+      }
+    });
   }
   return metrics;
 }

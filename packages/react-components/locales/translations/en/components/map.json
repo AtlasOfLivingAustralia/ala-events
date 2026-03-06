@@ -11,5 +11,10 @@
         "MERCATOR": "Mercator",
         "ANTARCTIC": "Antarctic",
         "PLATE_CAREE": "Plate Carrée"
-    }
+    },
+    "failedToGetUserLocation": {
+        "title": "",
+        "message": ""
+    },
+    "filterByView": "Use visible area as filter"
 }

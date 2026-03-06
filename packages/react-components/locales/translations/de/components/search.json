@@ -4,14 +4,46 @@
     "gallery": "Galerie",
     "map": "Karte",
     "datasets": "Datasets",
-    "download": "Download"
+    "events": "",
+    "download": "Download",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "Stadt zum Fundort."
   },
   "table": {
     "lockColumn": "Spalte fixieren"
   },
   "placeholders": {
     "default": "Suche",
-    "range": "Bereich oder einzelner Wert"
+    "range": "Bereich oder einzelner Wert",
+    "locationID": ""
   },
-  "loadMore": "Mehr"
+  "ternary": {
+    "yes": "",
+    "no": "",
+    "either": "Stadt zum Fundort."
+  },
+  "loadMore": "Mehr",
+  "occurrenceClustersView": {
+    "about": "",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "",
+      "TYPE": "",
+      "TREATMENT": "",
+      "OBSERVATION": "Beobachtung",
+      "SPECIMEN": "Exemplar",
+      "SEQUENCE": ""
+    }
+  }
 }

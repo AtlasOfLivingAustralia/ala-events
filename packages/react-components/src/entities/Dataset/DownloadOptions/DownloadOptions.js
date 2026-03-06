@@ -3,43 +3,70 @@ import { jsx } from '@emotion/react';
 import React, { useContext } from 'react';
 import ThemeContext from '../../../style/themes/ThemeContext';
 import * as css from './styles';
-import { Button } from '../../../components';
+import { Button, Message } from '../../../components';
+import LocaleContext from '../../../dataManagement/LocaleProvider/LocaleContext';
+import env from '../../../../.env.json';
+import { Card, CardHeader3 } from '../../shared';
+import { FormattedMessage } from 'react-intl';
 
 export function DownloadOptions({
-  dataset,
+  data,
   className,
   ...props
 }) {
   const theme = useContext(ThemeContext);
+  const localeSettings = useContext(LocaleContext);
+  const localePrefix = localeSettings?.localeMap?.gbif_org;
+  const { dataset, occurrenceSearch } = data;
+  const total = occurrenceSearch?.documents?.total;
 
-  return <div css={css.options({ theme })}>
-    <div>
-      <div css={css.card({ theme })}>
-        <h4>GBIF annotated metadata</h4>
-        <div>
-          The annotated EML file contains information lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </div>
-        <Button appeance="outline">EML</Button>
-      </div>
+  const fullPredicate = {
+    type: 'equals',
+    key: 'datasetKey',
+    value: dataset.key
+  };
+
+  const dwcAEndpoint = dataset.endpoints.find(function(e) {
+    return e.type == 'DWC_ARCHIVE';
+  });
+
+  return <div>
+    <div css={css.options({ theme })}>
+      {!!total && <div>
+        <Card>
+          <CardHeader3><FormattedMessage id="dataset.processedOccurrences" /></CardHeader3>
+          <div>
+            <Message id="dataset.processedOccurrencesDescription" />
+          </div>
+          <Button
+            as="a"
+            href={`${env.GBIF_ORG}/${localePrefix ? `${localePrefix}/` : ''}occurrence/download/request?predicate=${encodeURIComponent(JSON.stringify(fullPredicate))}#create`}
+            appearance="primary"><Message id="download.continueToGBIF" inline /></Button>
+        </Card>
+      </div>}
+
+      {dataset?.checklistBankDataset?.key && <div>
+        <Card>
+          <CardHeader3><FormattedMessage id="dataset.checklistBankDownload" /></CardHeader3>
+          <Message id="dataset.checklistBankDownloadDescription" />
+          <Button as="a" appeance="outline" href={`${env.CHECKLIST_BANK_WEBSITE}/dataset/gbif-${dataset.key}/download`} rel="noopener noreferrer">Checklist Bank</Button>
+        </Card>
+      </div>}
+
+      {dwcAEndpoint && <div>
+        <Card>
+          <CardHeader3><FormattedMessage id="dataset.originalArchive" /></CardHeader3>
+          <Message id="dataset.originalArchiveDescription" />
+          <Button as="a" appeance="outline" href={`${dwcAEndpoint.url}`} rel="noopener noreferrer">source archive</Button>
+        </Card>
+      </div>}
+      
     </div>
-
     <div>
-      <div css={css.card({ theme, highlighted: true })}>
-        <h4>GBIF annotated occurrence archive</h4>
-        <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </div>
-        <Button>Interpreted occurrences</Button>
-      </div>
-    </div>
-
-    <div>
-      <div css={css.card({ theme })}>
-        <h4>Source archive</h4>
-        <div>
-          The source archive is the data as published to GBIF. It contains information lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </div>
-        <Button appeance="outline">source archive</Button>
+      <div style={{color: "#888"}}>
+        <p>
+          For diagnostics you might want to look at the EML record after normalisation. <a style={{color: 'inherit'}} href={`${env.API_V1}/dataset/${dataset.key}/document`}>Download processed EML</a>
+        </p>
       </div>
     </div>
   </div>

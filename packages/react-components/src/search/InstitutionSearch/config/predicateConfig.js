@@ -2,9 +2,8 @@ import { filters } from './filterConf';
 
 const filterConf = {
   fields: {
-    countrySingleGrSciColl: {
+    countryGrSciColl: {
       defaultKey: 'country',
-      singleValue: true
     },
     q: {
       singleValue: true
@@ -25,12 +24,32 @@ const filterConf = {
       singleValue: true,
       transformValue: x => x === 'true'
     },
+    alternativeCode: {
+      singleValue: true
+    },
+    identifier: {
+      singleValue: true
+    },
+    institutionType: {
+      singleValue: true,
+      defaultKey: 'type',
+    },
+    discipline: {
+      
+    },
     numberSpecimens: {
       singleValue: true,
       v1: {
         supportedTypes: ['range', 'equals']
       }
-    }
+    },
+    specimensInGbif: {
+      singleValue: true,
+      defaultKey: 'occurrenceCount',
+      v1: {
+        supportedTypes: ['range', 'equals']
+      }
+    },
   }
 }
 

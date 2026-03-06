@@ -3,7 +3,7 @@ import EventContext from '../../../SearchContext';
 import SiteContext from '../../../../dataManagement/SiteContext'
 import { useDialogState } from "reakit/Dialog";
 import * as styles from './styles';
-import {Button, Popover, Progress, Skeleton} from '../../../../components';
+import {Button, Popover, Progress, Skeleton, DataTable} from '../../../../components';
 import env from '../../../../../.env.json';
 import {FilterContext} from "../../../../widgets/Filter/state";
 import {filter2predicate} from "../../../../dataManagement/filterAdapter";
@@ -26,9 +26,10 @@ export const List = ({query, first, prev, next, size, from, data, total, loading
 
   const dialog = useDialogState({ animated: true, modal: false });
   const items = data?.downloadsList?.facet?.datasetKey || [];
+  const noOfDatasets = data?.downloadsList?.cardinality?.datasetKey;
 
   if (loading){
-    return <DownloadSkeleton />;
+    return <><DownloadSkeleton /><DownloadSkeleton /><DownloadSkeleton /></>;
   }
 
   if (!items || items.length == 0){
@@ -38,19 +39,25 @@ export const List = ({query, first, prev, next, size, from, data, total, loading
   const datasets = data?.downloadsList?.facet?.datasetKey;
 
   return <>
-    <div>
-        <ul key={`dataset_results`} style={{ padding: 0, margin: 0, listStyle: 'none' }}>
-          {datasets.length > 0 && datasets.map((dataset, index) => <li key={`dataset_results_${dataset.key}`}>
-            <DatasetResult
-                index={index}
-                dialog={dialog}
-                key={dataset.key}
-                item={dataset}
-                largest={items[0].count}
-            />
-          </li>)}
-        </ul>
-    </div>
+    <DataTable {...{first, prev, next, size, from, total: noOfDatasets, loading}}>
+      <tbody>
+        <tr>
+          <td>
+            <ul key={`dataset_results`} style={{ padding: 0, margin: 0, listStyle: 'none' }}>
+              {datasets.length > 0 && datasets.map((dataset, index) => <li key={`dataset_results_${dataset.key}`}>
+                <DatasetResult
+                    index={index}
+                    dialog={dialog}
+                    key={dataset.key}
+                    item={dataset}
+                    largest={items[0].count}
+                />
+              </li>)}
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </DataTable>
   </>
 }
 

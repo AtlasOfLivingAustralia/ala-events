@@ -29,8 +29,8 @@ class EventAPI extends RESTDataSource {
   }
 
   async searchEventOccurrences({ eventID, datasetKey, locationID, month, year, size, from }) {
-    const response = await this.eventOccurrences({eventID, datasetKey, locationID, month, year, size, from });
-    let results =  response.documents.results.map(doc => {
+    const response = await this.eventOccurrences({ eventID, datasetKey, locationID, month, year, size, from });
+    const results = response.documents.results.map((doc) => {
       return {
         key: doc.key,
         scientificName: doc.acceptedScientificName,
@@ -38,15 +38,15 @@ class EventAPI extends RESTDataSource {
         family: doc.family,
         individualCount: doc.individualCount,
         occurrenceStatus: doc.occurrenceStatus,
-        basisOfRecord: doc.basisOfRecord
-      }
+        basisOfRecord: doc.basisOfRecord,
+      };
     });
     return {
       total: response.documents.total,
       size: response.documents.size,
       from: response.documents.from,
-      results: results
-    }
+      results,
+    };
   }
 
   async getArchive(datasetKey) {
@@ -99,8 +99,9 @@ class EventAPI extends RESTDataSource {
       ...(year && { year })
     };
 
-    let response = await this.get(
-      '/event-occurrence',params,
+    const response = await this.get(
+      '/event-occurrence',
+      params,
       { signal: this.context.abortController.signal },
     );
 

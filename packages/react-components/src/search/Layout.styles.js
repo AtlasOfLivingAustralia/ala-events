@@ -7,6 +7,11 @@ export const cssNavBar = ({theme, isActive}) => css`
   flex: 0 0 auto;
   margin: 10px;
   border-radius: ${theme.borderRadius}px;
+  
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
 `;
 
 export const cssViewArea = ({theme}) => css`
@@ -15,12 +20,14 @@ export const cssViewArea = ({theme}) => css`
   margin-top: 0;
   display: flex;
   flex-direction: column;
+  min-height: 500px;
+  z-index: 0;
 `;
 
 export const cssLayout = ({theme}) => css`
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  /* overflow: auto; */
 `;
 
 export const cssFooter = ({theme}) => css`

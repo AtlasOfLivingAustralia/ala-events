@@ -1,7 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useQuery} from "../../../dataManagement/api";
 import { DataTable, TBody} from "../../../components";
-import {OccurrenceLink} from "../../../components/resourceLinks/resourceLinks";
+import {OccurrenceEventSearchLink, OccurrenceLink} from "../../../components/resourceLinks/resourceLinks";
+import { MdOutbound} from "react-icons/md";
+import {MdHorizontalRule} from "react-icons/all";
 
 const EVENT_OCCURRENCE_QUERY = `
 query list ($eventID: String, $datasetKey:String, $size:Int, $from:Int) {
@@ -49,7 +51,17 @@ export function EventOccurrence({ eventID, datasetKey }) {
 
     return <>
         <div style={{paddingLeft: '20px', paddingRight: '30px'}}>
-        <h3>Occurrences ({ (total || 0)?.toLocaleString()})</h3>
+
+        <h3>Occurrences ({ (total || 0)?.toLocaleString()})
+            {total > 0 &&
+                <span style={{ marginLeft:'5px'}}>
+                    <MdHorizontalRule style={{ verticalAlign: 'bottom', marginRight: '5px'}}/>
+                    <OccurrenceEventSearchLink id={eventID} otherIds={{datasetKey: datasetKey}}>
+                       explore all records <MdOutbound style={{verticalAlign: 'bottom' , marginBottom: '2px', marginLeft: '2px'}} />
+                    </OccurrenceEventSearchLink>
+                </span>
+            }
+        </h3>
             { total > 0 &&
                 <DataTable {...{first, prev, next, size, from, total, loading}}
                            style={{flex: "1 1 auto", display: 'flex', flexDirection: 'column'}}>

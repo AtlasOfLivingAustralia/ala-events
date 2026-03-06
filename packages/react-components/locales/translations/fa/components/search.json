@@ -4,14 +4,46 @@
     "gallery": "",
     "map": "",
     "datasets": "مجموعه اطلاعات",
-    "download": "دانلود"
+    "events": "",
+    "download": "دانلود",
+    "clusters": "",
+    "dashboard": "",
+    "sites": ""
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "",
-    "range": ""
+    "range": "",
+    "locationID": ""
   },
-  "loadMore": "بیشتر"
+  "ternary": {
+    "yes": "بلی",
+    "no": "خیر",
+    "either": ""
+  },
+  "loadMore": "بیشتر",
+  "occurrenceClustersView": {
+    "about": "درباره",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "",
+      "TYPE": "",
+      "TREATMENT": "",
+      "OBSERVATION": "",
+      "SPECIMEN": "",
+      "SEQUENCE": ""
+    }
+  }
 }

@@ -4,14 +4,46 @@
     "gallery": "Galerie",
     "map": "Carte",
     "datasets": "Jeux de données",
-    "download": "Télécharger"
+    "events": "Évènements",
+    "download": "Télécharger",
+    "clusters": "",
+    "dashboard": "Tableau de bord",
+    "sites": "Archive annotée par GBIF"
   },
   "table": {
-    "lockColumn": ""
+    "lockColumn": "Verrouiller la colonne"
   },
   "placeholders": {
     "default": "Rechercher",
-    "range": ""
+    "range": "Intervalle ou valeur unique",
+    "locationID": ""
   },
-  "loadMore": "Plus"
+  "ternary": {
+    "yes": "Oui",
+    "no": "Non",
+    "either": "Archive annotée par GBIF"
+  },
+  "loadMore": "Plus",
+  "occurrenceClustersView": {
+    "about": "À propos",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "Image",
+      "TYPE": "Spécimens type",
+      "TREATMENT": "Traitement",
+      "OBSERVATION": "Observation",
+      "SPECIMEN": "Spécimen",
+      "SEQUENCE": ""
+    }
+  }
 }

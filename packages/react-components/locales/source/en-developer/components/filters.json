@@ -9,6 +9,16 @@
     "count": "{num, plural, one { Location ID } other {# Location IDs}}",
     "description": "Publishers can choose to assign IDs to the location. This field is not normalised, meaning that you search data as provided by the publisher."
   },
+  "hasCoordinate": {
+    "name": "Has coordinate",
+    "count": "Has coordinates",
+    "description": "Whether the record has coordinates."
+  },
+  "hasGeospatialIssues": {
+    "name": "Has geospatial issues",
+    "count": "Has geospatial issues",
+    "description": "Whether the record has geospatial issues."
+  },
   "collectionKey": {
     "name": "Collection",
     "count": "{num, plural, one { collection } other {# collection}}",
@@ -18,6 +28,87 @@
     "name": "Number of specimens",
     "count": "{num, plural, one { specimen count } other {# Specimen counts filters}}",
     "description": "The number of held specimens stated in the description. This number does not say anything about how many records have been digitized and shared."
+  },
+  "specimensInGbif": {
+    "name": "Specimens in GBIF",
+    "count": "{num, plural, one { GBIF specimen count } other {# specimens in GBIF}}",
+    "description": "Number of specimen occurrences published on GBIF and linked to the institution entry."
+  },
+  "iucnRedListCategory": {
+    "name": "IUCN Global Red List Category",
+    "count": "{num, plural, one { IUCN Global Red List category } other {# IUCN Global Red List categories}}",
+    "description": "The IUCN Global Redlist groups taxa by how threatned they are."
+  },
+  "geoDistance": {
+    "name": "Distance from coordinates",
+    "count": "{num, plural, one { filter } other {# filters }}",
+    "description": "Filter on records within a given distance from a point.",
+    "placeholderLat": "Latitude",
+    "placeholderLon": "Longitude",
+    "placeholderDist": "Distance"
+  },
+  "geometry": {
+    "name": "Location",
+    "count": "{num, plural, one { filter } other {# filters }}",
+    "description": "Filter on records within a given geometric area. The area can be a point, a line, a polygon, or a bounding box.",
+    "placeholderLat": "Latitude",
+    "placeholderLon": "Longitude",
+    "placeholderDist": "Distance"
+  },
+  "relevance": {
+    "name": "Relevance",
+    "count": "{num, plural, one { relevance } other {# relevance filters}}",
+    "description": "How is GBIF used in the literature."
+  },
+  "topics": {
+    "name": "Topic",
+    "count": "{num, plural, one { topic } other {# topics}}",
+    "description": "What are the topics of the record."
+  },
+  "audiences": {
+    "name": "Audience",
+    "count": "{num, plural, one { audience } other {# audiences}}",
+    "description": "Who are the audiences for the resource."
+  },
+  "purposes": {
+    "name": "Topic",
+    "count": "{num, plural, one { purpose } other {# purposes}}",
+    "description": "What are the purpose of the resource."
+  },
+  "eventDate": {
+    "name": "Event date",
+    "count": "{num, plural, one { event date } other {# event dates}}",
+    "description": "When was the record collected or observed."
+  },
+  "alternativeCode": {
+    "name": "Alternative code",
+    "count": "{num, plural, one { Alternative code } other {# Alternative codes}}",
+    "description": "Any additional code that is already in use for the same record in other contexts (for example, historical codes)."
+  },
+  "identifier": {
+    "name": "Identifier",
+    "count": "{num, plural, one { Identifier } other {# Identifiers}}",
+    "description": "A short description of the component should be placed here"
+  },
+  "institutionType": {
+    "name": "Type",
+    "count": "{num, plural, one { type } other {# types}}",
+    "description": "Institution type (Museum, Herbarium, etc.)"
+  },
+  "discipline": {
+    "name": "Discipline",
+    "count": "{num, plural, one { Discipline } other {# Disciplines}}",
+    "description": "The research disciplines the the institution houses."
+  },
+  "collectionContentType": {
+    "name": "Content type",
+    "count": "{num, plural, one { Content type } other {# Content types}}",
+    "description": "The type of objects available in the collection."
+  },
+  "preservationType": {
+    "name": "Preservation type",
+    "count": "{num, plural, one { Preservation type } other {# Preservation types}}",
+    "description": "The method used to preserve the objects available in the collection."
   },
   "taxonKey": {
     "name": "Scientific name",
@@ -54,9 +145,17 @@
     "description": "The types of issues or flags of potential interest discovered in processing the data."
   },
   "occurrenceCountry": {
-    "name": "Country",
+    "name": "Country or area",
     "count": "{num, plural, one {country} other {# countries}}",
     "description": "The country or territory where the event occurred"
+  },
+  "grsciCollCountry": {
+    "description": "Country or territory in the record's address."
+  },
+  "preparations": {
+    "name": "Preparations",
+    "count": "{num, plural, one {preparations} other {# preparationss}}",
+    "description": "How the specimen has been prepared. E.g. dried."
   },
   "publishingCountryCode": {
     "name": "Publishing country",
@@ -66,7 +165,7 @@
   "q": {
     "name": "Text search",
     "count": "{num, plural, one {text string} other {# search strings}}",
-    "description": "Find records with similar matching text among text fields. For matching text within a specific field, use corresponding filter, such as the one for \"Scientific Name\"."
+    "description": "Free text search across several fields."
   },
   "coordinates": {
     "name": "Coordinates"
@@ -89,6 +188,11 @@
   "publisherKey": {
     "name": "Publisher",
     "count": "{num, plural, one {publisher} other {# publishers}}",
+    "description": "The name of the organization under which the dataset for the record is registered."
+  },
+  "gbifPublisherKey": {
+    "name": "GBIF publisher",
+    "count": "{num, plural, one {GBIF publisher} other {# GBIF publishers}}",
     "description": "The name of the organization under which the dataset for the record is registered."
   },
   "hostingOrganizationKey": {
@@ -183,7 +287,12 @@
   "collectionCode": {
     "name": "Collection code",
     "count": "{num, plural, one { collection code } other {# collection codes}}",
-    "description": "A short description of the component should be placed here"
+    "description": "What collection code is assigned to the record."
+  },
+  "projectId": {
+    "name": "Project ID",
+    "count": "{num, plural, one { project ID } other {# project IDs}}",
+    "description": "What project ID is associated with the record."
   },
   "recordedById": {
     "name": "Recorded by id",
@@ -293,7 +402,12 @@
   "active": {
     "name": "Active",
     "count": "Active",
-    "description": "Whether or not the institution or collection is still active"
+    "description": "Whether the entry correspond to an active collection/institution or a historical listing that no longer exists."
+  },
+  "personalCollection": {
+    "name": "Personal collection",
+    "count": "Personal collection",
+    "description": "Selects private or personal collections."
   },
   "datasetType": {
     "name": "Dataset type",
@@ -313,17 +427,18 @@
   "name": {
     "name": "Name",
     "count": "{num, plural, one { Name } other {# Names}}",
-    "description": "A short description of the component should be placed here"
+    "description": "The entity's name.",
+    "searchPlaceholder": "Search by title/name"
   },
   "city": {
     "name": "City",
     "count": "{num, plural, one { City } other {# Cities}}",
-    "description": "A short description of the component should be placed here"
+    "description": "City where it can be found."
   },
   "code": {
     "name": "Code",
     "count": "{num, plural, one { Code } other {# Codes}}",
-    "description": "A short description of the component should be placed here"
+    "description": "The primary code that identifies the record as a whole. If you get no result, try the Alternative code filter."
   },
   "verbatimScientificName": {
     "name": "Verbatim scientific name",
@@ -331,8 +446,8 @@
     "description": "The scientific name as provided by the data publisher without any normalisation."
   },
   "networkKey": {
-    "name": "Network key",
-    "count": "{num, plural, one { Network key } other {# Network keys}}",
+    "name": "Network",
+    "count": "{num, plural, one { Network } other {# Networks}}",
     "description": "A short description of the component should be placed here"
   },
   "literatureType": {

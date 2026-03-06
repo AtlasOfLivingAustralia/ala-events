@@ -9,6 +9,16 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "Имеет координаты",
+    "count": "Имеет координаты",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "hasGeospatialIssues": {
+    "name": "Есть проблемы в географической привязке",
+    "count": "Есть проблемы в географической привязке",
+    "description": "Архив, аннотированный GBIF"
+  },
   "collectionKey": {
     "name": "Коллекция",
     "count": "",
@@ -18,6 +28,87 @@
     "name": "",
     "count": "",
     "description": ""
+  },
+  "specimensInGbif": {
+    "name": "Образцы в GBIF",
+    "count": "",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "iucnRedListCategory": {
+    "name": "Категория глобального красного списка IUCN (МСОП)",
+    "count": "Архив, аннотированный GBIF",
+    "description": "В Красной книге МСОП (IUCN Red List) таксоны группируются по степени их угрозы."
+  },
+  "geoDistance": {
+    "name": "Расстояние, полученное из координат",
+    "count": "",
+    "description": "Фильтрация записей по заданному расстоянию от точки",
+    "placeholderLat": "Широта",
+    "placeholderLon": "Долгота",
+    "placeholderDist": "Расстояние"
+  },
+  "geometry": {
+    "name": "Местонахождение (топоним)",
+    "count": "{num, plural, one { filter } few {# filters } many {# filters } other {# filters }}",
+    "description": "Архив, аннотированный GBIF",
+    "placeholderLat": "Широта",
+    "placeholderLon": "Долгота",
+    "placeholderDist": "Расстояние"
+  },
+  "relevance": {
+    "name": "Отношение публикации к GBIF",
+    "count": "",
+    "description": "Как GBIF используется в литературе."
+  },
+  "topics": {
+    "name": "Тематика",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "Аудитория",
+    "count": "{num, plural, one { пользователь } few {# audiences} many {# audiences} other {# audiences}}",
+    "description": "Кто является пользователем ресурса-материала."
+  },
+  "purposes": {
+    "name": "Тематика",
+    "count": "{num, plural, one { цель } few {# purposes} many {# purposes} other {# purposes}}",
+    "description": "Каковы цели ресурса-материала."
+  },
+  "eventDate": {
+    "name": "Дата события",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "alternativeCode": {
+    "name": "Архив, аннотированный GBIF",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "identifier": {
+    "name": "Идентификатор",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Здесь следует разместить краткое описание компонента"
+  },
+  "institutionType": {
+    "name": "Тип записи",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "discipline": {
+    "name": "Архив, аннотированный GBIF",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "collectionContentType": {
+    "name": "Архив, аннотированный GBIF",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
+  },
+  "preservationType": {
+    "name": "Архив, аннотированный GBIF",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
   },
   "taxonKey": {
     "name": "Латинское название",
@@ -58,15 +149,23 @@
     "count": "",
     "description": ""
   },
+  "grsciCollCountry": {
+    "description": "Архив, аннотированный GBIF"
+  },
+  "preparations": {
+    "name": "Способ препарирования",
+    "count": "Архив, аннотированный GBIF",
+    "description": "Архив, аннотированный GBIF"
+  },
   "publishingCountryCode": {
-    "name": "",
+    "name": "Страна или регион, в которых опубликованы данные",
     "count": "",
     "description": ""
   },
   "q": {
     "name": "",
     "count": "",
-    "description": ""
+    "description": "Архив, аннотированный GBIF"
   },
   "coordinates": {
     "name": "Координаты"
@@ -91,8 +190,13 @@
     "count": "",
     "description": ""
   },
+  "gbifPublisherKey": {
+    "name": "Публикатор GBIF",
+    "count": "",
+    "description": "Название организации, ответственной за совместное использование набора данных, в который включена запись."
+  },
   "hostingOrganizationKey": {
-    "name": "",
+    "name": "Принимающая организация",
     "count": "",
     "description": ""
   },
@@ -101,11 +205,11 @@
     "count": ""
   },
   "countriesOfCoverage": {
-    "name": "",
+    "name": "Страна (территория) интереса",
     "count": ""
   },
   "countriesOfResearcher": {
-    "name": "",
+    "name": "Страна (территория) исследователей",
     "count": ""
   },
   "typeStatus": {
@@ -185,13 +289,18 @@
     "count": "",
     "description": ""
   },
+  "projectId": {
+    "name": "ID проекта",
+    "count": "",
+    "description": ""
+  },
   "recordedById": {
-    "name": "",
+    "name": "Записано по ID",
     "count": "",
     "description": ""
   },
   "identifiedById": {
-    "name": "",
+    "name": "Идентифицировано по ID",
     "count": "",
     "description": ""
   },
@@ -293,7 +402,12 @@
   "active": {
     "name": "Действующая",
     "count": "Действующая",
-    "description": ""
+    "description": "Архив, аннотированный GBIF"
+  },
+  "personalCollection": {
+    "name": "Личная коллекция",
+    "count": "Личная коллекция",
+    "description": "Архив, аннотированный GBIF"
   },
   "datasetType": {
     "name": "Тип набора данных",
@@ -313,17 +427,18 @@
   "name": {
     "name": "Имя",
     "count": "",
-    "description": ""
+    "description": "Архив, аннотированный GBIF",
+    "searchPlaceholder": "Архив, аннотированный GBIF"
   },
   "city": {
     "name": "Город",
     "count": "",
-    "description": ""
+    "description": "Архив, аннотированный GBIF"
   },
   "code": {
     "name": "Акроним",
     "count": "",
-    "description": ""
+    "description": "Архив, аннотированный GBIF"
   },
   "verbatimScientificName": {
     "name": "Латинское название по первоисточнику",
@@ -331,8 +446,8 @@
     "description": ""
   },
   "networkKey": {
-    "name": "",
-    "count": "",
+    "name": "Сеть",
+    "count": "Архив, аннотированный GBIF",
     "description": ""
   },
   "literatureType": {

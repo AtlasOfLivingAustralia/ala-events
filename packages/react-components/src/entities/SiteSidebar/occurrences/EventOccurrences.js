@@ -1,7 +1,12 @@
 import React, { useEffect, useState} from 'react';
 import {useQuery} from "../../../dataManagement/api";
 import { DataTable, TBody} from "../../../components";
-import {OccurrenceLink} from "../../../components/resourceLinks/resourceLinks";
+import {
+    OccurrenceLink,
+    OccurrenceLocationSearchLink
+} from "../../../components/resourceLinks/resourceLinks";
+import {MdOutbound} from "react-icons/md";
+import {MdHorizontalRule} from "react-icons/all";
 
 const EVENT_MY_QUERY = `
 query list ($locationID: String, $month: Int, $year: Int, $size:Int, $from:Int) {
@@ -74,26 +79,38 @@ export function EventOccurrence({ locationID, month, year }) {
 
     return <>
         <div style={{paddingLeft: '20px', paddingRight: '30px'}}>
-        <h3>Occurrences ({ !total ? 'loading' : total?.toLocaleString()})</h3>
-        <DataTable {...{  first, prev, next, size, from, total, loading }}
-           style={{ flex: "1 1 auto",  display: 'flex', flexDirection: 'column' }}>
-            <thead>
-                <th>Family</th>
-                <th>Scientific name</th>
-                <th>Basis of record</th>
-                <th>Occurrence status</th>
-                <th></th>
-            </thead>
-            <TBody rowCount={size} columnCount={5} loading={loading}>
-                {data?.occurrences?.results?.map(x => <tr key={x.key}>
-                    <td>{x.family}</td>
-                    <td>{x.scientificName}</td>
-                    <td>{x.basisOfRecord}</td>
-                    <td>{x.occurrenceStatus}</td>
-                    <td><OccurrenceLink id={x.key}>View details</OccurrenceLink></td>
-                </tr>)}
-            </TBody>
-        </DataTable>
+
+        <h3>Occurrences ({ !total ? 'loading' : total?.toLocaleString()})
+            {total > 0 &&
+                <span style={{ marginLeft:'5px'}}>
+                    <MdHorizontalRule style={{ verticalAlign: 'bottom', marginRight: '5px'}}/>
+                    <OccurrenceLocationSearchLink id={locationID} otherIds={{ month: month > 0 ? month : null, year: year  > 0 ? year : null }}>
+                        explore all records<MdOutbound style={{verticalAlign: 'bottom' , marginBottom: '2px', marginLeft: '2px' }} />
+                    </OccurrenceLocationSearchLink>
+            </span>
+            }
+        </h3>
+            { total > 0 &&
+                <DataTable {...{  first, prev, next, size, from, total, loading }}
+                   style={{ flex: "1 1 auto",  display: 'flex', flexDirection: 'column' }}>
+                    <thead>
+                        <th>Family</th>
+                        <th>Scientific name</th>
+                        <th>Basis of record</th>
+                        <th>Occurrence status</th>
+                        <th></th>
+                    </thead>
+                    <TBody rowCount={size} columnCount={5} loading={loading}>
+                        {data?.occurrences?.results?.map(x => <tr key={x.key}>
+                            <td>{x.family}</td>
+                            <td>{x.scientificName}</td>
+                            <td>{x.basisOfRecord}</td>
+                            <td>{x.occurrenceStatus}</td>
+                            <td><OccurrenceLink id={x.key}>View details</OccurrenceLink></td>
+                        </tr>)}
+                    </TBody>
+                </DataTable>
+            }
         </div>
     </>
 }

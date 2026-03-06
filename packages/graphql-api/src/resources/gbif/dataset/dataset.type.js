@@ -27,13 +27,14 @@ const typeDef = gql`
       Not implemented yet
       """
       continent: [Continent]
+      projectId: [ID]
       hl: Boolean
-    ): DatasetSearchResults
+    ): DatasetSearchResults!
     dataset(key: ID!): Dataset
   }
 
   type DatasetSearchResults {
-    results: [DatasetSearchStub]!
+    results: [DatasetSearchStub!]!
     limit: Int!
     offset: Int!
     count: Int!
@@ -43,7 +44,7 @@ const typeDef = gql`
   }
 
   type DatasetListResults {
-    results: [Dataset]!
+    results: [Dataset!]!
     limit: Int!
     offset: Int!
     count: Int!
@@ -73,6 +74,12 @@ const typeDef = gql`
     hostingOrganization: Organization
     occurrenceCount: Int
     literatureCount: Int
+
+    """
+    volatile shortened version of the description
+    """
+    excerpt: String
+    mapCapabilities: MapCapabilities
   }
 
   type Dataset {
@@ -80,7 +87,7 @@ const typeDef = gql`
     additionalInfo: String
     bibliographicCitations: [BibliographicCitation]
     citation: Citation
-    contactsCitation: [ContactsCitation]
+    contactsCitation: [ContactsCitation!]
     collections: [JSON]
     comments: [JSON]
     contacts: [Contact]
@@ -138,12 +145,22 @@ const typeDef = gql`
     constituents(limit: Int, offset: Int): DatasetListResults
     networks: [Network]!
     metrics: DatasetChecklistMetrics
-    gridded: [GridMetric]
+    gridded(limit: Int): [GridMetric]
 
     """
     Link to homepage with crawling logs.
     """
     logInterfaceUrl: String
+
+    """
+    Get the dataset as it looks like in checklist bank. Only available for checklists. And not for all of them.
+    """
+    checklistBankDataset: ChecklistBankDataset
+    mapCapabilities: MapCapabilities
+    """
+    volatile shortened version of the description
+    """
+    excerpt: String
   }
 
   type DatasetChecklistMetrics {
@@ -210,7 +227,7 @@ const typeDef = gql`
   }
 
   type ContactsCitation {
-    key: Int
+    key: Int!
     abbreviatedName: String
     firstName: String
     lastName: String

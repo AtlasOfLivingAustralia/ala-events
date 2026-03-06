@@ -6,6 +6,7 @@ import { getClasses } from '../../utils/util';
 import styles from './styles';
 import CatalogueSelector from './CatalogueSelector';
 import { NavBar, NavItem } from '../NavBar/NavBar';
+import SiteContext from '../../dataManagement/SiteContext';
 
 export function DataHeader({
   as: Div = 'div',
@@ -15,21 +16,24 @@ export function DataHeader({
   availableCatalogues,
   right,
   children,
+  showEmpty = false,
   ...props
 }) {
+  const siteConfig = useContext(SiteContext);
   const theme = useContext(ThemeContext);
-  const showCatalogue = availableCatalogues && availableCatalogues.length > 1;
+  const catalogues = availableCatalogues ?? siteConfig.availableCatalogues;
+  const showCatalogue = catalogues && catalogues.length > 1;
 
   const hasLeftPart = left || catalogueLabel || showCatalogue;
   // if there is nothing configured, then do not show at all
-  if (!hasLeftPart && !children && !right) return null;
+  if (!hasLeftPart && !children && !right && !showEmpty) return null;
 
-  const { classNames } = getClasses(theme.prefix, 'dataHeader', {/*modifiers goes here*/ }, className);
-  return <Div css={styles.dataHeader({ theme })} {...props}>
+  return <Div css={styles.dataHeader} {...props}>
 
     {hasLeftPart && <>
       <div style={{ flex: '0 0 auto', position: 'relative', margin: '0 12px', display: 'flex', alignItems: 'center' }}>
-        {left || <CatalogueSelector label={catalogueLabel} availableCatalogues={availableCatalogues} />}
+        { showCatalogue && <CatalogueSelector label={catalogueLabel} availableCatalogues={catalogues} /> }
+        {left}
       </div>
       {children && <Separator />}
     </>}
@@ -39,8 +43,8 @@ export function DataHeader({
     </div>
 
     {right && <>
-      <Separator />
-      <div style={{ flex: '0 0 auto' }}>
+      {/* <Separator /> */}
+      <div css={styles.dataHeaderRight}>
         {right}
       </div>
     </>}

@@ -2,12 +2,22 @@
   "dwcaExtension": {
     "name": "DWCA-Erweiterung",
     "count": "{num, plural, one { DwCA-Erweiterung } other {# DwCA-Erweiterungen}}",
-    "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
+    "description": "Art des Datasets"
   },
   "locationId": {
     "name": "",
     "count": "",
     "description": ""
+  },
+  "hasCoordinate": {
+    "name": "",
+    "count": "",
+    "description": "Stadt zum Fundort."
+  },
+  "hasGeospatialIssues": {
+    "name": "",
+    "count": "",
+    "description": "Stadt zum Fundort."
   },
   "collectionKey": {
     "name": "",
@@ -18,6 +28,87 @@
     "name": "",
     "count": "",
     "description": ""
+  },
+  "specimensInGbif": {
+    "name": "Belege in GBIF",
+    "count": "",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
+  },
+  "iucnRedListCategory": {
+    "name": "Kategorie in der Roten Liste gefährdeter Arten",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": ""
+  },
+  "geoDistance": {
+    "name": "",
+    "count": "",
+    "description": "",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
+  "geometry": {
+    "name": "",
+    "count": "",
+    "description": "Stadt zum Fundort.",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
+  "relevance": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "topics": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "eventDate": {
+    "name": "",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
+  },
+  "alternativeCode": {
+    "name": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Stadt zum Fundort."
+  },
+  "identifier": {
+    "name": "",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Art des Datasets"
+  },
+  "institutionType": {
+    "name": "",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
+  },
+  "discipline": {
+    "name": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Stadt zum Fundort."
+  },
+  "collectionContentType": {
+    "name": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
+  },
+  "preservationType": {
+    "name": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
   },
   "taxonKey": {
     "name": "Wissenschaftlicher Name",
@@ -58,6 +149,14 @@
     "count": "{num, plural, one {Land} other {# Länder}}",
     "description": "Land oder Gebiet des Sammlungsereignisses"
   },
+  "grsciCollCountry": {
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
+  },
+  "preparations": {
+    "name": "",
+    "count": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\".",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
+  },
   "publishingCountryCode": {
     "name": "Veröffentlichendes Land",
     "count": "{num, plural, one {Veröffentlichendes Land} other {# Veröffentlichende Länder}}",
@@ -89,6 +188,11 @@
   "publisherKey": {
     "name": "Publisher",
     "count": "{num, plural, one {Publisher} other {# Publisher}}",
+    "description": "Der Name der Organisation, die das Dataset publiziert, zu dem der Datensatz gehört."
+  },
+  "gbifPublisherKey": {
+    "name": "",
+    "count": "",
     "description": "Der Name der Organisation, die das Dataset publiziert, zu dem der Datensatz gehört."
   },
   "hostingOrganizationKey": {
@@ -185,6 +289,11 @@
     "count": "{num, plural, one { Sammlungscode } other {# Sammlungscodes}}",
     "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
   },
+  "projectId": {
+    "name": "Projekt ID",
+    "count": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört.",
+    "description": "Bezeichner für die Sammlung, zu der das usprüngliche Objekt gehört."
+  },
   "recordedById": {
     "name": "Sammler/Beobachter ID",
     "count": "{num, plural, one { Sammler-ID } other {# Sammler-IDs}}",
@@ -251,7 +360,7 @@
     "description": ""
   },
   "occurrenceCount": {
-    "name": "",
+    "name": "Anzahl Vorkommen",
     "count": "",
     "description": ""
   },
@@ -293,7 +402,12 @@
   "active": {
     "name": "",
     "count": "",
-    "description": ""
+    "description": "Stadt zum Fundort."
+  },
+  "personalCollection": {
+    "name": "",
+    "count": "",
+    "description": "Suchen eines bestimmten Suchstrings in allen Textfeldern. Für die Suche in einem bestimmten Feld bitte den entsprechenden Filter verwenden, beispielsweise \"Wissenschaftlicher Name\"."
   },
   "datasetType": {
     "name": "Art des Datasets",
@@ -313,7 +427,8 @@
   "name": {
     "name": "Name",
     "count": "{num, plural, one { Name } other {# Namen}}",
-    "description": "A short description of the component should be placed here"
+    "description": "A short description of the component should be placed here",
+    "searchPlaceholder": "Stadt zum Fundort."
   },
   "city": {
     "name": "Stadt",

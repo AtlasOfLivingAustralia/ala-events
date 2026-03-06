@@ -4,10 +4,10 @@ import {ErrorBoundary} from "../../../../components";
 import PredicateDataFetcher from "../../../PredicateDataFetcher";
 
 const SITES_QUERY = `
-query list($predicate: Predicate, $size: Int = 30, $from: Int = 0){
+query list($predicate: Predicate, $limit: Int = 30, $offset: Int = 0){
   results: eventSearch(predicate:$predicate) {
     temporal {
-      locationID(size: $size, from: $from) {
+      locationID(size: $limit, from: $offset) {
         cardinality
         results {
           key
@@ -24,7 +24,7 @@ query list($predicate: Predicate, $size: Int = 30, $from: Int = 0){
     }
   }
   locations: eventSearch(predicate:$predicate) {
-    multifacet(size: $size, from: $from) {
+    multifacet(size: $limit, from: $offset) {
       locationIDStateProvince {
         keys
       }      
@@ -37,8 +37,14 @@ function Table() {
   return <PredicateDataFetcher
       queryProps={{ throwAllErrors: true}}
       graphQuery={SITES_QUERY}
-      queryTag='surveys'
+      queryTag='sites'
       presentation={SitesTable}
+      predicateMeddler={(predicate) => {
+        predicate.predicates.push({
+          type: "isNotNull",
+          key: "year"
+        });
+      }}
   />
 }
 

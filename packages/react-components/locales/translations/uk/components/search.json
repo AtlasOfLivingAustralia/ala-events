@@ -4,14 +4,46 @@
     "gallery": "Галерея",
     "map": "Мапа",
     "datasets": "Наборів даних",
-    "download": "Завантажити"
+    "events": "Заходи",
+    "download": "Завантажити",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "Архів анотований GBIF"
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "Пошук",
-    "range": ""
+    "range": "",
+    "locationID": ""
   },
-  "loadMore": "Більше"
+  "ternary": {
+    "yes": "Так",
+    "no": "Ні",
+    "either": "Архів анотований GBIF"
+  },
+  "loadMore": "Більше",
+  "occurrenceClustersView": {
+    "about": "Відомості про видавця даних",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "Зображення",
+      "TYPE": "Типовий зразок",
+      "TREATMENT": "Таксономічна картка",
+      "OBSERVATION": "Спостереження",
+      "SPECIMEN": "Зразок",
+      "SEQUENCE": ""
+    }
+  }
 }

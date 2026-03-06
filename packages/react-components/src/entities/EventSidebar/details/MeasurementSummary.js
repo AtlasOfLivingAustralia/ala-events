@@ -18,7 +18,7 @@ export function MeasurementSummary({ data }) {
                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
             })
             sorted_mof.forEach(function (uom) {
-                summary.push(uom.key + "("+ uom.count.toLocaleString('en-US') +")")
+                summary.push(uom.key + " ("+ uom.count.toLocaleString('en-US') +")")
             })
         }
         results.push({"key":key, "summary":summary})

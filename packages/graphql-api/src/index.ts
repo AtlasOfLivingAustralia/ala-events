@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
-import glob from 'glob';
 import { ApolloServer } from 'apollo-server-express';
 import {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -26,6 +25,9 @@ import api from './dataSources';
 // we will attach a user if an authorization header is present.
 import extractUser from './helpers/auth/extractUser';
 import mapController from './api-utils/maps/index.ctrl.js';
+import ipController from './api-utils/ip2country.ctrl.js';
+import polygonName from './api-utils/polygonName.ctrl.js';
+import { loggingPlugin } from './plugins/loggingPlugin';
 
 // we are doing this async as we need to load the various enumerations from the APIs
 // and generate the schema from those
@@ -52,26 +54,29 @@ async function initializeServer() {
         userAgent: get(req, 'headers.User-Agent') || 'GBIF_GRAPHQL_API',
         // we could also forward the full header I suppose. For now it is just the referer
         referer: get(req, 'headers.referer') || null,
+        locale: get(req, 'headers.locale') || 'en-GB',
+        preview: get(req, 'headers.preview') === 'true',
       };
     },
     typeDefs,
     resolvers,
-    dataSources: () =>
-      Object.keys(api).reduce(
-        (prev, cur) => ({
-          ...prev,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          [cur]: new (api as { [key: string]: any })[cur](config),
-        }),
-        {},
-      ), // Every request should have its own instance, see https://github.com/apollographql/apollo-server/issues/1562
+    dataSources: () => Object.keys(api).reduce(
+      (prev, cur) => ({
+        ...prev,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [cur]: new (api as { [key: string]: any })[cur](config),
+      }),
+      {},
+    ), // Every request should have its own instance, see https://github.com/apollographql/apollo-server/issues/1562
     validationRules: [depthLimit(14)], // this likely have to be much higher than 6, but let us increase it as needed and not before
     plugins: [
       ApolloServerPluginLandingPageGraphQLPlayground,
       ApolloServerPluginCacheControl({
         defaultMaxAge: config.debug ? 0 : 600,
       }),
+      loggingPlugin,
     ],
+    logger: console,
   });
 
   const app = express();
@@ -108,6 +113,8 @@ async function initializeServer() {
 
   // utils for map styles
   mapController(app);
+  ipController(app);
+  polygonName(app);
 
   await server.start();
   server.applyMiddleware({ app });

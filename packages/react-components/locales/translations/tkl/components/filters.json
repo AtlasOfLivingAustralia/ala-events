@@ -9,12 +9,103 @@
     "count": "",
     "description": ""
   },
+  "hasCoordinate": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "hasGeospatialIssues": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "collectionKey": {
     "name": "",
     "count": "",
     "description": ""
   },
   "numberSpecimens": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "specimensInGbif": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "iucnRedListCategory": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "geoDistance": {
+    "name": "",
+    "count": "",
+    "description": "",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
+  "geometry": {
+    "name": "",
+    "count": "",
+    "description": "",
+    "placeholderLat": "",
+    "placeholderLon": "",
+    "placeholderDist": ""
+  },
+  "relevance": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "topics": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "audiences": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "purposes": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "eventDate": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "alternativeCode": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "identifier": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "institutionType": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "discipline": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "collectionContentType": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "preservationType": {
     "name": "",
     "count": "",
     "description": ""
@@ -58,6 +149,14 @@
     "count": "",
     "description": ""
   },
+  "grsciCollCountry": {
+    "description": ""
+  },
+  "preparations": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "publishingCountryCode": {
     "name": "",
     "count": "",
@@ -87,6 +186,11 @@
     "description": ""
   },
   "publisherKey": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "gbifPublisherKey": {
     "name": "",
     "count": "",
     "description": ""
@@ -181,6 +285,11 @@
     "description": ""
   },
   "collectionCode": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
+  "projectId": {
     "name": "",
     "count": "",
     "description": ""
@@ -295,6 +404,11 @@
     "count": "",
     "description": ""
   },
+  "personalCollection": {
+    "name": "",
+    "count": "",
+    "description": ""
+  },
   "datasetType": {
     "name": "",
     "count": "",
@@ -313,7 +427,8 @@
   "name": {
     "name": "",
     "count": "",
-    "description": ""
+    "description": "",
+    "searchPlaceholder": ""
   },
   "city": {
     "name": "",
