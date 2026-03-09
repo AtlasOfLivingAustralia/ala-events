@@ -91,10 +91,19 @@ spec:
         image: "{{ .Values.graphqlApi.image.repository }}:{{ .Values.graphqlApi.image.tag }}"
         ports:
         - containerPort: 4000
+        resources:
+          {{- toYaml .Values.graphqlApi.resources | nindent 12 }}
         volumeMounts:
         - name: events-config
           mountPath: /usr/src/.env
           subPath: graphql-api.env
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
         livenessProbe:
           httpGet:
             path: /health
@@ -107,7 +116,7 @@ spec:
           httpGet:
             path: /health
             port: 4000
-          initialDelaySeconds: 5
+          initialDelaySeconds: 20
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
