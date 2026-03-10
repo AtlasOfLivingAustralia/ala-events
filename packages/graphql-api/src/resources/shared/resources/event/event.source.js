@@ -74,7 +74,6 @@ class EventAPI extends RESTDataSource {
         '/event',
         { body: JSON.stringify(body) },
         { signal: this.context.abortController.signal },
-        options,
       );
     } else {
       response = await this.post('/event', body, {
