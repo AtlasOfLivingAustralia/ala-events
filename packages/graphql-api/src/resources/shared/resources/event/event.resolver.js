@@ -213,7 +213,7 @@ export default {
     datasetTitle: ({ key }, args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
       return dataSources.eventAPI
-        .searchEventDocuments({ query: { datasetKey: key }, size: 1, skipAbort: true })
+        .searchEventDocuments({ query: { datasetKey: key }, size: 1 })
         .then((response) => {
           return response.results[0]?.datasetTitle;
         });
@@ -221,7 +221,7 @@ export default {
     occurrenceCount: ({ key }, args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
       return dataSources.eventAPI
-        .searchOccurrenceDocuments({ query: { datasetKey: key }, size: 1, skipAbort: true })
+        .searchOccurrenceDocuments({ query: { datasetKey: key }, size: 1 })
         .then((response) => {
           return response.total;
         });
