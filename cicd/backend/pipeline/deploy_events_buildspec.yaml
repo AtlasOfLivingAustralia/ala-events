@@ -24,9 +24,9 @@ phases:
       - echo Build started on $(date)
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
       - |
-      - if [ "$ELASTICSEARCH_AUTH_ENABLED" = "true" ]; then
-      - export ELASTICSEARCH_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "$ELASTICSEARCH_SECRET_NAME" --query 'SecretString' --output text | jq -r '.["password"]')
-      - fi
+        if [ "$ELASTICSEARCH_AUTH_ENABLED" = "true" ]; then
+        export ELASTICSEARCH_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "$ELASTICSEARCH_SECRET_NAME" --query 'SecretString' --output text | jq -r '.["password"]')
+        fi
       - cd helm
       - | 
         echo "
@@ -66,7 +66,7 @@ phases:
         --set es2vt.ingress.hostname=es2vt-$WS_SUB_DOMAIN.$HOSTED_ZONE \
         --set graphqlApi.image.repository=$ECR_REPO \
         --set graphqlApi.image.tag=$BUILD_TAG_GRAPHQL_API \
-        --set graphqlApi.ingress.hostname=graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .$HOSTED_ZONE \
+        --set graphqlApi.ingress.hostname=graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE \
         --set ingress.certificateArn=$APP_CERTIFICATE \
         -f helm_values.yaml \
         --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
