@@ -48,7 +48,7 @@ phases:
           indexName: $ES_INDEX
           username: $ELASTICSEARCH_USERNAME
           password: $ELASTICSEARCH_PASSWORD
-          hosts: https://${ELASTICSEARCH_ENDPOINT}/${ELASTIC_PORT}
+          hosts: https://${ELASTICSEARCH_ENDPOINT}:${ELASTIC_PORT}
           pv:
             name: pv-$ELASTIC_HOST
             volumeHandle: fs-008ef19f15acc2af8
@@ -69,8 +69,8 @@ phases:
         --set graphqlApi.ingress.hostname=graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE \                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .$HOSTED_ZONE \
         --set ingress.certificateArn=$APP_CERTIFICATE \
         -f helm_values.yaml \
-        --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
-        --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
+        --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
+        --set-string commitHash="$CODEBUILD_RESOLVED_SOURCE_VERSION"
       - |
         helm upgrade --install $HELM_RELEASE_NAME . \
           -n $EKS_NAMESPACE \
@@ -85,8 +85,8 @@ phases:
           --set graphqlApi.ingress.hostname=graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE \
           --set ingress.certificateArn=$APP_CERTIFICATE \
           -f helm_values.yaml \
-          --set deploymentAnnotations.checksum/configs="$(md5sum helm_values.yaml | awk '{print $1}')" \
-          --set deploymentAnnotations.commitHash=$CODEBUILD_RESOLVED_SOURCE_VERSION
+          --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
+          --set-string commitHash="$CODEBUILD_RESOLVED_SOURCE_VERSION"
   post_build:
     commands:
       - echo Post-build phase...

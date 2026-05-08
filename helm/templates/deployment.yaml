@@ -13,6 +13,9 @@ spec:
       app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
   template:
     metadata:
+      annotations:
+        checksum/configs: {{ .Values.deploymentChecksum | quote }}
+        commitHash: {{ .Values.commitHash | quote }}
       labels:
         {{- include "ala-events.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
@@ -49,6 +52,9 @@ spec:
       app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
   template:
     metadata:
+      annotations:
+        checksum/configs: {{ .Values.deploymentChecksum | quote }}
+        commitHash: {{ .Values.commitHash | quote }}
       labels:
         {{- include "ala-events.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
@@ -82,6 +88,9 @@ spec:
       app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
   template:
     metadata:
+      annotations:
+        checksum/configs: {{ .Values.deploymentChecksum | quote }}
+        commitHash: {{ .Values.commitHash | quote }}
       labels:
         {{- include "ala-events.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
