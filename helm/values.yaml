@@ -166,13 +166,11 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-es:
+elasticsearch:
   indexName: events
-elasticsearch: 
-  hosts: 
-    - http://aws-events-es-2022-1.ala:9200
-    - http://aws-events-es-2022-2.ala:9200
-
+  username: elastic
+  password:
+  hosts:
 # elastic search config for events ES instance within events namespace
 # elasticsearch: 
 #   pv:

@@ -23,6 +23,10 @@ phases:
     commands:
       - echo Build started on $(date)
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
+      - |
+      - if [ "$ELASTICSEARCH_AUTH_ENABLED" = "true" ]; then
+      - export ELASTICSEARCH_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "$ELASTICSEARCH_SECRET_NAME" --query 'SecretString' --output text | jq -r '.["password"]')
+      - fi
       - cd helm
       - | 
         echo "
@@ -40,15 +44,11 @@ phases:
           download: $API_DOWNLOAD
         dataset:
           eml: $DATASET_EML
-        es:
-          indexName: $ES_INDEX
         elasticsearch:
-          deployment:
-            name: $ELASTIC_HOST
-          service:
-            name: $ELASTIC_HOST
-            host: $ELASTIC_HOST
-            port: $ELASTIC_PORT
+          indexName: $ES_INDEX
+          username: $ELASTICSEARCH_USERNAME
+          password: $ELASTICSEARCH_PASSWORD
+          hosts: https://${ELASTICSEARCH_ENDPOINT}/${ELASTIC_PORT}
           pv:
             name: pv-$ELASTIC_HOST
             volumeHandle: fs-008ef19f15acc2af8
