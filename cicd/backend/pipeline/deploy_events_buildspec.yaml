@@ -15,7 +15,6 @@ phases:
 
   install:
     commands:
-      - env
       - echo Installing dependencies...
       - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
       - chmod 700 get_helm.sh
@@ -25,6 +24,7 @@ phases:
     commands:
       - echo Build started on $(date)
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
+      - HELM_VALUES_FILE=$CODEBUILD_SRC_DIR_ExportConfigArtifact/helm/helm_values.yaml
       - cd helm
       - echo helm upgrade --install $HELM_RELEASE_NAME . \
         -n $EKS_NAMESPACE \
@@ -40,8 +40,8 @@ phases:
         --set ingress.certificateArn=$APP_CERTIFICATE \
         --set-string esApi.apiKey="$ESAPI_APIKEY" \
         --set-string elasticsearch.password="$ELASTICSEARCH_PASSWORD" \
-        -f helm_values.yaml \
-        --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
+        -f $HELM_VALUES_FILE \
+        --set-string deploymentChecksum="$(md5sum $HELM_VALUES_FILE | awk '{print $1}')" \
         --set-string commitHash="$CODEBUILD_RESOLVED_SOURCE_VERSION"
       - |
         helm upgrade --install $HELM_RELEASE_NAME . \
@@ -58,8 +58,8 @@ phases:
           --set ingress.certificateArn=$APP_CERTIFICATE \
           --set-string esApi.apiKey="$ESAPI_APIKEY" \
           --set-string elasticsearch.password="$ELASTICSEARCH_PASSWORD" \
-          -f helm_values.yaml \
-          --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
+          -f $HELM_VALUES_FILE \
+          --set-string deploymentChecksum="$(md5sum $HELM_VALUES_FILE | awk '{print $1}')" \
           --set-string commitHash="$CODEBUILD_RESOLVED_SOURCE_VERSION"
   post_build:
     commands:
