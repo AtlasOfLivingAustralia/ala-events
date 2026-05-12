@@ -385,14 +385,14 @@ Resources:
         - AllowTeardown
         - Name: Teardown
           Actions:
-            - Name: ApprovalForPipelineTeardown
+            - Name: ApprovalForApplicationTeardown
               ActionTypeId:
                 Owner: AWS
                 Category: Approval
                 Version: 1
                 Provider: Manual
               Configuration:
-                CustomData: Approval required to tear down this stack
+                CustomData: Approval required to uninstall the application
               RunOrder: 1
             - Name: UninstallEvents
               ActionTypeId:
@@ -428,6 +428,15 @@ Resources:
                   Fn::ImportValue:
                     Fn::Sub: '${pBootstrapStackName}-CloudFormationServiceRoleArn'
               RunOrder: 3
+            - Name: ApprovalForPipelineTeardown
+              ActionTypeId:
+                Owner: AWS
+                Category: Approval
+                Version: 1
+                Provider: Manual
+              Configuration:
+                CustomData: Approval required to tear down the pipeline
+              RunOrder: 4
             - Name: TeardownCodePipeline
               ActionTypeId:
                 Owner: AWS
@@ -440,7 +449,7 @@ Resources:
                 RoleArn:
                      Fn::ImportValue:
                        Fn::Sub: '${pBootstrapStackName}-CloudFormationServiceRoleArn'
-              RunOrder: 4
+              RunOrder: 5
         - !Ref AWS::NoValue
 
   DeployEventsCodeBuildLogGroup:
