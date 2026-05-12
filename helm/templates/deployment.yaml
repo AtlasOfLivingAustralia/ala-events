@@ -24,6 +24,9 @@ spec:
         - name: {{ .Chart.Name }}-es-api
           image: "{{ .Values.esApi.image.repository }}:{{ .Values.esApi.image.tag }}"
           imagePullPolicy: {{ .Values.esApi.image.pullPolicy }}
+          env:
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
           ports:
             - containerPort: 4001
           resources:
