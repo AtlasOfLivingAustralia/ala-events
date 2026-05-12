@@ -192,7 +192,7 @@ Resources:
               Fn::ImportValue:
                 Fn::Sub: ${pBucketsStackName}-${AWS::Region}-CodePipelineArtifactBucketName
           Region: !Ref AWS::Region
-      DisableInboundStageTransitions:
+      DisableInboundStageTransitions: !If
         - AllowTeardown
         - - Reason: To prevent accidental teardown
             StageName: Teardown
