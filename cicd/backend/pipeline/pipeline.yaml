@@ -23,9 +23,6 @@ Parameters:
   pCleanBranch:
     Type: String
     Description: The clean branch, can be used in resource names
-  pCognitoStackName:
-    Type: String
-    Description: The name of the Cognito stack
   pEnvironment:
     Type: String
     Description: The AWS environment this belongs to
@@ -366,15 +363,13 @@ Resources:
                   { "name":"CLEAN_BRANCH", "value":"${pCleanBranch}" },
                   { "name":"COMMIT_ID", "value":"#{CheckoutSrcNS.CommitId}" },
                   { "name":"ENVIRONMENT", "value":"${pEnvironment}" },
-                  { "name":"HOSTED_ZONE", "value":"#{ExportConfigNS.HOSTED_ZONE}" },
+                  { "name":"EXECUTION_ID", "value":"#{codepipeline.PipelineExecutionId}" },
                   { "name":"PRODUCT_COMPONENT", "value":"#{ExportConfigNS.PRODUCT_COMPONENT}" },
                   { "name":"PRODUCT_NAME", "value":"#{ExportConfigNS.PRODUCT_NAME}" },
                   { "name":"REPO", "value":"#{CheckoutSrcNS.FullRepositoryName}" },
                   { "name":"SLACK_ALERT_CHANNEL", "value":"#{ExportConfigNS.SLACK_ALERT_CHANNEL}" },
                   { "name":"SLACK_DEPLOY_NOTIFICATION", "value":"#{ExportConfigNS.SLACK_DEPLOY_NOTIFICATION}" },
-                  { "name":"SRC_BRANCH", "value":"${pGitHubBranch}" },
-                  { "name":"UI_SUB_DOMAIN", "value":"#{ExportConfigNS.UI_SUB_DOMAIN}" },
-                  { "name":"WS_SUB_DOMAIN", "value":"#{ExportConfigNS.WS_SUB_DOMAIN}" }
+                  { "name":"SRC_BRANCH", "value":"${pGitHubBranch}" }
                 ]
             Namespace: DeployNotificationNS
             InputArtifacts:

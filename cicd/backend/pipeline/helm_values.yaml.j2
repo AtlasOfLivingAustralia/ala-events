@@ -16,6 +16,6 @@ elasticsearch:
   hosts: https://{{ elasticsearch_endpoint }}:{{ elastic_port }}
   pv:
     name: pv-{{ elastic_host }}
-    volumeHandle: fs-008ef19f15acc2af8
+    volumeHandle: {{ efs_filesystem_id }}
   pvc:
     name: pvc-{{ elastic_host }}

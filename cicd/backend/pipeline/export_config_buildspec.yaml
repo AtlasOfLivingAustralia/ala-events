@@ -9,7 +9,6 @@ env:
   variables:
     DEBIAN_FRONTEND: noninteractive
   exported-variables:
-    - ADMIN_USER
     - ALA_SECRETS_NAME
     - APP_CERTIFICATE
     - UI_SUB_DOMAIN
@@ -17,7 +16,6 @@ env:
     - BIOCACHE_URL
     - CODEBUILD_BUILD_NUMBER
     - DOCKER_USERNAME
-    - ECR_REPO
     - ECR_STACK_NAME
     - HELM_RELEASE_NAME
     - HOSTED_ZONE
@@ -80,13 +78,6 @@ phases:
       - cicd/gen_env_vars.py --env $ENVIRONMENT --clean-branch $CLEAN_BRANCH --conf cicd/$PRODUCT_COMPONENT/config.ini > env.txt
       - echo loading config..
       - set -a ; source env.txt ; set +a
-      # this is not being used in the deploy build spec. The environment vars are exported into the pipeline namespace.
-      - echo creating the app environment for the events deployment...
-      - |
-         source cicd/unset_codebuild_env_vars.sh
-         for var in $(printenv | awk -F= '{print $1}'); do
-           echo "$var=\"$(printenv $var)\"" >> app.env
-         done
     finally:
       - #echo This always runs
 
