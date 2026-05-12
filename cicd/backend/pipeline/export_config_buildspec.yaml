@@ -106,6 +106,8 @@ phases:
             echo Generating the template config for $stack
             cicd/gen_template_config.py --template ${stack}_template_config.j2 > ${stack}_template_config.json
           done
+      - echo Generating helm values...
+      - cicd/gen_template_config.py --template cicd/$PRODUCT_COMPONENT/pipeline/helm_values.yaml.j2 > helm/helm_values.yaml
     finally:
       - #echo This always runs
 
@@ -117,5 +119,6 @@ phases:
 artifacts:
   files:
     - cicd/$PRODUCT_COMPONENT/app/*
+    - helm/helm_values.yaml
   name: BuildTemplateConfigArtifact
   discard-paths: no

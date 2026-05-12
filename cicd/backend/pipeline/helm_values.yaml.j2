@@ -1,0 +1,21 @@
+bie:
+  url: {{ bie_url }}
+biocache:
+  url: {{ biocache_url }}
+images:
+  url: {{ images_url }}
+namematching:
+  url: {{ namematching_url }}
+api:
+  download: {{ api_download }}
+dataset:
+  eml: {{ dataset_eml }}
+elasticsearch:
+  indexName: {{ es_index }}
+  username: {{ elasticsearch_username }}
+  hosts: https://{{ elasticsearch_endpoint }}:{{ elastic_port }}
+  pv:
+    name: pv-{{ elastic_host }}
+    volumeHandle: fs-008ef19f15acc2af8
+  pvc:
+    name: pvc-{{ elastic_host }}
