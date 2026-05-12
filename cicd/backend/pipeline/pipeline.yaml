@@ -317,7 +317,6 @@ Resources:
                   - |
                     [
                       { "name":"APP_CERTIFICATE", "value":"#{ExportConfigNS.APP_CERTIFICATE}" },
-                      { "name":"AWS_ACCOUNT_ID", "value":"${AWS::AccountId}" },
                       { "name":"BIE_URL", "value":"#{ExportConfigNS.BIE_URL}" },
                       { "name":"BIOCACHE_URL", "value":"#{ExportConfigNS.BIOCACHE_URL}" },
                       { "name":"ECR_REPO", "value":"#{BuildCloudFormationOutNS.EventsRepositoryUri}" },
@@ -329,38 +328,25 @@ Resources:
                       { "name":"BUILD_TAG_GRAPHQL_API", "value":"#{BuildEventsNS.BUILD_TAG_GRAPHQL_API}" },
                       { "name":"HOSTED_ZONE", "value":"#{ExportConfigNS.HOSTED_ZONE}" },
                       { "name":"IMAGES_URL", "value":"#{ExportConfigNS.IMAGES_URL}" },
-                      { "name":"IMAGE_TAG", "value":"#{ExportConfigNS.IMAGE_TAG}" },
                       { "name":"EVENTS_SECRET_NAME", "value":"${EventsSecretName}" },
                       { "name":"NAMEMATCHING_URL", "value":"#{ExportConfigNS.NAMEMATCHING_URL}" },
-                      { "name":"APP_CLIENT_ID", "value":"${AppClientId}" },
                       { "name":"WS_SUB_DOMAIN", "value":"#{ExportConfigNS.WS_SUB_DOMAIN}" },
-                      { "name":"UI_SUB_DOMAIN", "value":"#{ExportConfigNS.UI_SUB_DOMAIN}" },
                       { "name":"ELASTIC_HOST", "value":"#{ExportConfigNS.ELASTIC_HOST}" },
                       { "name":"ELASTIC_PORT", "value":"#{ExportConfigNS.ELASTIC_PORT}" },
-                      { "name":"USER_POOL_ID", "value":"${UserPoolId}" },
+                      { "name":"ELASTICSEARCH_ENDPOINT", "value":"#{ExportConfigNS.ELASTICSEARCH_ENDPOINT}" },
+                      { "name":"ELASTICSEARCH_USERNAME", "value":"#{ExportConfigNS.ELASTICSEARCH_USERNAME}" },
+                      { "name":"ELASTICSEARCH_AUTH_ENABLED", "value":"#{ExportConfigNS.ELASTICSEARCH_AUTH_ENABLED}" },
+                      { "name":"ELASTICSEARCH_SECRET_NAME", "value":"#{ExportConfigNS.ELASTICSEARCH_SECRET_NAME}" },
                       { "name":"ES_INDEX", "value":"#{ExportConfigNS.ES_INDEX}" },
                       { "name":"API_DOWNLOAD", "value":"#{ExportConfigNS.API_DOWNLOAD}" },
                       { "name":"DATASET_EML", "value":"#{ExportConfigNS.DATASET_EML}" }
                     ]
-                  - AppClientId:
-                      Fn::ImportValue:
-                        Fn::Sub: "${pBaseStackName}-AppClientId"
-                    EksClusterName:
+                  - EksClusterName:
                       Fn::ImportValue:
                         Fn::Sub: "${pRegolithStackName}-ClusterName"
                     EventsSecretName:
                       Fn::ImportValue:
                         Fn::Sub: "${pBaseStackName}-EventsSecretName"
-                    OidcDiscoveryUrl:
-                        Fn::Sub:
-                          - "https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPoolId}/.well-known/openid-configuration"
-                          - UserPoolId:
-                              Fn::ImportValue:
-                                Fn::Sub: "${pCognitoStackName}-UserPoolId"
-                    UserPoolId:
-                      Fn::ImportValue:
-                        Fn::Sub: "${pCognitoStackName}-UserPoolId"
-
             InputArtifacts:
               - Name: SourceArtifact
               - Name: ExportConfigArtifact
