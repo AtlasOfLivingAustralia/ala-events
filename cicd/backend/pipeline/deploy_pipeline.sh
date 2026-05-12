@@ -78,11 +78,11 @@ else
   RESTART_PIPELINE_ON_UPDATE=true
 fi
 
-# check that any changes are commited and pushed
-#if [[ $real_branch -eq 1 && -n "$(git status --porcelain)" ]] ; then
-#  echo "changes must be committed and pushed before deploying"
-#  exit 1;
-#fi
+# check that any changes are committed and pushed
+if [[ $real_branch -eq 1 && -n "$(git status --porcelain)" ]] ; then
+  echo "changes must be committed and pushed before deploying"
+  exit 1;
+fi
 
 # check the remote branch exists
 if [[ $real_branch -eq 1 ]] && ! git ls-remote --exit-code origin $branch > /dev/null 2>&1 ; then
@@ -137,6 +137,7 @@ aws cloudformation deploy \
     --region $REGION \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
     --parameter-overrides \
+        pAllowTeardown=$ALLOW_TEARDOWN \
         pAutoDeploy=$AUTO_DEPLOY \
         pBaseStackName=$BASE_STACK_NAME \
         pBootstrapStackName=$BOOTSTRAP_STACK_NAME \
