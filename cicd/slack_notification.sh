@@ -57,7 +57,7 @@ curl -X POST "https://slack.com/api/chat.postMessage" \
         "type": "header",
         "text": {
           "type": "plain_text",
-          "text": "$AWS_ACCOUNT_NAME account - $PRODUCT_COMPONENT $ENVIRONMENT release",
+          "text": "$AWS_ACCOUNT_NAME account - $PRODUCT_NAME $PRODUCT_COMPONENT $ENVIRONMENT release",
           "emoji": true
         }
       },
