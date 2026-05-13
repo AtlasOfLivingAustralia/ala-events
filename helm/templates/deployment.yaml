@@ -65,6 +65,9 @@ spec:
       containers:
       - name: {{ .Chart.Name }}-es2vt
         image: "{{ .Values.es2vt.image.repository }}:{{ .Values.es2vt.image.tag }}"
+        env:
+          - name: NODE_TLS_REJECT_UNAUTHORIZED
+            value: "0"
         ports:
         - containerPort: 4002
         volumeMounts:
