@@ -5,7 +5,7 @@ version: 0.2
 env:
   shell: bash
   variables:
-    DEBIAN_FRONTEND: "noninteractive"
+    DEBIAN_FRONTEND: noninteractive
   exported-variables:
     - CODEBUILD_BUILD_NUMBER
   secrets-manager:
@@ -28,7 +28,7 @@ phases:
       - # have to get the commit message here because passing it as an env var from
       - # the pipeline doesn't work when the commit message contains json breaking characters
       - export PIPELINE_NAME=$(echo $CODEBUILD_INITIATOR | cut -d'/' -f2)
-      - export COMMIT_MSG=$(aws codepipeline list-pipeline-executions --pipeline-name $PIPELINE_NAME --max-items 1 --query 'pipelineExecutionSummaries[0].sourceRevisions[0].revisionSummary' | jq -r '. | fromjson | .CommitMessage')
+      - export COMMIT_MSG=$(aws codepipeline list-pipeline-executions --pipeline-name $PIPELINE_NAME --max-items 1 --query 'pipelineExecutionSummaries[0].sourceRevisions[*].revisionSummary' | jq -r '.[] | fromjson | .CommitMessage')
       - echo source branch is $SRC_BRANCH
       - echo clean branch is $CLEAN_BRANCH
       - echo Environment is $ENVIRONMENT

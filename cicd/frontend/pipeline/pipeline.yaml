@@ -62,9 +62,6 @@ Conditions:
   IsDev: !Equals
     - !Ref pEnvironment
     - development
-  IsProd: !Equals
-    - !Ref pEnvironment
-    - production
   AutoDeploy: !Equals
     - !Ref pAutoDeploy
     - true
