@@ -17,7 +17,8 @@ var client = new Client({
   nodes: env.content.hosts,
   maxRetries: env.content.maxRetries || 3,
   requestTimeout: env.content.requestTimeout || 60000,
-  agent
+  agent,
+  httpAuth: `${env.event.username}:${env.event.password}`
 });
 
 async function query({ query, aggs, size = 20, from = 0, sortBy, sortOrder = 'desc', metrics, req }) {

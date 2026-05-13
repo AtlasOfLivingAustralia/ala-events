@@ -23,6 +23,10 @@ const client = new Client({
   maxRetries: env.eventOccurrence.maxRetries || 3,
   requestTimeout: env.eventOccurrence.requestTimeout || 60000,
   agent,
+  auth: {
+    username: env.eventOccurrence.username,
+    password: env.eventOccurrence.password
+  },
   httpAuth: `${env.eventOccurrence.username}:${env.eventOccurrence.password}`
 });
 
