@@ -22,7 +22,12 @@ const client = new Client({
   nodes: env.eventOccurrence.hosts,
   maxRetries: env.eventOccurrence.maxRetries || 3,
   requestTimeout: env.eventOccurrence.requestTimeout || 60000,
-  agent
+  agent,
+  auth: {
+    username: env.eventOccurrence.username,
+    password: env.eventOccurrence.password
+  },
+  httpAuth: `${env.eventOccurrence.username}:${env.eventOccurrence.password}`
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, req }) {

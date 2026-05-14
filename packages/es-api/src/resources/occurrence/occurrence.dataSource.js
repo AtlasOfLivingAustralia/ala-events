@@ -17,7 +17,8 @@ const client = new Client({
   nodes: env.occurrence.hosts,
   maxRetries: env.occurrence.maxRetries || 3,
   requestTimeout: env.occurrence.requestTimeout || 60000,
-  agent
+  agent,
+  httpAuth: `${env.eventOccurrence.username}:${env.eventOccurrence.password}`
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, req }) {

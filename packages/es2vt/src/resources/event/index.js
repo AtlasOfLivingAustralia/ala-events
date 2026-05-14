@@ -13,7 +13,8 @@ const client = new Client({
   auth: {
     username: env.event.username,
     password: env.event.password
-  }
+  },
+  httpAuth: `${env.event.username}:${env.event.password}`
 });
 
 async function queryMvt({ query: body, tileParams }) {
