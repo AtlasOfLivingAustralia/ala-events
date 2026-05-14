@@ -14,8 +14,5 @@ elasticsearch:
   indexName: {{ es_index }}
   username: {{ elasticsearch_username }}
   hosts: https://{{ elasticsearch_endpoint }}:{{ elastic_port }}
-  pv:
-    name: pv-{{ elastic_host }}
-    volumeHandle: {{ efs_filesystem_id }}
   pvc:
     name: pvc-{{ elastic_host }}
