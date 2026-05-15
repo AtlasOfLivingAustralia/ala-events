@@ -9,6 +9,7 @@ env:
     JAVA_TOOL_OPTIONS: -Dhttps.protocols=TLSv1.2
   secrets-manager:
     ESAPI_APIKEY: $EVENTS_SECRET_NAME:esApi_apiKey
+    ELASTICSEARCH_PASSWORD: $ELASTICSEARCH_SECRET_NAME:password
 
 phases:
 
@@ -23,39 +24,8 @@ phases:
     commands:
       - echo Build started on $(date)
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
-      - |
-        if [ "$ELASTICSEARCH_AUTH_ENABLED" = "true" ]; then
-        export ELASTICSEARCH_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "$ELASTICSEARCH_SECRET_NAME" --query 'SecretString' --output text | jq -r '.["password"]')
-        fi
+      - HELM_VALUES_FILE=$CODEBUILD_SRC_DIR_ExportConfigArtifact/helm/helm_values.yaml
       - cd helm
-      - | 
-        echo "
-        esApi:
-          apiKey: \"$ESAPI_APIKEY\"
-        bie:
-          url: $BIE_URL
-        biocache:
-          url: $BIOCACHE_URL
-        images:
-          url: $IMAGES_URL
-        namematching:
-          url: $NAMEMATCHING_URL
-        api:
-          download: $API_DOWNLOAD
-        dataset:
-          eml: $DATASET_EML
-        elasticsearch:
-          indexName: $ES_INDEX
-          username: $ELASTICSEARCH_USERNAME
-          password: $ELASTICSEARCH_PASSWORD
-          hosts: https://${ELASTICSEARCH_ENDPOINT}:${ELASTIC_PORT}
-          pv:
-            name: pv-$ELASTIC_HOST
-            volumeHandle: fs-008ef19f15acc2af8
-          pvc:
-            name: pvc-$ELASTIC_HOST" > helm_values.yaml
-      - echo helm values
-      - cat helm_values.yaml
       - echo helm upgrade --install $HELM_RELEASE_NAME . \
         -n $EKS_NAMESPACE \
         --set esApi.image.repository=$ECR_REPO \
@@ -68,8 +38,10 @@ phases:
         --set graphqlApi.image.tag=$BUILD_TAG_GRAPHQL_API \
         --set graphqlApi.ingress.hostname=graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE \
         --set ingress.certificateArn=$APP_CERTIFICATE \
-        -f helm_values.yaml \
-        --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
+        --set-string esApi.apiKey="$ESAPI_APIKEY" \
+        --set-string elasticsearch.password="$ELASTICSEARCH_PASSWORD" \
+        -f $HELM_VALUES_FILE \
+        --set-string deploymentChecksum="$(md5sum $HELM_VALUES_FILE | awk '{print $1}')" \
         --set-string commitHash="$CODEBUILD_RESOLVED_SOURCE_VERSION"
       - |
         helm upgrade --install $HELM_RELEASE_NAME . \
@@ -84,8 +56,10 @@ phases:
           --set graphqlApi.image.tag=$BUILD_TAG_GRAPHQL_API \
           --set graphqlApi.ingress.hostname=graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE \
           --set ingress.certificateArn=$APP_CERTIFICATE \
-          -f helm_values.yaml \
-          --set-string deploymentChecksum="$(md5sum helm_values.yaml | awk '{print $1}')" \
+          --set-string esApi.apiKey="$ESAPI_APIKEY" \
+          --set-string elasticsearch.password="$ELASTICSEARCH_PASSWORD" \
+          -f $HELM_VALUES_FILE \
+          --set-string deploymentChecksum="$(md5sum $HELM_VALUES_FILE | awk '{print $1}')" \
           --set-string commitHash="$CODEBUILD_RESOLVED_SOURCE_VERSION"
   post_build:
     commands:
