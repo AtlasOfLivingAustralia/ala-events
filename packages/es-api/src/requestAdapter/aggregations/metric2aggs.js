@@ -29,7 +29,7 @@ function metric2aggs(metrics = {}, config) {
           let order;
           if (metric.order) {
             if (metric.order === 'TERM_ASC') {
-              order = { "_term": "asc" };
+              order = { "_key": "asc" };
             }
           }
           const aggName = {
@@ -58,7 +58,7 @@ function metric2aggs(metrics = {}, config) {
           let order;
           if (metric.order) {
             if (metric.order === 'TERM_ASC') {
-              order = { "_term": "asc" };
+              order = { "_key": "asc" };
             }
           }
 
