@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const compression = require('compression');
 const _ = require('lodash');
 const cors = require('cors');
@@ -37,7 +36,7 @@ const app = express();
 app.use(cors());
 app.use(compression());
 app.use(express.static('public'));
-app.use(bodyParser.json());
+app.use(express.json());
 
 let setCache = function (req, res, next) {
   const period = 600; // unit seconds
@@ -271,6 +270,6 @@ function getMetaOnly(resource) {
 app.get('*', unknownRouteHandler);
 app.use(errorHandler);
 
-app.listen({ port: config.port }, () =>
+app.listen(config.port, () =>
   console.log(`🚀 Server ready at http://localhost:${config.port}`)
 );
