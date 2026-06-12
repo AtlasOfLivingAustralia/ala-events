@@ -1,5 +1,4 @@
 const { Client } = require('@elastic/elasticsearch');
-const Agent = require('agentkeepalive');
 const { ResponseError } = require('../errorHandler');
 const { search } = require('../esRequest');
 const env = require('../../config');
@@ -8,16 +7,10 @@ const { queryReducer } = require('../../responseAdapter');
 
 const searchIndex = env.occurrence.index || 'occurrence';
 
-const agent = () => new Agent({
-  maxSockets: 1000, // Default = Infinity
-  keepAlive: true
-});
-
 const client = new Client({
   nodes: env.occurrence.hosts,
   maxRetries: env.occurrence.maxRetries || 3,
-  requestTimeout: env.occurrence.requestTimeout || 60000,
-  agent
+  requestTimeout: env.occurrence.requestTimeout || 60000
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, req }) {

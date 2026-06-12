@@ -1,5 +1,4 @@
 const { Client } = require('@elastic/elasticsearch');
-const Agent = require('agentkeepalive');
 const { ResponseError } = require('../errorHandler');
 const { search } = require('../esRequest');
 const env = require('../../config');
@@ -21,11 +20,10 @@ const client = new Client({
   nodes: env.event.hosts,
   maxRetries: env.event.maxRetries || 3,
   requestTimeout: env.event.requestTimeout || 60000,
-  agent,
   auth: {
     username: env.event.username,
     password: env.event.password
-  }
+  },
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, randomSeed, randomize, req }) {

@@ -1,5 +1,4 @@
 const { Client } = require('@elastic/elasticsearch');
-const Agent = require('agentkeepalive');
 const { ResponseError } = require('../errorHandler');
 const { search } = require('../esRequest');
 const env = require('../../config');
@@ -8,19 +7,13 @@ const { reduce } = require('./reduce');
 
 const searchIndex = 'dataset';
 
-const agent = () => new Agent({
-  maxSockets: 1000, // Default = Infinity
-  keepAlive: true
-});
-
 const client = new Client({
   nodes: env.dataset.hosts,
   maxRetries: env.dataset.maxRetries || 3,
   requestTimeout: env.dataset.requestTimeout || 60000,
-  agent
 });
 
-async function query({ query, aggs, size=20, from=0, req }) {
+async function query({ query, aggs, size = 20, from = 0, req }) {
   if (parseInt(from) + parseInt(size) > env.dataset.maxResultWindow) {
     throw new ResponseError(400, 'BAD_REQUEST', `'from' + 'size' must be ${env.dataset.maxResultWindow} or less`);
   }
@@ -35,7 +28,7 @@ async function query({ query, aggs, size=20, from=0, req }) {
     aggs,
     track_total_hits: true,
     _source: {
-      exclude: [ 'metadata' ]
+      exclude: ['metadata']
     },
   }
   let response = await search({ client, index: searchIndex, query: esQuery, req });
@@ -43,7 +36,7 @@ async function query({ query, aggs, size=20, from=0, req }) {
   body.hits.hits = body.hits.hits.map(n => reduce(n));
   return {
     esBody: esQuery,
-    result: queryReducer({body, size, from})
+    result: queryReducer({ body, size, from })
   };
 }
 
