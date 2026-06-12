@@ -453,6 +453,14 @@ const config =
       type: 'keyword',
       field: 'event.measurementOrFactTypes.keyword'
     },
+    measurementValue: {
+      type: 'keyword',
+      field: 'event.measurementOrFacts.measurementValue.keyword'
+    },
+    measurementType: {
+      type: 'keyword',
+      field: 'event.measurementOrFacts.measurementType.keyword'
+    },
     mediaLicenses: {
       type: 'keyword',
       field: 'event.mediaLicenses'
