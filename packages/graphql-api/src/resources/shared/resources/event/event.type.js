@@ -114,6 +114,7 @@ export default gql`
     get dataset information via EML
     """
     dataset: JSON!
+    extensions: EventExtensions
     """
     Get number of distinct species for this event and its children
     """
@@ -342,5 +343,9 @@ export default gql`
     key: String!
     count: Int!
     _predicate: JSON
+  }
+
+  type EventExtensions {
+    seedbank: SeedBankExtension
   }
 `;

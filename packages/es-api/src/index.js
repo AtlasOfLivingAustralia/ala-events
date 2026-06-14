@@ -267,7 +267,7 @@ function getMetaOnly(resource) {
   }
 }
 
-app.get('*', unknownRouteHandler);
+app.use(unknownRouteHandler);
 app.use(errorHandler);
 
 app.listen(config.port, () =>

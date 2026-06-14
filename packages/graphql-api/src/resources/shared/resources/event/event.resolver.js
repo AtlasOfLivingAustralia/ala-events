@@ -67,7 +67,7 @@ export default {
     },
     event: (parent, { eventID, datasetKey }, { dataSources }) =>
       dataSources.eventAPI.getEventByKey({ eventID, datasetKey }),
-    occurrences: (parent, { eventID, datasetKey, locationID,  month, year, size, from }, { dataSources }) => {
+    occurrences: (parent, { eventID, datasetKey, locationID, month, year, size, from }, { dataSources }) => {
       return dataSources.eventAPI.searchEventOccurrences({ eventID, datasetKey, locationID, month, year, size, from });
     },
     location: (parent, { locationID }, { dataSources }) =>
@@ -90,17 +90,19 @@ export default {
     occurrenceFacet: (parent) => {
       return { _predicate: parent._predicate };
     },
-    facet: (parent, {size, from}) => {
+    facet: (parent, { size, from }) => {
       return {
         size: size,
         from: from,
-        _predicate: parent._predicate };
+        _predicate: parent._predicate
+      };
     },
-    multifacet: (parent, {size, from}) => {
+    multifacet: (parent, { size, from }) => {
       return {
         size: size,
         from: from,
-        _predicate: parent._predicate };
+        _predicate: parent._predicate
+      };
     },
     cardinality: (parent) => {
       return { _predicate: parent._predicate };
@@ -204,6 +206,7 @@ export default {
             }),
           ),
         ),
+    extensions: ({ seedbankRecord }) => ({ seedbank: seedbankRecord }),
   },
   EventFacetResult_dataset: {
     datasetTitle: ({ key }, args, { dataSources }) => {

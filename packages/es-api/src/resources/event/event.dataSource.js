@@ -9,12 +9,6 @@ const searchIndex = env.event.index || 'event';
 
 // this isn't an ideal solution, but we keep changing between using an http and https agent. vonfig should require code change as well
 const isHttpsEndpoint = env.event.hosts[0].startsWith('https');
-const AgentType = isHttpsEndpoint ? Agent.HttpsAgent : Agent;
-
-const agent = () => new AgentType({
-  maxSockets: 1000, // Default = Infinity
-  keepAlive: true
-});
 
 const client = new Client({
   nodes: env.event.hosts,
