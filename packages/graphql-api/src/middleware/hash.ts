@@ -1,10 +1,10 @@
 import hash from 'object-hash';
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { Request, Response, NextFunction } from 'express';
 import { ParsedQs } from 'qs';
 
-const queryCache = new LRU({ max: 1000 });
-const variablesCache = new LRU({ max: 10000 });
+const queryCache = new LRUCache({ max: 1000 });
+const variablesCache = new LRUCache({ max: 10000 });
 
 type StoredQuery = string | ParsedQs | string[] | ParsedQs[] | undefined;
 
