@@ -14,7 +14,7 @@ const cliOptions = [
   { name: 'port', alias: 'p', type: Number },
   { name: 'debug', type: Boolean, defaultOption: false },
 ];
-const options = commandLineArgs(cliOptions);
+const options = commandLineArgs(cliOptions, { partial: true });
 
 const config = merge({ debug: false }, env, options);
 
