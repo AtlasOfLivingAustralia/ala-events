@@ -12,7 +12,7 @@ const env = YAML.parse(file);
 const cliOptions = [
   { name: 'port', alias: 'p', type: Number }
 ];
-const options = commandLineArgs(cliOptions);
+const options = commandLineArgs(cliOptions, { partial: true });
 
 const config = _.merge(
   env,
