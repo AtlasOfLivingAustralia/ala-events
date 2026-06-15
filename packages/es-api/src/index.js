@@ -68,8 +68,18 @@ const temporaryAuthMiddleware = function (req, res, next) {
   } else if (apiKey !== config.apiKey || !config.apiKey) {
     next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
   }
-  // the apiKey shouldn't be used elsewhere and shouldn't be interpreted as a es query param
-  delete req.query.apiKey;
+
+  // Express 5 Safe: Redefine the query object without the apiKey property
+  const updatedQuery = { ...req.query };
+  delete updatedQuery.apiKey;
+
+  Object.defineProperty(req, 'query', {
+    value: updatedQuery,
+    writable: true,
+    configurable: true,
+    enumerable: true
+  });
+
   // Pass to next layer of middleware
   next()
 }
