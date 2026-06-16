@@ -35,10 +35,10 @@ const typeDef = gql`
     germinationRateInDays: Int
     adjustedGerminationPercentage: Float
     viabilityPercentage: Float
-    numberFull: Int
-    numberEmpty: Int
-    numberTested: Int
-    numberNotViable: Int
+    numberFull: Float
+    numberEmpty: Float
+    numberTested: Float
+    numberNotViable: Float
     preTestProcessingNotes: String
     pretreatment: String
     mediaSubstrate: String
