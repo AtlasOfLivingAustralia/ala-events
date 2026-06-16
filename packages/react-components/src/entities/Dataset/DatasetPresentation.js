@@ -1,206 +1,141 @@
-import { jsx } from '@emotion/react';
-import React, { useContext, useCallback, useState, useEffect } from 'react';
-import ThemeContext from '../../style/themes/ThemeContext';
-import { Prose, Tabs, Eyebrow, LicenseTag, DataHeader, Doi, Button, ResourceLink, ResourceSearchLink, Row, Col } from '../../components';
-import OccurrenceSearch from '../../search/OccurrenceSearch/OccurrenceSearch';
-import EventSearch from '../../search/EventSearch/EventSearch';
-import { iconFeature } from '../../components/IconFeatures/styles';
-import { Homepage, OccurrenceCount } from '../../components/IconFeatures/IconFeatures';
+import { jsx, css } from '@emotion/react';
+import React from 'react';
+import { Tabs, Eyebrow, LicenseTag, Doi, ResourceLink, Tooltip, Button } from '../../components';
 import { About } from './about/About';
 import { Project } from './project/Project';
 import { Activity } from './activity/Activity';
 import { DownloadOptions } from './DownloadOptions';
-import { FormattedMessage, FormattedNumber, FormattedDate } from 'react-intl';
+import { FormattedMessage, FormattedDate } from 'react-intl';
 import { join } from '../../utils/util';
-import useBelow from '../../utils/useBelow';
-import { Headline } from '../shared/header';
+import env from '../../../.env.json';
 
-import * as css from './styles';
-import { MdDownload, MdOutlineCode, MdOutlineHelpOutline, MdKeyboardArrowLeft, MdLocationOn, MdPeople, MdLink, MdPlaylistAddCheck, MdStar, MdFormatQuote } from 'react-icons/md';
+import { Homepage, FeatureList, GenericFeature } from '../../components/IconFeatures/IconFeatures';
+import { DataHeader, HeaderWrapper, ContentWrapper, Headline, DeletedMessage, HeaderInfoWrapper, HeaderInfoMain } from '../shared/header';
+import { Page404, PageLoader } from '../shared';
 
-import { Switch, Route, useRouteMatch, Link } from 'react-router-dom';
+import { MdPeople, MdLink, MdFormatQuote, MdOutlineCode, MdOutlineHelpOutline } from 'react-icons/md';
+import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
-const { TabList, RouterTab } = Tabs;
-const { H1 } = Prose;
+const { TabList, RouterTab, Tab } = Tabs;
 export function DatasetPresentation({
   id,
   data,
   insights,
   error,
   loading,
+  disableCatalog,
+  style = {},
   ...props
 }) {
-  const isBelowNarrow = useBelow(800);
   let { url, path } = useRouteMatch();
-  const theme = useContext(ThemeContext);
 
-  if (loading) return <div>loading</div>
-  const { dataset, literatureSearch, occurrenceSearch, siteOccurrences, taxonSearch } = data;
-
-  if (error || !dataset) {
-    // TODO a generic component for failures is needed
-    return <div>Failed to retrieve item</div>
+  if (error) {
+    if (error?.errorPaths?.dataset?.status === 404) {
+      return <>
+        <DataHeader />
+        <Page404 />
+      </>
+    } else {
+      throw new Error(error);
+    }
   }
 
-  const rootPredicate = {
-    "type": "equals",
-    "value": id,
-    "key": "datasetKey"
-  };
+  if (loading || !data) return <PageLoader />
 
-  const config = {
-    rootPredicate,
-    excludedFilters: ['datasetCode', 'datasetKey', 'institutionKey', 'institutionCode', 'hostingOrganizationKey', 'protocol', 'publishingCountryCode'],
-    occurrenceSearchTabs: ['TABLE', 'GALLERY', 'MAP'],
-    highlightedFilters: ['taxonKey', 'catalogNumber', 'recordedBy', 'identifiedBy', 'typeStatus']
-  };
+  const { dataset, literatureSearch } = data;
 
-  const eventConfig = { 
-    // rootFilter:{datasetKey: [dataset.key]}, 
-    rootFilter:{type: 'equals', key: 'datasetKey', value: 'dr18391'}, 
-    excludedFilters: ['datasetKey'], 
-    // highlightedFilters: ['taxonKey', 'catalogNumber', 'recordedBy', 'identifiedBy', 'typeStatus'],
-    tabs: ['EVENTS']
-  };
+  // const config = {
+  //   rootPredicate: {
+  //     "type": "equals",
+  //     "value": id,
+  //     "key": "datasetKey"
+  //   },
+  //   excludedFilters: ['datasetCode', 'datasetKey', 'institutionKey', 'institutionCode', 'hostingOrganizationKey', 'protocol', 'publishingCountryCode'],
+  //   occurrenceSearchTabs: ['TABLE', 'GALLERY', 'MAP'],
+  //   highlightedFilters: ['taxonKey', 'catalogNumber', 'recordedBy', 'identifiedBy', 'typeStatus']
+  // };
 
-  return <>
+  return <div style={{ ...style, minHeight: '80vh', background: 'var(--background)' }} {...props}>
     <DataHeader
-      left={<ResourceSearchLink type="datasetSearch" discreet>
-        <MdKeyboardArrowLeft />
-        <FormattedMessage id='catalogues.datasets' />
-      </ResourceSearchLink>}
-      style={{ borderBottom: `1px solid ${theme.paperBorderColor}`, background: 'white' }}
-      right={<div css={css.headerIcons}>
-        {!isBelowNarrow && <Doi id={dataset.doi} />}
-        <Button look="text"><MdFormatQuote /></Button>
+      availableCatalogues={disableCatalog ? [] : undefined}
+      right={<>
+        <Doi id={dataset.doi} />
+        {/* The idea is that these should provide information on how to cite, how to access by API and a general help about this page */}
+        {/* <Button look="text"><MdFormatQuote /></Button>
         <Button look="text"><MdOutlineCode /></Button>
-        <Button look="text"><MdOutlineHelpOutline /></Button>
-      </div>}>
-    </DataHeader>
-    <div css={css.headerWrapper({ theme })}>
-      <div css={css.proseWrapper({ theme })}>
-        <Eyebrow prefix={<FormattedMessage id={`dataset.longType.${dataset.type}`} />} suffix={<FormattedMessage id="dataset.registeredDate" values={{ DATE: <FormattedDate value={dataset.created} year="numeric" month="long" day="2-digit" /> }} />} />
-        <div css={css.headerFlex}>
-          <div css={css.headerContent}>
-            {/* <Eyebrow prefix={<FormattedMessage id={`dataset.longType.${dataset.type}`} />} suffix={<FormattedMessage id="dataset.registeredDate" values={{ DATE: <FormattedDate value={dataset.created} year="numeric" month="long" day="2-digit" /> }} />} /> */}
-            <Headline>{dataset.title}</Headline>
-            <Row wrap="nowrap">
-              {/* {!isBelowNarrow && dataset.logoUrl && <Col css={css.headerLogo}>
-                <img src={dataset.logoUrl} />
-              </Col>} */}
-              <Col grow={true}>
-                {dataset?.contactsCitation.length > 0 && <div css={iconFeature({ theme })}>
-                  <MdPeople />
-                  <div>
-                    <ol css={css.bulletList}>{dataset?.contactsCitation.map(p => <li key={p.key}>{p.abbreviatedName}</li>)}</ol>
-                  </div>
-                </div>}
-                <div style={{ marginTop: '.5em' }}>
-                  Published by <ResourceLink css={Prose.css.a(theme)} type="publisherKey" id={dataset.publishingOrganizationKey}>{dataset.publishingOrganizationTitle}</ResourceLink>
-                </div>
+        <Button look="text"><MdOutlineHelpOutline /></Button> */}
+      </>}
+    />
 
-                <div css={css.summary}>
-                  <div css={css.iconFeatures()}>
+    <HeaderWrapper>
+      <Eyebrow prefix={<FormattedMessage id={`dataset.longType.${dataset.type}`} />} suffix={<FormattedMessage id="dataset.registeredDate" values={{ DATE: <FormattedDate value={dataset.created} year="numeric" month="long" day="2-digit" /> }} />} />
+      <Headline css={css`display: inline; margin-right: 12px;`} badge={dataset.deleted ? 'Deleted' : null}>{dataset.title}</Headline>
+      <DeletedMessage date={dataset.deleted} />
 
-                    <div css={iconFeature({ theme })}>
-                      <LicenseTag value={dataset.license} />
-                    </div>
+      {/* It would be great if we could point from a deleted dataset to the version it has been replaced with. But duplicates only exist in the API the opposite direction. So for now I've disabled this */}
+      {/* {dataset?.duplicateOfDataset && <ErrorMessage>
+        <FormattedMessage id="phrases.replacedBy" values={{ newItem: <ResourceLink type="datasetKey" id={dataset?.duplicateOfDataset?.key}>{dataset?.duplicateOfDataset?.title}</ResourceLink> }} />
+      </ErrorMessage>} */}
 
-                    {isBelowNarrow && <div css={iconFeature({ theme })}>
-                      <Doi id={dataset.doi} />
-                    </div>}
+      {dataset.publishingOrganizationKey && <div style={{ marginTop: 8 }}>
+        <FormattedMessage id="dataset.publishedBy" /> <ResourceLink type="publisherKey" id={dataset.publishingOrganizationKey}>{dataset.publishingOrganizationTitle}</ResourceLink>
+      </div>}
 
-                    {dataset.homepage && <Homepage href={dataset.homepage} />}
-
-                    {occurrenceSearch.documents.total > 0 && <OccurrenceCount count={occurrenceSearch.documents.total}/>}
-
-                    {/* {siteOccurrences.documents.total > 0 && <div css={iconFeature({ theme })}>
-                      <MdLocationOn />
-                      <span><FormattedNumber value={siteOccurrences.documents.total} /> occurrences on this site</span>
-                    </div>} */}
-
-                        {/* {literatureSearch.documents?.count > 0 && <div css={countFeature({ theme })}>
-                      <span>
-                        <MdFormatQuote />
-                        <FormattedNumber value={literatureSearch.documents.count} />
-                      </span>
-                      <span><Link to={join(url, 'citations')}>citations</Link></span>
-                    </div>} */}
-
-                    {taxonSearch.count > 0 && <div css={iconFeature({ theme })}>
-                      <MdPlaylistAddCheck />
-                      <span><FormattedNumber value={taxonSearch.count} /> accepted names</span>
-                    </div>}
-
-                    {/* <div css={countFeature({ theme })}>
-                      <span>{dataset.license}</span>
-                    </div> */}
-
-                            {/* {occurrenceSearch.documents.total > 0 && <div css={countFeature({ theme })}>
-                      <span><FormattedNumber value={occurrenceSearch.documents.total} /></span>
-                      <span>occurrences</span>
-                    </div>}
-                    
-                    {literatureSearch.count > 0 && <div css={countFeature({ theme })}>
-                      <span><FormattedNumber value={literatureSearch.count} /></span>
-                      <span>citations</span>
-                    </div>}
-
-                    {taxonSearch.count > 0 && <div css={countFeature({ theme })}>
-                      <span><FormattedNumber value={taxonSearch.count} /></span>
-                      <span>accepted names</span>
-                    </div>} */}
-                  </div>
-
-                </div>
-              </Col>
-            </Row>
-          </div>
-        </div>
-        <TabList style={{ marginTop: '12px', borderTop: '1px solid #ddd' }}>
-          <RouterTab to={url} exact label="About" />
-          {dataset.project && <RouterTab to={join(url, 'project')} label="Project" />}
-          {/* <RouterTab to={join(url, 'metrics')} label="Metrics"/> */}
-          {/* <RouterTab to={join(url, 'activity')} label="Activity" /> */}
-          {literatureSearch.documents?.count > 0 && <RouterTab to={join(url, 'citations')} label="Citations" />}
-          {/* <RouterTab to={join(url, 'specimens')} css={css.tab({ theme, noData: occurrenceSearch?.documents?.total === 0 })} label="Occurrences" /> */}
-          <RouterTab to={join(url, 'events')} css={css.tab({ theme, noData: occurrenceSearch?.documents?.total === 0 })} label="Events" />
-          {/* <RouterTab to={join(url, 'taxonomy')} label="Taxonomy"/> */}
-          <RouterTab to={join(url, 'download')} label="Download" />
-        </TabList>
-      </div>
-    </div>
-
+      <HeaderInfoWrapper>
+        <HeaderInfoMain>
+          <FeatureList style={{ marginTop: 8 }}>
+            {dataset?.contactsCitation?.length > 0 && <GenericFeature>
+              <MdPeople />
+              {dataset?.contactsCitation.length < 10 && <span>
+                {dataset?.contactsCitation.map(c => `${c.firstName ? `${c.firstName} ` : ''}${c.lastName ? c.lastName : ''}`).join(' • ')}
+              </span>
+              }
+              {dataset?.contactsCitation.length >= 10 && <span>{dataset?.contactsCitation.length} authors</span>}
+            </GenericFeature>}
+            <Homepage href={dataset.homepage} />
+            <GenericFeature>
+              <LicenseTag value={dataset.license} />
+            </GenericFeature>
+          </FeatureList>
+        </HeaderInfoMain>
+      </HeaderInfoWrapper>
+      <TabList style={{ marginTop: '12px', borderTop: '1px solid #ddd' }}>
+        <RouterTab to={url} exact label={<FormattedMessage id="phrases.about" />} />
+        {dataset.project && <RouterTab to={join(url, 'project')} label={<FormattedMessage id="phrases.project" />} />}
+        {literatureSearch.documents?.total > 0 && <RouterTab to={join(url, 'citations')} label={<FormattedMessage id="phrases.citations" />} />}
+        {dataset?.checklistBankDataset?.key && <Tab tabId="0" label="Checklist Bank"><Tooltip title={<FormattedMessage id="dataset.exploreInChecklistBank" defaultMessage="Explore taxonomy via Checklist Bank" />} placement="bottom"><a css={css`text-decoration: none; color: inherit!important;`} href={`${env.CHECKLIST_BANK_WEBSITE}/dataset/gbif-${dataset.key}/classification`}>Taxonomy<MdLink /></a></Tooltip></Tab>}
+        <RouterTab to={join(url, 'download')} label={<FormattedMessage id="phrases.download" />} />
+      </TabList>
+    </HeaderWrapper>
 
     <section>
       <Switch>
         <Route path={join(path, 'citations')}>
-          <div css={css.proseWrapper({ theme })}>
+          <ContentWrapper>
             <Activity {...{ dataset }} />
-          </div>
+          </ContentWrapper>
         </Route>
         <Route path={join(path, 'download')}>
-          <div css={css.proseWrapper({ theme })}>
-            <DownloadOptions {...{ dataset }} />
-          </div>
+          <ContentWrapper>
+            <DownloadOptions {...{ data }} />
+          </ContentWrapper>
         </Route>
-        <Route path={join(path, 'specimens')}>
-          <OccurrenceSearch config={config} style={{ margin: 'auto', maxWidth: 1000, minHeight: 'calc(90vh)' }}></OccurrenceSearch>
-        </Route>
-        <Route path={join(path, 'events')}>
-          <EventSearch config={eventConfig} tabs={['EVENTS']} style={{ margin: '12px auto', maxWidth: 1350, minHeight: 'calc(90vh)' }}></EventSearch>
-        </Route>
+        {/* <Route path={join(path, 'specimens')}>
+          <ContentWrapper>
+            <OccurrenceSearch config={config} style={{ margin: 'auto', maxWidth: 1000, minHeight: 'calc(90vh)' }}></OccurrenceSearch>
+          </ContentWrapper>
+        </Route> */}
         <Route path={join(path, 'project')}>
-          <div css={css.proseWrapper({ theme })}>
+          <ContentWrapper>
             <Project {...{ data }} />
-          </div>
+          </ContentWrapper>
         </Route>
         <Route path={path}>
-          <div css={css.proseWrapper({ theme })}>
+          <ContentWrapper>
             <About {...{ data }} insights={insights} />
-          </div>
+          </ContentWrapper>
         </Route>
       </Switch>
     </section>
-  </>
+  </div>
 };

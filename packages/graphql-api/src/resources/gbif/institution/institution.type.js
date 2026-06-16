@@ -11,13 +11,20 @@ const typeDef = gql`
       name: String
       fuzzyName: String
       city: String
-      country: Country
+      country: [Country]
       alternativeCode: String
       active: Boolean
       numberSpecimens: String
+      occurrenceCount: String
+      identifier: String
+      type: String
+      institutionKey: [GUID]
+      discipline: [String]
       displayOnNHCPortal: Boolean
+      sortBy: CollectionsSortField
+      sortOrder: SortOrder
       ): InstitutionSearchResults
-    institution(key: String!): Institution
+    institution(key: ID!): Institution
   }
 
   type InstitutionSearchResults {

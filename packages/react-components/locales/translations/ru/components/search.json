@@ -4,14 +4,46 @@
     "gallery": "Галерея",
     "map": "Карта",
     "datasets": "Опубликованных наборов данных",
-    "download": "Загрузить"
+    "events": "Мероприятия",
+    "download": "Загрузить",
+    "clusters": "",
+    "dashboard": "Панель управления",
+    "sites": "Архив, аннотированный GBIF"
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "Поиск",
-    "range": ""
+    "range": "",
+    "locationID": ""
   },
-  "loadMore": "Еще"
+  "ternary": {
+    "yes": "Да",
+    "no": "Нет",
+    "either": "Архив, аннотированный GBIF"
+  },
+  "loadMore": "Еще",
+  "occurrenceClustersView": {
+    "about": "Подробно",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "Изображение",
+      "TYPE": "Типовой образец",
+      "TREATMENT": "Обработка",
+      "OBSERVATION": "Наблюдение",
+      "SPECIMEN": "Образец",
+      "SEQUENCE": ""
+    }
+  }
 }

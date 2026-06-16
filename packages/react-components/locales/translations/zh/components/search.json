@@ -4,14 +4,46 @@
     "gallery": "图库",
     "map": "地图",
     "datasets": "数据集",
-    "download": "下载"
+    "events": "事件",
+    "download": "下载",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "在文本字段中查找具有相似匹配文本的记录。对于特定字段中的匹配文本，请使用相应的过滤器，例如“科学名称”的过滤器。"
   },
   "table": {
     "lockColumn": "锁定列"
   },
   "placeholders": {
     "default": "搜索",
-    "range": "范围或单个值"
+    "range": "范围或单个值",
+    "locationID": ""
   },
-  "loadMore": "更多"
+  "ternary": {
+    "yes": "是",
+    "no": "否",
+    "either": "在文本字段中查找具有相似匹配文本的记录。对于特定字段中的匹配文本，请使用相应的过滤器，例如“科学名称”的过滤器。"
+  },
+  "loadMore": "更多",
+  "occurrenceClustersView": {
+    "about": "关于",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "图片",
+      "TYPE": "",
+      "TREATMENT": "治疗",
+      "OBSERVATION": "观察",
+      "SPECIMEN": "标本",
+      "SEQUENCE": ""
+    }
+  }
 }

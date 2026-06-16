@@ -4,8 +4,10 @@ export const filters = [
   'countriesOfResearcher',
   'countriesOfCoverage',
   'datasetKey',
-  'publisherKey',
-  'literatureType'
+  'gbifPublisherKey',
+  'literatureType',
+  'relevance',
+  'topics',
 ].sort();
 
 const highlighted = [

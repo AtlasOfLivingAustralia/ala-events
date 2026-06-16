@@ -2,6 +2,7 @@ import { jsx } from "@emotion/react";
 import React from "react";
 import { Properties, HyperText } from "../../../../components";
 import { FormattedMessage, FormattedDate } from "react-intl";
+import * as sharedStyles from '../../../shared/styles';
 
 const { Term: T, Value: V } = Properties;
 
@@ -19,7 +20,8 @@ function GeographicCoverage({ coverage }) {
   let geoJSON;
   if (
     coverage?.boundingBox?.minLatitude > -85 &&
-    coverage?.boundingBox?.maxLatitude < 85
+    coverage?.boundingBox?.maxLatitude < 85 &&
+    coverage?.boundingBox?.minLatitude < coverage?.boundingBox?.maxLatitude
   ) {
     const {
       minLongitude,
@@ -42,26 +44,31 @@ function GeographicCoverage({ coverage }) {
   }
 
   let Bbox;
+  
   if (coverage?.boundingBox?.minLatitude) {
+    const {
+      minLongitude,
+      minLatitude,
+      maxLongitude,
+      maxLatitude,
+    } = coverage.boundingBox;
     Bbox = <Properties horizontal>
-    <T>Latitude</T>
-    <V>
-      From {coverage.boundingBox.minLatitude} to{" "}
-      {coverage.boundingBox.maxLatitude}
-    </V>
-    <T>Longitude</T>
-    <V>
-      From {coverage.boundingBox.minLongitude} to{" "}
-      {coverage.boundingBox.maxLongitude}
-    </V>
-  </Properties>
+      <T><FormattedMessage id="dataset.latitude" /></T>
+      <V>
+        <FormattedMessage id="intervals.description.between" values={{ from: minLatitude, to: maxLatitude }} />
+      </V>
+      <T><FormattedMessage id="dataset.longitude" /></T>
+      <V>
+        <FormattedMessage id="intervals.description.between" values={{ from: minLongitude, to: maxLongitude }} />
+      </V>
+    </Properties>
   } else {
     Bbox = null;
   }
 
   return (
-    <Properties>
-      <T>Description</T>
+    <Properties css={sharedStyles.cardProperties}>
+      <T><FormattedMessage id="dataset.description" /></T>
       <V><HyperText text={coverage.description} /></V>
       {geoJSON && (
         <>
@@ -78,7 +85,7 @@ function GeographicCoverage({ coverage }) {
         </>
       )}
       {!geoJSON && <>
-        <T>Bounding box</T>
+        <T><FormattedMessage id="dataset.boundingBox" /></T>
         <V>{Bbox}</V>
       </>}
     </Properties>

@@ -1,0 +1,226 @@
+# Default values for helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+ingress:
+  enabled: true
+  className: "alb"
+  certificateArn: "arn:aws:acm:ap-southeast-2:748909248546:certificate/969309c3-9c24-4fc8-9e16-10334e82bbd4"
+  hostname: ""
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+  tls: []
+
+esApi:
+
+  replicaCount: 1
+
+  image:
+    repository: ""
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  resources:
+    # limits:
+    #   memory: 4096Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 4001
+    targetPort: 4001
+
+es2vt:
+
+  replicaCount: 1
+
+  image:
+    repository: ""
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  resources:
+    # limits:
+    #   memory: 4096Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 4002
+    targetPort: 4002
+
+graphqlApi:
+
+  replicaCount: 1
+
+  image:
+    repository: ""
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  resources:
+    # limits:
+    #   memory: 4096Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 4000
+    targetPort: 4000
+
+# rds:
+#   externalName: "mysql-rds"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+elasticsearch:
+  indexName: events
+  username: elastic
+  password:
+  hosts:
+# elastic search config for events ES instance within events namespace
+# elasticsearch: 
+#   pv:
+#     name: ala-event-elasticsearch-pv
+#   pvc:
+#     name: ala-events-elasticsearch-pvc
+#   service:
+#     name: ala-event-elasticsearch
+#     host: ala-event-elasticsearch
+#     port: 9200
+#   deployment:
+#     name: ala-event-elasticsearch
+
+#   clusterName: ala-event-elasticsearch
+#   nodeGroup: master
+
+#   replicas: 2
+
+#   protocol: http
+#   httpPort: 9200
+  
+#   securityContext:
+#     runAsUser: null
+
+#   podSecurityContext:
+#     allowPrivilegeEscalation: false
+#     # fsGroup: null
+#     # runAsUser: null
+
+#   sysctlInitContainer:
+#     enabled: false
+
+#   volumeClaimTemplate:
+#     accessModes: [ "ReadWriteMany" ]
+#     volumeMode: Filesystem
+#     volumeName: ala-events-elasticsearch-efs-pv
+#     storageClassName: ""
+#     resources:
+#       requests:
+#         storage: 10Gi
+
+api:
+  download: https://api.test.ala.org.au/dataset/{datasetKey}
+dataset:
+  eml: https://collections-test.ala.org.au/ws/eml/{datasetKey}
+namematching:
+  url: https://namematching-ws.ala.org.au/api
+bie:
+  url: https://bie-ws.ala.org.au/ws
+biocache:
+  url: https://biocache-ws.ala.org.au/ws
+images:
+  url: https://images.ala.org.au/ws

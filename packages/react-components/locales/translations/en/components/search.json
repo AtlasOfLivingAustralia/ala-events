@@ -4,14 +4,46 @@
     "gallery": "Gallery",
     "map": "Map",
     "datasets": "Datasets",
-    "download": "Download"
+    "events": "Events",
+    "download": "Download",
+    "clusters": "Related",
+    "dashboard": "Dashboard",
+    "sites": ""
   },
   "table": {
     "lockColumn": "Lock column"
   },
   "placeholders": {
     "default": "Search",
-    "range": "Range or single value"
+    "range": "Range or single value",
+    "locationID": "Search by location ID (case sensitive)"
   },
-  "loadMore": "More"
+  "ternary": {
+    "yes": "Yes",
+    "no": "No",
+    "either": ""
+  },
+  "loadMore": "More",
+  "occurrenceClustersView": {
+    "about": "About",
+    "clusters": "Related",
+    "legend": "Legend",
+    "differentPublishers": "Different publishers",
+    "samePublishers": "Same publisher",
+    "entryPoint": "Entry point",
+    "hasMultipleTaxonKeys": "Contains different identifications",
+    "aboutLink": "About the link",
+    "isCapped": "This node has more connections than shown here. Go to the record to see the full list.",
+    "isDeleted": "This record has since been deleted.",
+    "similarities": "Similarities",
+    "currentRecord": "Current record",
+    "nodeType": {
+      "IMAGE": "Image",
+      "TYPE": "Type specimen",
+      "TREATMENT": "Treatment",
+      "OBSERVATION": "Observation",
+      "SPECIMEN": "Specimen",
+      "SEQUENCE": "Sequence"
+    }
+  }
 }

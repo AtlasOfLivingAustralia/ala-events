@@ -10,11 +10,11 @@ query list($predicate: Predicate, $offset: Int, $limit: Int){
     size: $limit, 
     from: $offset
     ) {
-    documents {
-      total
-    }
-    facet(size: 100, from: 0) {
-      surveyID {
+    cardinality {
+      surveyID
+    }    
+    facet {
+      surveyID (size: $limit, from: $offset) {
         key
         count
       }
@@ -28,7 +28,7 @@ function Table() {
         queryProps={{ throwAllErrors: true }}
         graphQuery={SURVEYS_QUERY}
         queryTag='surveys'
-        limit={50}
+        limit={20}
         presentation={List}
     />
 }

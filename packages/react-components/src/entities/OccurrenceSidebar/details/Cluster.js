@@ -1,14 +1,16 @@
 
-import { jsx } from '@emotion/react';
+import { jsx, css } from '@emotion/react';
 import React, { useContext, useState, useEffect } from 'react';
 import ThemeContext from '../../../style/themes/ThemeContext';
-import * as css from '../styles';
-import { Row, Col, Image, Properties, IconFeatures } from "../../../components";
+import * as styles from '../styles';
+import { Row, Col, Image, Properties, IconFeatures, ResourceLink } from "../../../components";
 import { useQuery } from '../../../dataManagement/api';
 import { Header } from './Header';
 import { prettifyEnum } from '../../../utils/labelMaker/config2labels';
+import env from '../../../../.env.json';
 
 import { useUrlState } from '../../../dataManagement/state/useUrlState';
+import { FormattedMessage } from 'react-intl';
 
 const { Term: T, Value: V } = Properties;
 
@@ -35,21 +37,27 @@ export function Cluster({
   }
 
   return <div style={{ padding: '12px 16px' }}>
-    <Header data={data} />
-    <div style={{ marginTop: 24 }}>
+    {/* Based on feedback in https://github.com/gbif/hosted-portals/issues/263 I have removed the header and instead repeated the information in a format similar to the other clustered records */}
+    {/* <Header data={data} /> */}
+    <div>
+      <RelatedOccurrence onClick={e => setActiveKey(data.occurrence.key)} related={data.occurrence} css={css`
+        border-color: var(--primary);
+        background: var(--paperBackground700);
+        border-radius: var(--borderRadiusPx);
+      `}/>
       {related.map(x => {
         if (x.occurrence) {
           return <RelatedOccurrence key={x.occurrence.key} onClick={e => setActiveKey(x.occurrence.key)} related={x.occurrence} reasons={x.reasons} original={data.occurrence} />;
         } else {
           return <div style={{padding: 30, background: 'tomato', color: 'white', borderRadius: 4}}>
-            This record has since been removed from the dataset. 
+            <FormattedMessage id="search.occurrenceClustersView.isDeleted" />
             <div>
               <Properties style={{ marginTop: 12 }} horizontal dense>
-                <T style={{color: 'white'}}>Publisher</T><V>{x.stub.publishingOrgName}</V>
+                <T style={{color: 'white'}}><FormattedMessage id="occurrenceDetails.publisher" /></T><V>{x.stub.publishingOrgName}</V>
                 {/* We can no longer show the original dataset name as the API has been changed.  */}
                 {/* <T style={{color: 'white'}}>Dataset</T><V>{x.stub.datasetName}</V> */}
-                {x.stub.catalogNumber && <><T style={{color: 'white'}}>Catalog number</T><V>{x.stub.catalogNumber}</V></>}
-                {x.stub.occurrenceID && <><T style={{color: 'white'}}>Occurrence ID</T><V>{x.stub.occurrenceID}</V></>}
+                {x.stub.catalogNumber && <><T style={{color: 'white'}}><FormattedMessage id="occurrenceFieldNames.catalogNumber" /></T><V>{x.stub.catalogNumber}</V></>}
+                {x.stub.occurrenceID && <><T style={{color: 'white'}}><FormattedMessage id="occurrenceFieldNames.occurrenceID" /></T><V>{x.stub.occurrenceID}</V></>}
               </Properties>
             </div>
           </div>
@@ -61,17 +69,18 @@ export function Cluster({
 
 export function RelatedOccurrence({ original, reasons, related, ...props }) {
   const theme = useContext(ThemeContext);
-  return <article css={css.clusterCard({ theme })} {...props}>
+  
+  return <article css={styles.clusterCard({ theme })} {...props}>
     <Row wrap="nowrap" halfGutter={6} style={{ padding: 12 }}>
       <Col>
         <h4 style={{ margin: 0 }} dangerouslySetInnerHTML={{ __html: related.gbifClassification.usage.formattedName }}></h4>
-        <div css={css.entitySummary({ theme })}>
-          <IconFeatures css={css.features({ theme })}
+        <div css={styles.entitySummary({ theme })}>
+          <IconFeatures css={styles.features({ theme })}
             eventDate={related.eventDate}
             countryCode={related.countryCode}
             locality={related.locality}
           />
-          <IconFeatures css={css.features({ theme })}
+          <IconFeatures css={styles.features({ theme })}
             stillImageCount={related.stillImageCount}
             movingImageCount={related.movingImageCount}
             soundCount={related.soundCount}
@@ -84,11 +93,12 @@ export function RelatedOccurrence({ original, reasons, related, ...props }) {
             issueCount={related.issues?.length}
           />
         </div>
-        <div>
-          <Properties style={{ fontSize: 12 }} horizontal dense>
-            <T>Publisher</T><V>{related.publisherTitle}</V>
-            <T>Dataset</T><V>{related.datasetTitle}</V>
+        <div style={{ fontSize: 12 }}>
+          <Properties horizontal dense>
+            <T><FormattedMessage id="occurrenceDetails.publisher" /></T><V>{related.publisherTitle}</V>
+            <T><FormattedMessage id="occurrenceDetails.dataset" /></T><V>{related.datasetTitle}</V>
           </Properties>
+          <a onClick={e => e.stopPropagation()} href={`${env.GBIF_ORG}/occurrence/${related.key}`}><FormattedMessage id="phrases.viewOnGBif" /></a>
         </div>
       </Col>
       <Col grow={false} shrink={false}>
@@ -98,11 +108,14 @@ export function RelatedOccurrence({ original, reasons, related, ...props }) {
         </div>
       </Col>
     </Row>
-    <div css={css.clusterFooter({ theme })}>
-      <Properties style={{ fontSize: 12 }} horizontal dense>
-        <T>Similarities</T>
-        <V>{ reasons.map(reason => <span css={css.chip({ theme })} key={reason}>{prettifyEnum(reason)}</span>) }</V>
-      </Properties>
+    <div css={styles.clusterFooter({ theme })}>
+      {!reasons && <div><FormattedMessage id="search.occurrenceClustersView.currentRecord" /></div>}
+      {reasons && <Properties style={{ fontSize: 12 }} horizontal dense>
+        <T><FormattedMessage id="search.occurrenceClustersView.similarities" /></T>
+        <V>{ reasons.map(reason => <span css={styles.chip({ theme })} key={reason}>
+          <FormattedMessage id={`enums.clusterReasons.${reason}`} defaultMessage={prettifyEnum(reason)} />
+        </span>) }</V>
+      </Properties>}
     </div>
   </article>
 };

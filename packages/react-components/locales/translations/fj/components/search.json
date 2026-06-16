@@ -4,14 +4,46 @@
     "gallery": "",
     "map": "",
     "datasets": "",
-    "download": ""
+    "events": "",
+    "download": "",
+    "clusters": "",
+    "dashboard": "",
+    "sites": ""
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "",
-    "range": ""
+    "range": "",
+    "locationID": ""
   },
-  "loadMore": ""
+  "ternary": {
+    "yes": "",
+    "no": "",
+    "either": ""
+  },
+  "loadMore": "",
+  "occurrenceClustersView": {
+    "about": "",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "",
+      "TYPE": "",
+      "TREATMENT": "",
+      "OBSERVATION": "",
+      "SPECIMEN": "",
+      "SEQUENCE": ""
+    }
+  }
 }

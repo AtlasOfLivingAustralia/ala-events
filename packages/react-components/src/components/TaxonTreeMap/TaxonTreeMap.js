@@ -81,4 +81,4 @@ const TaxonTreeMap = ({ initialData, initialPath, onSelection, resetCallback }) 
   );
 };
 
-export  { TaxonTreeMap };
+export default TaxonTreeMap;

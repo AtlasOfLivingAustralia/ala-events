@@ -415,6 +415,7 @@ const config =
     locationID: {
       type: 'keyword',
       field: 'event.locationID.keyword',
+      facetField: 'event.locationID.keyword',
       suggestField: 'locationID.suggest',
       displayField: 'event.locationID.verbatim'
     },

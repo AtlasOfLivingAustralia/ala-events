@@ -111,7 +111,7 @@
 
   <script
           type="text/javascript"
-          src="dist/lib/gbif-react-components.js"
+          src="dist/lib/ala-react-components.js"
   ></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client-ts/2.0.2/browser/oidc-client-ts.min.js"></script>
 </head>
@@ -878,7 +878,7 @@
                 style="padding-left: 0px; margin-left: 20px"
         >
           <li><a href="http://www.ala.org.au">Home</a></li>
-          <li class="active">Surveys and sampling events</li>
+          <li class="active">Surveys and sampling datasets</li>
         </ol>
       </nav>
     </div>
@@ -905,9 +905,8 @@
     let collectionsServer =  'https://collections.ala.org.au'
     let biocacheUrl = 'https://biocache-test.ala.org.au'
 
-
     if (typeof config != "undefined") {
-      authServer = config?.authServer || authServer
+      authServer = config?.authServer || authServer;
       authServerOidc = (config?.authServer || authServer) + "cas/oidc";
       authClientID = config?.authClientID || authClientID
       baseUrl = config?.baseUrl || baseUrl
@@ -1041,7 +1040,7 @@
 
     var widgetLocale = 'en';
 
-    var siteTheme = gbifReactComponents.themeBuilder.extend({
+    var siteTheme = alaReactComponents.themeBuilder.extend({
       baseTheme: 'light',
       extendWith: {
         dense: true,
@@ -1083,6 +1082,32 @@
         url: ({ key }) => `${biocacheUrl}/occurrences/${key}`,
         isHref: true,
         route: '/occurrence/:key'
+      },
+      occurrenceEventSearch: {
+        url: ({ key, otherIds }) => `${biocacheUrl}/occurrences/search?fq=eventHierarchy:${key}&fq=dataResourceUid:${otherIds.datasetKey}`,
+        isHref: true,
+        route: '/occurrences/search'
+      },
+      occurrenceDatasetSearch: {
+        url: ({ key }) => `${biocacheUrl}/occurrences/search?fq=dataResourceUid:${key}`,
+        isHref: true,
+        route: '/occurrences/search'
+      },
+      occurrenceLocationSearch: {
+        url: ({ key, otherIds }) => {
+          if (!otherIds.month && !otherIds.year){
+            return `${biocacheUrl}/occurrences/search?fq=locationID:${key}`;
+          }
+          if (!otherIds.month && otherIds.year){
+            return `${biocacheUrl}/occurrences/search?fq=locationID:${key}&fq=year:${otherIds.year}`;
+          }
+          if (otherIds.month && !otherIds.year){
+            return `${biocacheUrl}/occurrences/search?fq=locationID:${key}&fq=month:${otherIds.month}`;
+          }
+          return `${biocacheUrl}/occurrences/search?fq=locationID:${key}&fq=month:${otherIds.month}&fq=year:${otherIds.year}`;
+        },
+        isHref: true,
+        route: '/occurrences/search'
       }
     };
     routes.basename = '/';
@@ -1131,7 +1156,7 @@
 
     ReactDOM.render(
             // React.createElement(gbifReactComponents.OccurrenceSearch, {
-            React.createElement(gbifReactComponents.EventSearch, {
+            React.createElement(alaReactComponents.EventSearch, {
               style: { height: 'calc(100vh - 148px)' },
               siteConfig: alaSiteConfig,
               pageLayout: true,

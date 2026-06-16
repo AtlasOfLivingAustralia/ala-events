@@ -36,15 +36,15 @@ class EventAPI extends RESTDataSource {
         family: doc.family,
         individualCount: doc.individualCount,
         occurrenceStatus: doc.occurrenceStatus,
-        basisOfRecord: doc.basisOfRecord
-      }
+        basisOfRecord: doc.basisOfRecord,
+      };
     });
     return {
       total: response.documents.total,
       size: response.documents.size,
       from: response.documents.from,
-      results: results
-    }
+      results,
+    };
   }
 
   async getArchive(datasetKey) {

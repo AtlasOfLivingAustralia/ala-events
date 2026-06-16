@@ -1,8 +1,8 @@
 import { css, keyframes } from '@emotion/react';
 
-export const placeholder = props => css`
+export const placeholder = css`
   &::placeholder {
-    color: ${props.theme.color500};
+    color: var(--color500);
   }
 `;
 
@@ -11,7 +11,7 @@ export const noUserSelect = props => css`
   user-select: none;
 `;
 
-export const focusStyle = props => css`
+export const focusStyle = css`
   &:focus {
     outline: none;
     box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
@@ -64,22 +64,27 @@ export const classification = ({ ...props }) => css`
   }
 `;
 
-export const root = ({ appRoot, theme = {} }) => css`
+export const root = css`
+  font-family: var(--fontFamily);
   * {
-    font-family: ${theme.fontFamily || 'BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif'};
+    font-family: var(--fontFamily);
   }
-  color: ${theme.color900 || '#4a4a4a'};
-  font-size: ${theme.fontSize || '1em'};
+  color: var(--color900);
+  font-size: var(--fontSize);
   font-weight: 400;
   line-height: 1.2;
   box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
-  background: ${appRoot ? theme.background : null};
   *, *::before, *::after, strong {
     box-sizing: inherit;
   }
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+`;
+
+export const appRoot = css`
+  background: var(--background);
+  ${root}
 `;
 
 export const srOnly = css`

@@ -8,33 +8,33 @@ import * as styles from './styles';
 
 const palette = ['orange', 'deepskyblue', 'tomato'];
 
-export function Progress({
+export const Progress = React.forwardRef(({
   className,
   percent,
   color,
   unknown,
-  // overlays,
+  overlays,
   ...props
-}) {
+}, ref) => {
   const theme = useContext(ThemeContext);
   const { classNames } = getClasses(theme.prefix, 'progress', {/*modifiers goes here*/ }, className);
 
-  // let more = [];
-  // if (Array.isArray(overlays)) {
-  //   overlays.forEach((x, i) => {
-  //     if (typeof x === 'number') {
-  //       more.push({ percent: x, color: palette[i] || 'tomato' })
-  //     } if (typeof x?.percent === 'number' && typeof x?.color === 'string') {
-  //       more.push({ percent: x, color: x.color })
-  //     }
-  //   });
-  // }
-  // more = more.sort((a,b) => a.percent < b.percent);
-  return <div css={styles.progress({ color, theme, unknown })} {...props}>
+  let more = [];
+  if (Array.isArray(overlays)) {
+    overlays.forEach((x, i) => {
+      if (typeof x === 'number') {
+        more.push({ percent: x, color: palette[i] || 'tomato' })
+      } if (typeof x?.percent === 'number' && typeof x?.color === 'string') {
+        more.push({ percent: x.percent, color: x.color })
+      }
+    });
+  }
+  more = more.sort((a,b) => a.percent < b.percent);
+  return <div css={styles.progress({ color, theme, unknown })} {...props} role="progressbar" ref={ref}>
     <div style={{ width: `${percent}%` }}></div>
-    {/* {more.length > 0 && more.map((x, i) => <div style={{ width: `${x.percent}%`, background: x.color }}></div>)} */}
+    {more.length > 0 && more.map((x, i) => <div key={i} style={{ width: `${x.percent}%`, background: x.color }}></div>)}
   </div>
-};
+});
 
 Progress.propTypes = {
   as: PropTypes.element

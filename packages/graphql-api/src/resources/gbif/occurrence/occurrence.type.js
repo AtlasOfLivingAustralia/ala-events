@@ -75,7 +75,7 @@ const typeDef = gql`
     elevationAccuracy: Float
     endDayOfYear: Int
     establishmentMeans: String
-    eventDate: DateTime
+    eventDate: String
     eventID: String
     eventRemarks: String
     eventTime: String
@@ -335,11 +335,20 @@ const typeDef = gql`
     count: Int
     size: Int
     from: Int
+    currentOccurrence: RelatedCurrentOccurrence!
     relatedOccurrences: [RelatedOccurrence]
   }
 
   type RelatedOccurrence {
     reasons: [String]!
+    occurrence: Occurrence
+    """
+    The occurrence as provided by the cluster API. It only has relev
+    """
+    stub: RelatedOccurrenceStub
+  }
+
+  type RelatedCurrentOccurrence {
     occurrence: Occurrence
     """
     The occurrence as provided by the cluster API. It only has relev
@@ -414,9 +423,9 @@ const typeDef = gql`
   }
 
   type Globe {
-    svg: String
-    lat: Float
-    lon: Float
+    svg: String!
+    lat: Float!
+    lon: Float!
   }
 
   type GbifClassification {
@@ -515,6 +524,7 @@ const typeDef = gql`
     type: String
     format: String
     identifier: String
+    thumbor(width: Int, height: Int, fitIn: Boolean): String
     created: String
     creator: String
     license: String
@@ -548,6 +558,17 @@ const typeDef = gql`
     extendedMeasurementOrFact: [JSON]
     chronometricAge: [JSON]
     dnaDerivedData: [JSON]
+  }
+
+  type MapCapabilities {
+    minLat: Int!
+    maxLat: Int!
+    minLng: Int!
+    maxLng: Int!
+    minYear: Int
+    maxYear: Int
+    total: Int!
+    generated: DateTime!
   }
 `;
 

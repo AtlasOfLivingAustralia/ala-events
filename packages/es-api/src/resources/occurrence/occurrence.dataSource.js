@@ -32,7 +32,7 @@ async function query({ query, aggs, size = 20, from = 0, metrics, req }) {
     from,
     query,
     aggs
-  }
+  };
 
   let response = await search({ client, index: searchIndex, query: esQuery, req });
   let body = response.body;

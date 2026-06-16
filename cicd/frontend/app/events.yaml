@@ -1,0 +1,171 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Events Infrastructure
+
+Parameters:
+  pEventsWafWebAclArn:
+    Type: String
+    Description: The WAF Web ACL to attach the CloudFront distribution to
+  pSourceBucket:
+    Type: String
+    Description: The bucket name for the site
+  pBucketPath:
+    Type: String
+    Description: Optional path that the files are stored under
+  pCleanBranch:
+    Type: String
+    Description: A cleaned version of the code branch name
+    Default: development
+  pEnvironment:
+    Type: String
+    Description: The AWS environment this belongs to
+  pHostedZone:
+    Type: String
+    Description: The hosted zone the site are accessed under
+  pUiSubDomain:
+    Type: String
+    Description: The subdomain the site are accessed on
+  pCloudfrontCertificate:
+    Type: String
+    Description: The arn of the SSL certificate to be used
+
+Conditions:
+  IsDev: !Equals
+    - !Ref pEnvironment
+    - development
+  NotDev: !Not [ Condition: IsDev ]
+
+Resources:
+  EventsBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: !Sub ${pSourceBucket}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: TRUE
+        BlockPublicPolicy: TRUE
+        IgnorePublicAcls: TRUE
+        RestrictPublicBuckets: TRUE
+      Tags:
+        - Key: component
+          Value: website
+        - Key: Name
+          Value: !Sub ${pSourceBucket}
+
+  EventsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref EventsBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: GrantCloudFrontAccess
+            Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${EventsBucket}/*'
+            Principal:
+              AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${EventsCloudFrontOai}'
+          - Sid: TLSAccessOnly
+            Action:
+              - s3:*
+            Effect: Deny
+            Resource: 
+              - !Sub arn:aws:s3:::${EventsBucket}
+              - !Sub arn:aws:s3:::${EventsBucket}/*
+            Principal: '*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': "false"
+
+  EventsDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Sub '${pUiSubDomain}.${pHostedZone}'
+      Comment: !Sub Event domain for the ${pEnvironment} environment
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt EventsCloudFrontDistro.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+      HostedZoneName: !Sub '${pHostedZone}.'
+
+  EventsCloudFrontDistro:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: EventsBucket
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Sub '${pUiSubDomain}.${pHostedZone}'
+        Comment: !Sub CF Distribution for the Event site ${pEnvironment}
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ErrorCachingMinTTL: 300
+            ResponseCode: 200
+            ResponsePagePath: /ala-demo.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId: !Ref EventsCachePolicy
+          Compress: true
+          TargetOriginId: events-s3
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: ala-demo.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: false
+        Origins:
+          - DomainName: !Sub '${pSourceBucket}.s3.${AWS::Region}.amazonaws.com'
+            Id: events-s3
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${EventsCloudFrontOai}'
+            OriginPath: !Sub '/${pBucketPath}'
+        ViewerCertificate:
+          AcmCertificateArn: !Ref pCloudfrontCertificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+        WebACLId: !Ref pEventsWafWebAclArn
+      Tags:
+        - Key: component
+          Value: cdn
+
+  EventsCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: !Sub CF Cache Policy for the Event site ${pEnvironment}
+        DefaultTTL: 300
+        MaxTTL: 86400
+        MinTTL: 1
+        Name: !Sub
+          - "Events-cache-Policy-${ResourceName}"
+          - ResourceName: !If [ IsDev, !Ref pCleanBranch, !Ref pEnvironment ]
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: whitelist
+            QueryStrings:
+              - cb
+
+  EventsCloudFrontOai:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub CF Origin Access Identity for the Event ${pEnvironment}
+
+Outputs:
+  EventsBucketName:
+    Value: !Ref EventsBucket
+  EventsBucketArn:
+    Value: !GetAtt EventsBucket.Arn
+  EventsCloudFrontDistributionArn:
+    Value: !Sub
+      - "arn:aws:cloudfront::${AWS::AccountId}:distribution/${DistributionId}"
+      - DistributionId: !GetAtt EventsCloudFrontDistro.Id

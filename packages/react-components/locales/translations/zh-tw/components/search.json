@@ -4,14 +4,46 @@
     "gallery": "圖片集",
     "map": "地圖",
     "datasets": "資料集",
-    "download": "下載"
+    "events": "事件",
+    "download": "下載",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "GBIF 註記的存檔"
   },
   "table": {
-    "lockColumn": ""
+    "lockColumn": "鎖定欄位"
   },
   "placeholders": {
     "default": "搜尋",
-    "range": ""
+    "range": "範圍或單一數值",
+    "locationID": ""
   },
-  "loadMore": "更多"
+  "ternary": {
+    "yes": "是",
+    "no": "否",
+    "either": "GBIF 註記的存檔"
+  },
+  "loadMore": "更多",
+  "occurrenceClustersView": {
+    "about": "關於",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "圖像",
+      "TYPE": "",
+      "TREATMENT": "分類處理",
+      "OBSERVATION": "觀察",
+      "SPECIMEN": "標本",
+      "SEQUENCE": ""
+    }
+  }
 }

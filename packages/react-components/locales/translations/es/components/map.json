@@ -11,5 +11,10 @@
         "MERCATOR": "Mercator",
         "ANTARCTIC": "Antártico",
         "PLATE_CAREE": "Proyección Geográfica"
-    }
+    },
+    "failedToGetUserLocation": {
+        "title": "Aquí debe colocarse una breve descripción del componente",
+        "message": "Aquí debe colocarse una breve descripción del componente"
+    },
+    "filterByView": "Usar el área visible como filtro"
 }

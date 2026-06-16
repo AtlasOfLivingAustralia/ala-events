@@ -64,13 +64,34 @@ class Map extends Component {
         this.map.zoomIn();
       } else if (this.props.latestEvent?.type === 'ZOOM_OUT') {
         this.map.zoomOut();
+      } else if (this.props.latestEvent?.type === 'ZOOM_TO') {
+        this.map.flyTo({
+          center: [this.props.latestEvent.lng, this.props.latestEvent.lat],
+          zoom: this.props.latestEvent.zoom,
+          essential: true // this animation is considered essential with respect to prefers-reduced-motion
+        });
+      } else if (this.props.latestEvent?.type === 'EXPLORE_AREA') {
+        this.exploreArea();
       }
+    }
+    // check if the size of the map container has changed and if so resize the map
+    if ((prevProps.height !== this.props.height || prevProps.width !== this.props.width) && this.mapLoaded) {
+      this.map.resize();
     }
     if (prevProps.mapConfig !== this.props.mapConfig && this.mapLoaded) {
       // seems we do not need to remove the sources when we load the style this way
       this.map.setStyle(this.getStyle());
       setTimeout(x => this.updateLayer(), 500);// apparently we risk adding the occurrence layer below the layers if we do not wait
     }
+  }
+
+  exploreArea() {
+    // get the current view of the map as a bounding box and send it to the parent component
+    const { listener } = this.props;
+    if (!listener || typeof listener !== 'function') return;
+    // get extent of the map view
+    const bounds = this.map.getBounds();
+    listener({ type: 'EXPLORE_AREA', bbox: {top: bounds.getNorth(), left: bounds.getWest(), bottom: bounds.getSouth(), right: bounds.getEast()} });
   }
 
   getStyle() {

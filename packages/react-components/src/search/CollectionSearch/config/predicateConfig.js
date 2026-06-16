@@ -2,9 +2,8 @@ import { filters } from './filterConf';
 
 const filterConf = {
   fields: {
-    countrySingleGrSciColl: {
-      defaultKey: 'country',
-      singleValue: true
+    countryGrSciColl: {
+      defaultKey: 'country'
     },
     institutionKeySingle: {
       defaultKey: 'institution',
@@ -25,7 +24,23 @@ const filterConf = {
     code: {
       singleValue: true
     },
+    alternativeCode: {
+      singleValue: true
+    },
+    identifier: {
+      singleValue: true
+    },
+    collectionContentType: {
+      defaultKey: 'contentType'
+    },
+    preservationType: {
+      
+    },
     active: {
+      singleValue: true,
+      transformValue: x => x === 'true'
+    },
+    personalCollection: {
       singleValue: true,
       transformValue: x => x === 'true'
     },
@@ -34,7 +49,14 @@ const filterConf = {
       v1: {
         supportedTypes: ['range', 'equals']
       }
-    }
+    },
+    specimensInGbif: {
+      defaultKey: 'occurrenceCount',
+      singleValue: true,
+      v1: {
+        supportedTypes: ['range', 'equals']
+      }
+    },
   }
 }
 

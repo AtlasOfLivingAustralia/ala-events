@@ -15,6 +15,7 @@ export const filters = [
   'mediaType',
   'sampleSizeUnit',
   'license',
+  'projectId',
   'coordinateUncertainty',
   'depth',
   'organismQuantity',
@@ -41,11 +42,15 @@ export const filters = [
   'gadmGid',
   'identifiedBy',
   'isInCluster',
+  'hasCoordinate',
+  'hasGeospatialIssue',
   'institutionKey',
   'collectionKey',
   'q',
+  'iucnRedListCategory',
   'verbatimScientificName',
-  'dwcaExtension'
+  'dwcaExtension',
+  'geometry'
 ].sort();
 
 const highlighted = [

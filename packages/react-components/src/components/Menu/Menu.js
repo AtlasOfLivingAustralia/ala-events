@@ -8,28 +8,32 @@ import {
   MenuItem,
   MenuButton
 } from "reakit/Menu";
+import { Portal } from "reakit/Portal";
 import { Root } from '../Root/Root';
-
 import Switch from '../Switch/Switch';
 
 export const Menu = React.memo(({ trigger, placement, items, style, ...props }) => {
   const theme = useContext(ThemeContext);
   const menu = useMenuState({ placement: placement || theme.dir === 'rtl' ? 'bottom-start' : 'bottom-end' });
   return (
-    <Root style={ style }>
+    <>
       <MenuButton {...menu} {...trigger.props}>
         {disclosureProps => React.cloneElement(trigger, disclosureProps)}
       </MenuButton>
-      <BaseMenu {...menu} {...props} css={focus(theme)} style={{ zIndex: 999 }}>
-        <div css={menuContainer({ theme })} className="gb-menuContainer">
-          {(typeof items === 'function' ? items(menu) : items).map((item, i) => (
-            <MenuItem {...menu} {...item.props} key={i}>
-              {itemProps => React.cloneElement(item, itemProps)}
-            </MenuItem>
-          ))}
-        </div>
-      </BaseMenu>
-    </Root>
+      <Portal>
+        <BaseMenu {...menu} {...props} css={focus(theme)} style={{ zIndex: 999 }}>
+          <Root>
+            <div css={menuContainer({ theme })} className="gb-menuContainer">
+              {(typeof items === 'function' ? items(menu) : items).map((item, i) => (
+                <MenuItem {...menu} {...item.props} key={i}>
+                  {itemProps => React.cloneElement(item, itemProps)}
+                </MenuItem>
+              ))}
+            </div>
+          </Root>
+        </BaseMenu>
+      </Portal>
+    </>
   );
 });
 

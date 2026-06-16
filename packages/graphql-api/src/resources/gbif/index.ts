@@ -1,4 +1,5 @@
 export { default as collection } from './collection';
+// export { default as country } from './country';
 export { default as dataset } from './dataset';
 export { default as download } from './download';
 export { default as installation } from './installation';
@@ -13,6 +14,14 @@ export { default as organization } from './organization';
 export { default as participant } from './participant';
 export { default as staffMember } from './staffMember';
 export { default as taxon } from './taxon';
+export { default as vocabulary } from './vocabulary';
+export { default as gadm } from './gadm';
+export { default as resource } from './resource';
+export { default as directoryPerson } from './directoryPerson';
+
+// experimental taxonmedia service. The idea it to provide a few high quality images per taxon
+export { default as taxonMedia } from '../shared/resources/taxonMedia';
+export { default as taxonMediaAPI } from './taxon/taxonMediaAPI';
 
 // ALA use this, but we do not have an index for it yet
 // export { default as event } from '../shared/resources/event';

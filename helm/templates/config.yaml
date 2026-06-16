@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ala-events.fullname" . }}
+  labels:
+    {{- include "ala-events.labels" . | nindent 4 }}
+data:
+{{ (tpl (.Files.Glob "config/es-api.env").AsConfig . ) | indent 2 }}
+{{ (tpl (.Files.Glob "config/es2vt.env").AsConfig . ) | indent 2 }}
+{{ (tpl (.Files.Glob "config/graphql-api.env").AsConfig . ) | indent 2 }}

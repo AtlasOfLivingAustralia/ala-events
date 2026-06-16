@@ -4,14 +4,46 @@
     "gallery": "Galleri",
     "map": "Kort",
     "datasets": "Datasæt",
-    "download": "Download"
+    "events": "Arrangementer",
+    "download": "Download",
+    "clusters": "",
+    "dashboard": "",
+    "sites": "GBIF annoteret Arkiv"
   },
   "table": {
     "lockColumn": ""
   },
   "placeholders": {
     "default": "Søg",
-    "range": ""
+    "range": "",
+    "locationID": ""
   },
-  "loadMore": "Flere"
+  "ternary": {
+    "yes": "",
+    "no": "",
+    "either": "GBIF annoteret Arkiv"
+  },
+  "loadMore": "Flere",
+  "occurrenceClustersView": {
+    "about": "Om",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "Billede",
+      "TYPE": "",
+      "TREATMENT": "",
+      "OBSERVATION": "Observation_xxx",
+      "SPECIMEN": "",
+      "SEQUENCE": ""
+    }
+  }
 }

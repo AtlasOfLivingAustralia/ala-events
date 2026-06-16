@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import md5 from 'md5';
 import _ from 'lodash';
 import getGlobe from '#/helpers/globe';
 import {
@@ -7,7 +8,7 @@ import {
   getCardinality,
   getHistogram,
   getAutoDateHistogram,
-} from './helpers/getMetrics';
+} from '../getMetrics';
 import {
   facetFields,
   statsFields,
@@ -20,38 +21,41 @@ import groupResolver from './helpers/groups/occurrenceGroups';
 import termResolver from './helpers/terms/occurrenceTerms';
 import predicate2v1 from './helpers/predicate2v1';
 import getLongitudeBounds from './helpers/longitudeBounds';
+import config from '../../../config';
+
+const getSourceSearch = (dataSources) => args => dataSources.occurrenceAPI.searchOccurrences.call(dataSources.occurrenceAPI, args);
 
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {
-  dictionary[facetName] = getFacet(facetName);
+  dictionary[facetName] = getFacet(facetName, getSourceSearch);
   return dictionary;
 };
 const OccurrenceFacet = facetFields.reduce(facetReducer, {});
 
 // there are also many fields that support stats. Generate them all.
 const statsReducer = (dictionary, statsName) => {
-  dictionary[statsName] = getStats(statsName);
+  dictionary[statsName] = getStats(statsName, getSourceSearch);
   return dictionary;
 };
 const OccurrenceStats = statsFields.reduce(statsReducer, {});
 
 // there are also many fields that support cardinality. Generate them all.
 const cardinalityReducer = (dictionary, fieldName) => {
-  dictionary[fieldName] = getCardinality(fieldName);
+  dictionary[fieldName] = getCardinality(fieldName, getSourceSearch);
   return dictionary;
 };
 const OccurrenceCardinality = cardinalityFields.reduce(cardinalityReducer, {});
 
 // there are also many fields that support histograms. Generate them all.
 const histogramReducer = (dictionary, fieldName) => {
-  dictionary[fieldName] = getHistogram(fieldName);
+  dictionary[fieldName] = getHistogram(fieldName, getSourceSearch);
   return dictionary;
 };
 const OccurrenceHistogram = histogramFields.reduce(histogramReducer, {});
 
 // there are also many fields that support date histograms. Generate them all.
 const autoDateHistogramReducer = (dictionary, fieldName) => {
-  dictionary[fieldName] = getAutoDateHistogram(fieldName);
+  dictionary[fieldName] = getAutoDateHistogram(fieldName, getSourceSearch);
   return dictionary;
 };
 const OccurrenceAutoDateHistogram = dateHistogramFields.reduce(
@@ -79,7 +83,7 @@ const facetOccurrenceSearch = (parent) => {
 export default {
   Query: {
     occurrenceSearch: (_parent, args, { dataSources }) => {
-      // dataSources.occurrenceAPI.searchOccurrences({ query: args }),
+      // return dataSources.occurrenceAPI.searchOccurrences({ query: args });
       const v1Predicate = predicate2v1(args.predicate);
       const v1PredicateQStripped = predicate2v1(args.predicate, {
         shouldRemoveFullTextPredicates: true,
@@ -158,16 +162,43 @@ export default {
       };
     },
   },
+  MultimediaItem: {
+    thumbor: ({identifier, type, occurrenceKey}, {fitIn, width = '', height = ''}) => {
+      if (!identifier) return null;
+      if (type !== 'StillImage') return null;
+      if (!occurrenceKey) return null;
+      // do not use the thumbor service.
+      // for occurrences we have a special url format for the occurrence images. This is in preparation for the new image service that will disable any unsafe urls
+      // it also has a different cache purge strategy
+      // see also https://github.com/gbif/gbif-web/issues/303
+      try {
+        const url = `${config.occurrenceImageCache}/${fitIn ? 'fit-in/' : ''}${width}x${height}/occurrence/${occurrenceKey}/media/${md5(identifier ?? '')}`;
+        return url;
+      } catch(err) {
+        return identifier;
+      }
+    }
+  },
   Occurrence: {
     coordinates: ({ decimalLatitude, decimalLongitude }) => {
       if (typeof decimalLatitude === 'undefined') return null;
       // extract primary image. for now just any image
       return { lat: decimalLatitude, lon: decimalLongitude };
     },
-    primaryImage: ({ media }) => {
+    media: ({ key, media }) => {
+      // add occurrence key to the media objects
+      return media.map((x) => {
+        return { ...x, occurrenceKey: key };
+      });
+    },
+    primaryImage: ({ key, media }) => {
       if (!Array.isArray(media)) return null;
       // extract primary image. for now just any image
-      return media.find((x) => x.type === 'StillImage');
+      const img = media.find((x) => x.type === 'StillImage');
+      if (img) {
+        return {...img, occurrenceKey: key};
+      }
+      return null;
     },
     stillImageCount: ({ media }) => {
       if (!Array.isArray(media)) return null;
@@ -181,9 +212,11 @@ export default {
       if (!Array.isArray(media)) return null;
       return media.filter((x) => x.type === 'Sound').length;
     },
-    stillImages: ({ media }) => {
+    stillImages: ({ media, key }) => {
       if (!Array.isArray(media)) return null;
-      return media.filter((x) => x.type === 'StillImage');
+      return media.filter((x) => x.type === 'StillImage').map((x) => {
+        return { ...x, occurrenceKey: key };
+      });
     },
     movingImages: ({ media }) => {
       if (!Array.isArray(media)) return null;
@@ -206,6 +239,7 @@ export default {
           size,
           from,
           count: response.relatedOccurrences.length,
+          currentOccurrence: response.currentOccurrence,
           relatedOccurrences: response.relatedOccurrences.slice(
             from,
             from + size,
@@ -397,6 +431,20 @@ export default {
     },
     occurrences: facetOccurrenceSearch,
   },
+  OccurrenceFacetResult_establishmentMeans: {
+    concept: ({ key }, _args, { dataSources }) => {
+      if (typeof key === 'undefined') return null;
+      return dataSources.vocabularyAPI.getConcept({ vocabulary: 'establishmentMeans', concept: key });
+    },
+    occurrences: facetOccurrenceSearch,
+  },
+  OccurrenceFacetResult_gadm: {
+    gadm: ({ key }, _args, { dataSources }) => {
+      if (typeof key === 'undefined') return null;
+      return dataSources.gadmAPI.getGadmById({ id: key });
+    },
+    occurrences: facetOccurrenceSearch,
+  },
   OccurrenceFacetResult_node: {
     node: ({ key }, _args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
@@ -487,7 +535,7 @@ export default {
       { decimalLatitude, decimalLongitude },
       { sphere, graticule, land },
     ) => {
-      if (typeof decimalLatitude === 'undefined') return null;
+      if (typeof decimalLatitude !== 'number' || typeof decimalLongitude !== 'number') return null;
 
       const roundedLat = Math.floor(decimalLatitude / 15) * 15;
       const lat = Math.min(Math.max(roundedLat, -60), 60);
@@ -547,27 +595,16 @@ export default {
       }),
     stub: (related) => related.occurrence,
   },
+  RelatedCurrentOccurrence: {
+    occurrence: (current, _args, { dataSources }) =>
+      dataSources.occurrenceAPI.getOccurrenceByKey({
+        key: current.gbifId,
+      }),
+    stub: (current) => current,
+  },
   LongitudeHistogram: {
     bounds: ({ buckets, interval }) => {
       return getLongitudeBounds(buckets, interval);
     },
   },
-  // TermGroups: (occurrence, args, { dataSources }) => {
-  //   console.log('get verbatim');
-  //   return dataSources.occurrenceAPI.getVerbatim({key: occurrence.key })
-  //     .then(verbatim => {
-  //       console.log('sdf');
-  //       groupResolver({occurrence, verbatim})
-  //     });
-  // }
 };
-
-// var ggbn = ['Amplification', 'MaterialSample', 'Permit', 'Preparation', 'Preservation'];
-//   vm.isSequenced = function(extensions) {
-//     if (!extensions) return false;
-//     for (var i = 0; i < ggbn.length; i++) {
-//       var ext = extensions['http://data.ggbn.org/schemas/ggbn/terms/' + ggbn[i]];
-//       if (ext && ext.length > 0) return true;
-//     }
-//     return false;
-//   };

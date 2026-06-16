@@ -33,7 +33,7 @@ export function Description({
         <Card style={{ marginTop: 12, marginBottom: 24 }}>
           <CardHeader2><FormattedMessage id="grscicoll.description" deafultMessage="Description" /></CardHeader2>
           <Prose style={{ marginBottom: 24, maxWidth: '60em', fontSize: '16px' }}>
-            {institution.description && <HyperText text={institution.description} />}
+            {institution.description && <HyperText text={institution.description}  sanitizeOptions={{ ALLOWED_TAGS: ['a', 'strong', 'em', 'p', 'h3', 'li', 'ul', 'ol'] }} />}
             {!institution.description && <EmptyValue />}
           </Prose>
           <Properties style={{ fontSize: 16, marginBottom: 12 }} breakpoint={800}>
@@ -63,7 +63,7 @@ export function Description({
           </Properties>
         </Card>
         <Card style={{ marginTop: 24, marginBottom: 24 }}>
-          <CardHeader2>Contact</CardHeader2>
+          <CardHeader2><FormattedMessage id="grscicoll.contacts" deafultMessage="Contacts" /></CardHeader2>
           <Properties style={{ fontSize: 16, marginBottom: 12 }} breakpoint={800}>
             <Property value={institution?.email} labelId="grscicoll.email" />
             <Property value={institution?.homepage} labelId="grscicoll.homepage" />
@@ -84,7 +84,7 @@ export function Description({
                 </Properties>
               </V>
             </>}
-            <Property value={institution?.logoUrl} labelId="grscicoll.logo" formatter={logoUrl => <Image src={logoUrl} h={120} />} />
+            <Property value={institution?.logoUrl} labelId="grscicoll.logoUrl" formatter={logoUrl => <Image src={logoUrl} h={120} />} />
           </Properties>
           {institution?.contactPersons?.length > 0 && <div css={css`
             display: flex;
@@ -107,7 +107,8 @@ export function Description({
               return <ListItem
                 key={contact.key}
                 isCard
-                title={`${contact.firstName} ${contact.lastName}`}
+                firstName={contact.firstName}
+                lastName={contact.lastName}
                 avatar={<Name2Avatar first={contact.firstName} last={contact.lastName} />}
                 description={contact.position?.[0]}
                 footerActions={actions}>
@@ -118,7 +119,7 @@ export function Description({
         </Card>
 
         <Card style={{ marginTop: 24, marginBottom: 24 }}>
-          <CardHeader2>Identifiers</CardHeader2>
+          <CardHeader2><FormattedMessage id="grscicoll.identifiers" deafultMessage="Identifiers" /></CardHeader2>
           <Properties style={{ fontSize: 16, marginBottom: 12 }} breakpoint={800}>
             <Property value={institution.code} labelId="grscicoll.code" showEmpty />
             {institution?.alternativeCodes?.length > 0 && <Property value={institution.alternativeCodes} labelId="grscicoll.alternativeCodes">

@@ -7,15 +7,9 @@
  */
 export default {
   Query: {
-    participantSearch: (parent, args, { dataSources }) =>
-      dataSources.participantAPI.searchParticipants({ query: args }),
-    participant: (parent, { key }, { dataSources }) =>
-      dataSources.participantAPI.getParticipantByKey({ key }),
-  },
-  Participant: {
-    // someField: ({ fieldWithKey: key }, args, { dataSources }) => {
-    //   if (typeof key === 'undefined') return null;
-    //   dataSources.someAPI.getSomethingByKey({ key })
-    // },
-  },
+    participantSearch: (parent, args, { dataSources, locale }) => 
+      dataSources.participantAPI.searchParticipants({ query: args }, locale), 
+    participant:  (parent, { key }, { dataSources, locale }) => 
+      dataSources.participantAPI.getParticipantByDirectoryId({ id: key, locale }),
+  }
 };

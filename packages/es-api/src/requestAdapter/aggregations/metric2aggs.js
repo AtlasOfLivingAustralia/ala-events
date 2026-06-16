@@ -1,12 +1,13 @@
 'use strict';
+
 const _ = require('lodash');
 const { ResponseError } = require('../../resources/errorHandler');
 
 function metric2aggs(metrics = {}, config) {
-  let aggs = {};
-  for (let [name, metric] of Object.entries(metrics)) {
+  const aggs = {};
+  for (const [name, metric] of Object.entries(metrics)) {
     const conf = _.get(config, `options[${metric.key}]`);
-    if (metric.type != "multifacet" && !conf) continue;
+    if (metric.type !== "multifacet" && !conf) continue;
     else {
       if (config?.options?.[metric.key]?.join) {
         aggs[name] = {
@@ -17,8 +18,8 @@ function metric2aggs(metrics = {}, config) {
         };
         continue;
       }
-      let from = parseInt(metric.from || 0);
-      let size = parseInt(metric.size || 10) || 10;
+      const from = parseInt(metric.from || 0, 10);
+      const size = parseInt(metric.size || 10, 10) || 10;
       switch (metric.type) {
         case 'facet': {
           if (!['keyword', 'numeric', 'boolean'].includes(conf.type)) {
@@ -28,12 +29,12 @@ function metric2aggs(metrics = {}, config) {
           let order;
           if (metric.order) {
             if (metric.order === 'TERM_ASC') {
-              order = { "_term": "asc" };
+              order = { "_key": "asc" };
             }
           }
-          let aggName = {
+          const aggName = {
             terms: {
-              field: conf.displayField ? conf.displayField : conf.field,
+              field: conf.facetField || conf.displayField || conf.field,
               size: size + from,
               include: metric.include
             }
@@ -48,8 +49,8 @@ function metric2aggs(metrics = {}, config) {
         case 'multifacet': {
 
           metric.keys.forEach( key => {
-            const conf = _.get(config, `options[${key}]`);
-            if (!['keyword', 'numeric', 'boolean'].includes(conf.type)) {
+            const metricConf = _.get(config, `options[${key}]`);
+            if (!['keyword', 'numeric', 'boolean'].includes(metricConf.type)) {
               throw new ResponseError(400, 'badRequest', 'Facets are only supported on keywords, boolean and numeric fields');
             }
           });
@@ -57,19 +58,19 @@ function metric2aggs(metrics = {}, config) {
           let order;
           if (metric.order) {
             if (metric.order === 'TERM_ASC') {
-              order = { "_term": "asc" };
+              order = { "_key": "asc" };
             }
           }
 
-          let terms = Array();
+          const terms = [];
           metric.keys.forEach( key => {
-            const conf = _.get(config, `options[${key}]`);
+            const metricConf = _.get(config, `options[${key}]`);
             terms.push({
-              field: conf.displayField ? conf.displayField : conf.field
+              field: metricConf.displayField ? metricConf.displayField : metricConf.field
             });
           });
 
-          let aggName = { multi_terms : { terms: terms, size: size + from } };
+          const aggName = { multi_terms : { terms, size: size + from } };
           if (order) {
             aggName.terms.order = order;
           }
@@ -101,7 +102,8 @@ function metric2aggs(metrics = {}, config) {
           aggs[name] = {
             auto_date_histogram: {
               field: conf.field,
-              buckets: metric.buckets || 10
+              buckets: metric.buckets || 10,
+              minimum_interval: metric.minimum_interval
             }
           };
           break;

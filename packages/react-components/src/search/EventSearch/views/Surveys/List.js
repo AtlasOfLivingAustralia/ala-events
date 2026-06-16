@@ -1,7 +1,7 @@
 import React, {useEffect, useCallback, useContext, useState} from 'react';
 import { useUpdateEffect } from 'react-use';
 import SearchContext from '../../../SearchContext';
-import {Button, Col, DetailsDrawer, Row, Skeleton, Tag, Tags} from '../../../../components';
+import {Button, Col, DataTable, DetailsDrawer, Row, Skeleton, Tag, Tags} from '../../../../components';
 import { useQuery } from '../../../../dataManagement/api';
 import * as style from "../List/style";
 import { FilterContext } from "../../../../widgets/Filter/state";
@@ -13,6 +13,14 @@ import {css} from "@emotion/react";
 import env from "../../../../../.env.json";
 import ThemeContext from "../../../../style/themes/ThemeContext";
 import {ResultsHeader} from "../../../ResultsHeader";
+import {
+    FaCreativeCommonsSampling,
+    GiBarrel, GrDocumentMissing, GrDocumentVerified, MdHorizontalRule,
+    MdLocationPin,
+    MdOutlineDeviceThermostat
+} from "react-icons/all";
+import {MdEvent} from "react-icons/md";
+import {StringParam, useQueryParam} from "use-query-params";
 
 export const List = ({query, first, prev, next, size, from, data, total, loading }) => {
 
@@ -23,6 +31,7 @@ export const List = ({query, first, prev, next, size, from, data, total, loading
     const currentFilterContext = useContext(FilterContext);
 
     const surveys = data?.results?.facet?.surveyID;
+    const noOfSurveys = data?.results?.cardinality.surveyID;
 
     const {details, setQuery} = useGraphQLContext();
 
@@ -108,12 +117,20 @@ export const List = ({query, first, prev, next, size, from, data, total, loading
             />
 
         </DetailsDrawer>}
-        <ResultsHeader loading={loading} total={data?.results?.facet?.surveyID?.length} />
-        <ul css={style.datasetList}>
-            {surveys.map(x => <li  key={x.key}>
-                <Survey eventID={x.key} filters={filters} setActiveEvent={setActiveEvent} />
-            </li>)}
-        </ul>
+        <ResultsHeader loading={loading} total={noOfSurveys} />
+        <DataTable {...{first, prev, next, size, from, total: noOfSurveys, loading}}>
+            <tbody>
+                <tr>
+                    <td>
+                        <ul css={style.datasetList}>
+                            {surveys.map(x => <li  key={x.key}>
+                                <Survey eventID={x.key} filters={filters} setActiveEvent={setActiveEvent} />
+                            </li>)}
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </DataTable>
     </div>
 }
 
@@ -165,16 +182,31 @@ const SURVEY_QUERY = `
 
 function DatasetSkeleton() {
     return <div css={style.datasetSkeleton}>
-        <Skeleton width="random" style={{ height: '1.5em' }} />
-        <Skeleton width="random" />
-        <Skeleton width="random" />
-        <Skeleton width="random" />
+        <Skeleton width="random" style={{ marginBottom: '30px', width: '50%'}}  />
+        <div css={style.details}>
+            <div css={style.details_col1}>
+                <Skeleton width="random" />
+                <Skeleton width="random" />
+                <Skeleton width="random" />
+                <Skeleton width="random" />
+            </div>
+            <div css={style.details_col2}>
+                <Skeleton width="random" />
+                <Skeleton width="random" />
+                <Skeleton width="random" style={{ marginTop: '20px'}} />
+                <Skeleton width="random" />
+            </div>
+            <div css={style.details_col3}>
+                <Skeleton width="random" style={{height: '200px', width: '350px'}} />
+            </div>
+        </div>
     </div>
 }
 
 function Survey({ eventID, setActiveEvent, filters, ...props }) {
 
     const theme = useContext(ThemeContext);
+    const [activeView,  setActiveView] = useQueryParam('view', StringParam);
     const eventDetailsPredicate = { type: "and", predicates: [
             {
                 type: "equals",
@@ -197,8 +229,25 @@ function Survey({ eventID, setActiveEvent, filters, ...props }) {
         ]}
     ;
 
+    const isDiscreetLink = css`
+          text-decoration: none;
+          color: var(--linkColor);
+          :hover {
+            text-decoration: underline;
+          }
+        `;
+
     const { data, error, loading, load } = useQuery(SURVEY_QUERY, { lazyLoad: true });
     const currentFilterContext = useContext(FilterContext);
+
+    const viewSitesForSurvey = () => {
+        currentFilterContext.setField('eventHierarchy', [eventID], true)
+        setActiveView("SITES")
+    }
+
+    const addMofFilter = (mof) => {
+        currentFilterContext.setField('measurementOrFactTypes', [mof], true)
+    }
 
     useEffect(() => {
         load({ keepDataWhileLoading: true, variables: {
@@ -267,6 +316,10 @@ function Survey({ eventID, setActiveEvent, filters, ...props }) {
         return coords;
     }
 
+    if (!event) {
+        return null;
+    }
+
     let geojson = null;
     let extent = null;
 
@@ -316,7 +369,7 @@ function Survey({ eventID, setActiveEvent, filters, ...props }) {
                 "type": "Feature",
                 "geometry": geojson,
                 "properties": style
-            }
+                }
             extent = "auto";
         }
     }
@@ -327,68 +380,71 @@ function Survey({ eventID, setActiveEvent, filters, ...props }) {
 
     return <article>
         <div css={style.summary}>
-
-            <div style={{ display: 'flex', width: '100%'}}>
-                <div style={{ flex: '1', flexBasis: '35%'}}>
-                    <div css={style.details} style={{ fontSize: "18px", paddingRight: '20px', borderRight: '1px solid #E6E6E6', height: '100%' }}>
-                        <Button look="link">
-                            <h2 css={css` font-size: 1.4rem;`} onClick={onClick}>{event.eventType?.concept}: {event.eventName} {event.eventID}</h2>
-                        </Button>
-                        <div>Dataset: <span>{event.datasetTitle}</span></div>
-                        <div>Sites: <span>{cardinality.locationID?.toLocaleString()}</span></div>
-                        {facet.samplingProtocol && facet.samplingProtocol.length > 0 &&
-                            <div>Sampling protocol: <span>{facet.samplingProtocol.map(x => x.key).join(', ')}</span></div>
-                        }
-
-                        <Button
-                            style={{ marginTop: '20px' }}
-                            onClick={() => filterByThisSurvey(event)}
-                            look="primaryOutline"
-                            css={css` font-size: 14px;`}>Add to filter
-                        </Button>
-                    </div>
+            <Button look="link">
+                <h2 onClick={onClick}>{event.eventType?.concept}: {event.eventName} {event.eventID}</h2>
+            </Button>
+            <div css={style.details}>
+                <div css={style.details_col1}>
+                    <div><GiBarrel /> Dataset: <span>{event.datasetTitle}</span></div>
+                    <div><MdLocationPin /> Sites: <span><a href="#" css={isDiscreetLink} onClick={() => viewSitesForSurvey()}>{cardinality.locationID?.toLocaleString()}</a></span></div>
+                    {facet.samplingProtocol && facet.samplingProtocol.length > 0 &&
+                        <div><FaCreativeCommonsSampling  /> Sampling protocol: <span>{facet.samplingProtocol.map(x => x.key).join(', ')}</span></div>
+                    }
                 </div>
-                <div  style={{ flex: '1',  flexBasis: '25%'}}>
-                    <div css={style.details} style={{ paddingLeft: '20px', fontSize: '16px'}}>
+                <div css={style.details_col2}>
+                    <div>
+                        <MdEvent />
                         {event.temporalCoverage?.gte &&
-                            <div>Start date: <span>{event.temporalCoverage?.gte}</span></div>
+                            <span>{event.temporalCoverage?.gte}</span>
+                        }
+                        {event.temporalCoverage?.gte && event.temporalCoverage?.lte &&
+                            <span><MdHorizontalRule style={{ marginLeft:'3px', marginRight:'3px', paddingTop:'4px'}}/></span>
                         }
                         {event.temporalCoverage?.lte &&
-                            <div style={{ marginTop: '10px'}}>End date: <span>{event.temporalCoverage?.lte}</span> </div>
-                        }
-                        {facet.measurementOrFactTypes && facet.measurementOrFactTypes.length > 0 &&
-                            <div style={{
-                                marginTop: "20px",
-                            }}><div style={{ marginBottom: '10px'}}>Measurements</div>
-                                <Tags style={{fontSize: '12px'}}>
-                                    {facet.measurementOrFactTypes.map(x => <Tag key={x.key} type="light" outline={true}>{x.key}</Tag>)}
-                                </Tags>
-                            </div>
-                        }
-                        {hasOccurrenceData && <div style={{ marginTop: '20px'}}>
-                            {hasPresenceData && hasAbsenceData &&
-                                <Tag type="light">Species presence and absence data </Tag>
-                            }
-                            {hasPresenceData && !hasAbsenceData &&
-                                <Tag type="light">Species presence data only </Tag>
-                            }
-                            {!hasPresenceData && hasAbsenceData &&
-                                <Tag type="light">Species absence data only </Tag>
-                            }
-                        </div>
+                            <span>{event.temporalCoverage?.lte}</span>
                         }
                     </div>
+
+                    {facet.measurementOrFactTypes && facet.measurementOrFactTypes.length > 0 &&
+                        <div style={{
+                            marginTop: "20px",
+                        }}><div style={{ marginBottom: '10px'}}> <MdOutlineDeviceThermostat/> Measurements</div>
+                            <Tags style={{ fontSize: '12px' }}>
+                                {facet.measurementOrFactTypes.map(x => <Tag key={x.key} type="light" outline={true}>
+                                    <a href="#" css={style.discreet_link} onClick={() => addMofFilter(x.key)}>
+                                    {x.key}
+                                    </a>
+                                </Tag>)}
+                            </Tags>
+                        </div>
+                    }
+                    {hasOccurrenceData && <div style={{ marginTop: '20px'}}>
+                        {hasPresenceData && hasAbsenceData &&
+                            <Tag type="light"><GrDocumentVerified/> <GrDocumentMissing style={{marginRight: '5px'}}/> Species presence and absence data </Tag>
+                        }
+                        {hasPresenceData && !hasAbsenceData &&
+                            <Tag type="light"><GrDocumentVerified style={{marginRight: '5px'}}/> Species presence data only </Tag>
+                        }
+                        {!hasPresenceData && hasAbsenceData &&
+                            <Tag type="light"><GrDocumentMissing style={{marginRight: '5px'}}/> Species absence data only </Tag>
+                        }
+                    </div>
+                    }
                 </div>
-                <div style={{  flex: '1',  flexBasis: '40%' }}>
-                    <div style={{ float: 'right' }}>
+                <div css={style.details_col3}>
+                    <div css={style.details_map}>
                         {extent && geojson &&
                             <img
                                 src={`https://api.mapbox.com/styles/v1/mapbox/light-v10/static/geojson(${JSON.stringify(geojson)})/${extent}/350x200?access_token=${env.MAPBOX_KEY}`}/>
                         }
                     </div>
                 </div>
+                <Button
+                    onClick={() => filterByThisSurvey(event)}
+                    look="primaryOutline"
+                    css={style.filter_by}>Add to filter
+                </Button>
             </div>
-
         </div>
     </article>;
 }

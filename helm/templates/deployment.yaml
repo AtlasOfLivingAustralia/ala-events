@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ala-events.fullname" . }}-es-api
+  labels:
+    {{- include "ala-events.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
+spec:
+  replicas: {{ .Values.esApi.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ala-events.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
+  template:
+    metadata:
+      annotations:
+        checksum/configs: {{ .Values.deploymentChecksum | quote }}
+        commitHash: {{ .Values.commitHash | quote }}
+      labels:
+        {{- include "ala-events.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-es-api
+          image: "{{ .Values.esApi.image.repository }}:{{ .Values.esApi.image.tag }}"
+          imagePullPolicy: {{ .Values.esApi.image.pullPolicy }}
+          env:
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+          ports:
+            - containerPort: 4001
+          resources:
+            {{- toYaml .Values.esApi.resources | nindent 12 }}
+          volumeMounts:
+            - name: events-config
+              mountPath: /usr/src/.env
+              subPath: es-api.env
+      volumes:
+        - name: events-config
+          configMap:
+            name: {{ include "ala-events.fullname" . }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ala-events.fullname" . }}-es2vt
+  labels:
+    {{- include "ala-events.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
+spec:
+  replicas: {{ .Values.es2vt.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ala-events.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
+  template:
+    metadata:
+      annotations:
+        checksum/configs: {{ .Values.deploymentChecksum | quote }}
+        commitHash: {{ .Values.commitHash | quote }}
+      labels:
+        {{- include "ala-events.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-es2vt
+        image: "{{ .Values.es2vt.image.repository }}:{{ .Values.es2vt.image.tag }}"
+        env:
+          - name: NODE_TLS_REJECT_UNAUTHORIZED
+            value: "0"
+        ports:
+        - containerPort: 4002
+        volumeMounts:
+        - name: events-config
+          mountPath: /usr/src/.env
+          subPath: es2vt.env
+      volumes:
+        - name: events-config
+          configMap:
+            name: {{ include "ala-events.fullname" . }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ala-events.fullname" . }}-graphql-api
+  labels:
+    {{- include "ala-events.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
+spec:
+  replicas: {{ .Values.graphqlApi.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ala-events.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
+  template:
+    metadata:
+      annotations:
+        checksum/configs: {{ .Values.deploymentChecksum | quote }}
+        commitHash: {{ .Values.commitHash | quote }}
+      labels:
+        {{- include "ala-events.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-graphql-api
+        image: "{{ .Values.graphqlApi.image.repository }}:{{ .Values.graphqlApi.image.tag }}"
+        ports:
+        - containerPort: 4000
+        volumeMounts:
+        - name: events-config
+          mountPath: /usr/src/.env
+          subPath: graphql-api.env
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 4000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+        - name: events-config
+          configMap:
+            name: {{ include "ala-events.fullname" . }}

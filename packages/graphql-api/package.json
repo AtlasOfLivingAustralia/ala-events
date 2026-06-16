@@ -8,7 +8,8 @@
     "develop": "ts-node-dev -r tsconfig-paths/register src/index.ts",
     "start": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts",
     "start:ci": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts",
-    "test": "ts-mocha src/**/*.test.js",
+    "test": "ts-mocha --paths src/**/*.test.js src/**/*.test.ts",
+    "test:ci": "ts-mocha src/**/*.test.js src/**/*.test.ts -w --watch-files 'src/**/*.*' --paths",
     "write-enums": "ts-node -r tsconfig-paths/register --transpile-only tools/writeEnums.js",
     "write-interpretation-remark": "ts-node -r tsconfig-paths/register --transpile-only tools/writeInterpretationRemark.js"
   },
@@ -44,6 +45,7 @@
     "object-hash": "^3.0.0",
     "qs": "^6.15.2",
     "topojson": "^3.0.2",
+    "wellknown": "^0.5.0",
     "wikibase-sdk": "^7.0.8",
     "xml2js": "^0.6.2",
     "yaml": "^2.9.0"

@@ -1,8 +1,6 @@
 
 import { jsx, css } from '@emotion/react';
-import React, { useContext } from 'react';
-import { MdInfo } from 'react-icons/md'
-import ThemeContext from '../../style/themes/ThemeContext';
+import React, { useState, useEffect } from 'react';
 import { Tabs, Eyebrow, Button, Tooltip, ResourceLink } from '../../components';
 import OccurrenceSearch from '../../search/OccurrenceSearch/OccurrenceSearch';
 import { OccurrenceCount, Homepage, FeatureList, Location, GenericFeature, GbifCount } from '../../components/IconFeatures/IconFeatures';
@@ -15,7 +13,7 @@ import env from '../../../.env.json';
 import useBelow from '../../utils/useBelow';
 
 import { DataHeader, HeaderWrapper, ContentWrapper, Headline, DeletedMessage, ErrorMessage, HeaderInfoWrapper, HeaderInfoMain, HeaderInfoEdit } from '../shared/header';
-import { PageError, Page404, PageLoader } from '../shared';
+import { Page404, PageLoader } from '../shared';
 
 import { GrGithub as Github } from 'react-icons/gr';
 import { MdLink, MdOutlineScreenSearchDesktop as CatalogIcon } from 'react-icons/md';
@@ -34,14 +32,38 @@ export function InstitutionPresentation({
   const hideSideBar = useBelow(1100);
   let { path, url } = useRouteMatch();
 
+  const rootPredicate = {
+    "type": "equals",
+    "value": id,
+    "key": "institutionKey"
+  };
+
+  const configState = {
+    rootPredicate,
+    occurrenceSearchTabs: ['TABLE', 'GALLERY', 'MAP'],
+    excludedFilters: ['occurrenceStatus', 'networkKey', 'hostingOrganizationKey', 'protocol', 'publishingCountryCode', 'institutionCode', 'institutionKey', 'institutionKey'],
+    highlightedFilters: ['taxonKey', 'verbatimScientificName', 'catalogNumber', 'recordedBy', 'identifiedBy'],
+    defaultTableColumns: ['features', 'collectionKey', 'collectionCode', 'catalogNumber', 'country', 'year', 'recordedBy', 'identifiedBy'],
+  };
+  const [config, setConfig] = useState(configState);
+
+  // once we get the slow query back with information about how many records have coordinates, iages and is in a cluster, then we can decide what tabs to show
+  useEffect(() => {
+    let occurrenceSearchTabs = ['TABLE'];
+    if (data?.withCoordinates?.documents?.total > 0) occurrenceSearchTabs.push('MAP');
+    if (data?.withImages?.documents?.total > 0) occurrenceSearchTabs.push('GALLERY');
+    if (data?.withClusters?.documents?.total > 0) occurrenceSearchTabs.push('CLUSTERS');
+    setConfig({...config, occurrenceSearchTabs})
+  }, [data?.withImages]);
+
   if (error) {
     if (error?.errorPaths?.institution?.status === 404) {
       return <>
-        <DataHeader searchType="institutionSearch" messageId="catalogues.institutions" />
+        <DataHeader />
         <Page404 />
       </>
     } else {
-      return <PageError />
+      throw new Error(error);
     }
   }
 
@@ -51,27 +73,13 @@ export function InstitutionPresentation({
   if (error || !institution) {
     // TODO a generic component for failures is needed
     return <>
-      <DataHeader searchType="institutionSearch" messageId="catalogues.institutions" />
+      <DataHeader />
       <Page404 />
     </>
   }
 
-  const rootPredicate = {
-    "type": "equals",
-    "value": id,
-    "key": "institutionKey"
-  };
-
-  const config = {
-    rootPredicate,
-    occurrenceSearchTabs: ['TABLE', 'GALLERY', 'MAP'],
-    excludedFilters: ['occurrenceStatus', 'networkKey', 'hostingOrganizationKey', 'protocol', 'publishingCountryCode', 'institutionCode', 'institutionKey', 'institutionKey'],
-    highlightedFilters: ['taxonKey', 'verbatimScientificName', 'catalogNumber', 'recordedBy', 'identifiedBy'],
-    defaultTableColumns: ['features', 'collectionKey', 'collectionCode', 'catalogNumber', 'country', 'year', 'recordedBy', 'identifiedBy'],
-  };
-
   // if there is at least a countryCode for thee address, then use that, else fall back to the mailing address
-  const contactInfo = institution?.address?.countryCode ? institution?.address : institution?.mailingAddress;
+  const contactInfo = institution?.address?.country ? institution?.address : institution?.mailingAddress;
 
   const feedbackTemplate = `Please provide you feedback here, but leave content below for context
 
@@ -79,9 +87,9 @@ export function InstitutionPresentation({
 Relating to ${env.GBIF_REGISTRY}/institution/${institution.key}
   `;
   return <>
-    <DataHeader searchType="institutionSearch" messageId="catalogues.institutions" />
+    <DataHeader showEmpty />
     <HeaderWrapper>
-      <Eyebrow prefix="Institution code" suffix={institution.code} />
+      <Eyebrow prefix={<FormattedMessage id="grscicoll.institutionCode" />} suffix={institution.code} />
       <Headline css={css`display: inline; margin-right: 12px;`} badge={institution.active ? null : 'Inactive'}>{institution.name}</Headline>
       <DeletedMessage date={institution.deleted} />
       {institution.replacedByInstitution && <ErrorMessage>
@@ -98,21 +106,21 @@ Relating to ${env.GBIF_REGISTRY}/institution/${institution.key}
           </FeatureList>
           {institution.catalogUrl && <FeatureList css={css`margin-top: 8px;`}>
             <GenericFeature>
-              <CatalogIcon /><span><a href={institution.catalogUrl}>Data catalog</a></span>
+              <CatalogIcon /><span><a href={institution.catalogUrl}><FormattedMessage id="grscicoll.dataCatalog" defaultMessage="Data catalog" /></a></span>
             </GenericFeature>
           </FeatureList>}
         </HeaderInfoMain>
         <HeaderInfoEdit>
-          <Tooltip title="No login required" placement="bottom">
-            <Button as="a" href={`${env.GBIF_REGISTRY}/institution/${institution.key}`} look="primaryOutline">Edit</Button>
+          <Tooltip title={<FormattedMessage id="grscicoll.editHelpText" defaultMessage="No login required" />} placement="bottom">
+            <Button as="a" href={`${env.GBIF_REGISTRY}/institution/${institution.key}`} look="primaryOutline"><FormattedMessage id="grscicoll.edit" defaultMessage="Edit" /></Button>
           </Tooltip>
-          <Tooltip title="Leave a comment - requires a free Github account" placement="bottom">
+          <Tooltip title={<FormattedMessage id="grscicoll.githubHelpText" defaultMessage="Github" />} placement="bottom">
             <a style={{ marginLeft: 8, fontSize: 24, color: "var(--primary)" }} target="_blank" href={`https://github.com/gbif/portal-feedback/issues/new?title=${encodeURIComponent(`NHC: ${institution.name}`)}&body=${encodeURIComponent(feedbackTemplate)}`}><Github /></a>
           </Tooltip>
         </HeaderInfoEdit>
       </HeaderInfoWrapper>
       <TabList style={{ marginTop: '12px', borderTop: '1px solid #ddd' }}>
-        <RouterTab to={url} exact label="About" />
+        <RouterTab to={url} exact label={<FormattedMessage id="grscicoll.tabs.about" defaultMessage="About" />} />
         {<RouterTab to={join(url, '/collections')} css={institution?.collections?.length === 0 ? css`color: var(--color300);` : null} label={<FormattedMessage id="counts.nCollections" values={{ total: institution?.collections?.length }} />} />}
         {occurrenceSearch?.documents?.total > 0 && <RouterTab to={join(url, '/specimens')} tooltip={<FormattedMessage id="grscicoll.specimensViaGbif" defaultMessage="Specimens via GBIF" />} label={<FormattedMessage id="grscicoll.specimens" defaultMessage="Specimens" />} css={occurrenceSearch?.documents?.total === 0 ? css`color: var(--color300);` : null} />}
         {occurrenceSearch?.documents?.total === 0 && institution.catalogUrl && <Tab tabId="0" label="Online catalog"><a css={css`text-decoration: none; color: inherit!important;`} href={institution.catalogUrl}>Explore catalog<MdLink /></a></Tab>}

@@ -1,0 +1,66 @@
+version: 0.2
+###
+# This build project builds the Events site files ready for upload to s3
+
+env:
+  shell: bash
+  secrets-manager:
+    MAPBOX_KEY: $EVENTS_SECRET_NAME:mapbox_key
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      nodejs: $NODE_VERSION
+    commands:
+      - cp packages/react-components/env.json packages/react-components/.env.json
+      - |  
+        jq \
+        --arg translations "https://$UI_SUB_DOMAIN.$HOSTED_ZONE" \
+        --arg mapbox_key "$MAPBOX_KEY" \
+        --arg es_web_api "https://es-$WS_SUB_DOMAIN.$HOSTED_ZONE" \
+        --arg graph_api "https://graphql-$WS_SUB_DOMAIN.$HOSTED_ZONE/graphql" \
+        --arg event_tile_api "https://es2vt-$WS_SUB_DOMAIN.$HOSTED_ZONE" \
+        --arg search_url "$BIOCACHE_SEARCH_URL" \
+        --arg namematching_ws_url "$NAMEMATCHING_WS_URL" \
+        '
+        .TRANSLATIONS = $translations |
+        .MAPBOX_KEY = $mapbox_key |
+        .ES_WEB_API = $es_web_api |
+        .GRAPH_API = $graph_api |
+        .EVENT_TILE_API = $event_tile_api |
+        .EVENT_SEARCH_URL = $search_url |
+        .NAME_MATCHING_WS_URL = $namematching_ws_url
+        ' packages/react-components/.env.json > tmp.json && mv tmp.json packages/react-components/.env.json
+      - cat packages/react-components/.env.json
+      - |
+        sed -i -e "s|baseUrl: '.*'|baseUrl: 'https://$UI_SUB_DOMAIN.$HOSTED_ZONE'|g" \
+               -e "s|authServer: '.*'|authServer: '$OIDC_DISCOVERY_URI'|g" \
+               -e "s|authClientID: '.*'|authClientID: '$AUTH_CLIENT_ID'|g" \
+               -e "s|collectionsServer: \".*\"|collectionsServer: \"$COLLECTION_URL\"|g" \
+               -e "s|biocacheUrl: \".*\"|biocacheUrl: \"$BIOCACHE_URL\"|g" packages/react-components/config.js
+      - cat packages/react-components/config.js
+  pre_build:
+    commands:
+      - cd packages/react-components
+      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      - |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+        nvm install 16.13.1
+        nvm use 16.13.1
+        node -v
+      - npm install
+  build:
+    commands:
+      - export NODE_OPTIONS="--max_old_space_size=4096"
+      - npm run build-translations
+      - npm run build
+
+artifacts:
+  base-directory: packages/react-components
+  files:
+    - 'ala-demo.html'
+    - 'config.js'
+    - 'dist/**/*'

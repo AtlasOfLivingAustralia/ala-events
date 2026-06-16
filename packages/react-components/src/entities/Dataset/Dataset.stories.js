@@ -14,7 +14,7 @@ export default {
 
 export const Example = () => <Router initialEntries={[`/`]}>
   <QueryParamProvider ReactRouterRoute={Route}>
-    {/* <AddressBar style={{ position: 'sticky', top: 0 }} /> */}
+    <AddressBar style={{ position: 'sticky', top: 0, zIndex: 1000 }} />
     <div style={{ flex: '1 1 auto' }}></div>
     {/* Crustacea */}
     {/* <Dataset id="1d1393bd-7edd-46fe-a224-ac8ff8e38402" /> */}
@@ -29,7 +29,7 @@ export const Example = () => <Router initialEntries={[`/`]}>
     {/* <Dataset id="42844cb6-421e-4bcf-bdeb-c56039bee08c" /> */}
 
     {/* Gull */}
-    <Dataset id={text('datasetUUID', '2985efd1-45b1-46de-b6db-0465d2834a5a')} />
+    <Dataset id={text('datasetUUID', '82b2e911-9636-47e1-ba1b-e8ab3fb93f9e')} />
 
     {/* Vascan */}
     {/* <Dataset id={text('datasetUUID', '3f8a1297-3259-4700-91fc-acc4170b27ce')} /> */}
@@ -48,13 +48,15 @@ Example.story = {
 };
 
 const siteConfig = {
-  locale: 'es',
-  messages: {
-    'dataset.longType.OCCURRENCE': 'TEsT'
-  },
+  // locale: 'es',
+  // messages: {
+  //   'dataset.longType.OCCURRENCE': 'TEsT'
+  // },
   occurrence: {
     rootPredicate: { type: 'equals', key: 'country', value: 'DE' }
-  }
+  },
+  routes: {},
+  availableCatalogues: ['OCCURRENCE', 'DATASET', 'PUBLISHER', 'LITERATURE', 'COLLECTION', 'INSTITUTION'],
 };
 
-export const StandaloneExample = () => <Standalone siteConfig={siteConfig} id="83e20573-f7dd-4852-9159-21566e1e691e"></Standalone>;
+export const StandaloneExample = () => <Standalone siteConfig={siteConfig} id={text('datasetUUID', '82b2e911-9636-47e1-ba1b-e8ab3fb93f9e')}></Standalone>;

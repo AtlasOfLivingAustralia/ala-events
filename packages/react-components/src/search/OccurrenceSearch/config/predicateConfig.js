@@ -69,7 +69,10 @@ const filterConf = {
       })
     },
     geometry: {
-      defaultType: 'within'
+      defaultType: 'within',
+      v1: {
+        supportedTypes: ['within']
+      }
     },
     basisOfRecord: {
       defaultNegationKey: 'not_basisOfRecord'
@@ -86,6 +89,12 @@ const filterConf = {
       defaultType: 'range',
       v1: {
         supportedTypes: ['range', 'equals']
+      }
+    },
+    geoDistance: {
+      defaultType: 'geoDistance',
+      v1: {
+        supportedTypes: ['geoDistance']
       }
     },
     depth: {

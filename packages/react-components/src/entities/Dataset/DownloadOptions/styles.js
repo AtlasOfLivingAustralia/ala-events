@@ -4,19 +4,22 @@ import { css } from '@emotion/react';
 
 export const options = ({ ...props }) => css`
   display: flex;
-  justify-content: space-evenly;
-  margin: 24px 0;
+  justify-content: left;
+  margin: 0;
+  > div {
+    margin: 12px;
+    width: 450px;
+    max-width: 100%;
+  }
 `;
 
 export const card = ({ highlighted, ...props }) => css`
   background: white;
-  width: 250px;
+  width: 350px;
   max-width: 100%;
   background: white;
   padding: 24px;
   margin: 12px;
-  border-radius: 8px;
-  box-shadow: 0 0 3px 3px rgba(0,0,0,.05);
   font-size: 14px;
   h4 {
     font-size: 16px;

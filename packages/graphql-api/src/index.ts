@@ -73,13 +73,16 @@ async function initializeServer() {
       }),
       ApolloDataSources(({ dataSources: dataSourcesFn }))
     ],
+    logger: console,
   });
 
   const app = express();
   app.use(compression());
   app.use(
     cors({
-      methods: 'GET,POST,OPTIONS',
+      origin: '*',
+      methods: ['GET', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     }),
   );
   app.use(express.static('public'));
@@ -98,9 +101,11 @@ async function initializeServer() {
   });
 
   app.get('/health', health);
-  
+
   // utils for map styles
   mapController(app);
+  ipController(app);
+  polygonName(app);
 
   await server.start();
 

@@ -14,7 +14,14 @@ import occurrenceStatus from '../../enums/basic/occurrenceStatus.json';
 import datasetType from '../../enums/basic/datasetType.json';
 import datasetSubtype from '../../enums/basic/datasetSubtype.json';
 import literatureType from '../../enums/cms/literatureType.json';
+import relevance from '../../enums/cms/relevance.json';
+import topics from '../../enums/cms/topics.json';
 import dwcaExtension from '../../enums/basic/dwcaExtension.json';
+import iucnRedListCategory from '../../enums/basic/iucnRedListCategory.json';
+import institutionType from '../../enums/basic/institutionType.json';
+import discipline from '../../enums/basic/discipline.json';
+import collectionContentType from '../../enums/basic/collectionContentType.json';
+import preservationType from '../../enums/basic/preservationType.json';
 // -- Add imports above this line (required by plopfile.js) --
 
 export const commonFilters = {
@@ -33,6 +40,29 @@ export const commonFilters = {
       specific: {
         suggestHandle: 'taxonKey',
         id2labelHandle: 'taxonKey'
+      }
+    }
+  },
+  geoDistance: {
+    type: 'GEO_DISTANCE',
+    config: {
+      std: {
+        id2labelHandle: 'geoDistance',
+        translations: {
+          count: 'filters.geoDistance.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.geoDistance.name',// translation path to a title for the popover and the button
+          description: 'filters.geoDistance.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        // These are far from precise, but they can help the user avoid the worst mistakes i hope
+        latRegex: /^([1-9]{1})?[0-9]{0,1}((\.)[0-9]{0,8})?$/,
+        lonRegex: /^([1]{1})?[0-9]{0,2}((\.)[0-9]{0,8})?$/,
+        kmRegex: /^[0-9]*((\.)[0-9]{0,8})?$/,
+        placeholderLat:  'filters.geoDistance.placeholderLat',
+        placeholderLon:  'filters.geoDistance.placeholderLon',
+        placeholderDist: 'filters.geoDistance.placeholderDist',
+        singleSelect: true
       }
     }
   },
@@ -69,7 +99,7 @@ export const commonFilters = {
       }
     }
   },
-  countrySingleGrSciColl: {
+  countryGrSciColl: {
     type: 'SUGGEST',
     config: {
       std: {
@@ -77,12 +107,11 @@ export const commonFilters = {
         translations: {
           count: 'filters.occurrenceCountry.count', // translation path to display names with counts. e.g. "3 scientific names"
           name: 'filters.occurrenceCountry.name',// translation path to a title for the popover and the button
-          description: 'filters.occurrenceCountry.description', // translation path for the filter description
+          description: 'filters.grsciCollCountry.description', // translation path for the filter description
         },
       },
       specific: {
-        suggestHandle: 'countryCode',
-        singleSelect: true
+        suggestHandle: 'countryCode'
       }
     }
   },
@@ -99,6 +128,22 @@ export const commonFilters = {
       },
       specific: {
         suggestHandle: 'countryCode',
+      }
+    }
+  },
+  geometry: {
+    type: 'GEOMETRY',
+    config: {
+      std: {
+        id2labelHandle: 'geometry',
+        translations: {
+          count: 'filters.geometry.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.geometry.name',// translation path to a title for the popover and the button
+          description: 'filters.geometry.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        
       }
     }
   },
@@ -201,6 +246,23 @@ export const commonFilters = {
       }
     }
   },
+  gbifPublisherKey: { // same as any publisher, but with a more explicit naming
+    type: 'SUGGEST',
+    config: {
+      std: {
+        id2labelHandle: 'publisherKey',
+        translations: {
+          count: 'filters.gbifPublisherKey.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.gbifPublisherKey.name',// translation path to a title for the popover and the button
+          description: 'filters.gbifPublisherKey.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        suggestHandle: 'publisherKey',
+        allowEmptyQueries: true
+      }
+    }
+  },
   institutionCode: {
     type: 'SUGGEST',
     config: {
@@ -222,7 +284,7 @@ export const commonFilters = {
     config: {
       std: {
         filterHandle: 'catalogNumber',// if nothing else provided, then this is the filterName used
-        id2labelHandle: 'catalogNumber',
+        id2labelHandle: 'wildcard',
         translations: {
           count: 'filters.catalogNumber.count', // translation path to display names with counts. e.g. "3 scientific names"
           name: 'filters.catalogNumber.name',// translation path to a title for the popover and the button
@@ -230,7 +292,7 @@ export const commonFilters = {
         },
       },
       specific: {
-        id2labelHandle: 'catalogNumber',
+        id2labelHandle: 'wildcard',
         placeholder: 'Search for a catalog number',
         supportsExist: true,
         query: `
@@ -320,6 +382,26 @@ export const commonFilters = {
       }
     }
   },
+  specimensInGbif: {
+    type: 'NUMBER_RANGE',
+    config: {
+      std: {
+        filterHandle: 'specimensInGbif',
+        id2labelHandle: 'interval',
+        translations: {
+          count: 'filters.specimensInGbif.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.specimensInGbif.name',// translation path to a title for the popover and the button
+          description: 'filters.specimensInGbif.description', // translation path for the filter description
+        }
+      },
+      specific: {
+        placeholder: 'search.placeholders.range',
+        supportsExist: true,
+        singleSelect: true,
+        regex: /^((-)?[0-9]{0,12})(,)?((-)?[0-9]{0,12})$/
+      }
+    }
+  },
   basisOfRecord: {
     type: 'ENUM',
     config: {
@@ -334,6 +416,43 @@ export const commonFilters = {
       },
       specific: {
         options: basisofRecord,
+        supportsInverse: true,
+      }
+    }
+  },
+  relevance: {
+    type: 'ENUM',
+    config: {
+      std: {
+        filterHandle: 'relevance',
+        id2labelHandle: 'relevance',
+        translations: {
+          count: 'filters.relevance.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.relevance.name',// translation path to a title for the popover and the button
+          description: 'filters.relevance.description', // translation path for the filter description
+        }
+      },
+      specific: {
+        options: relevance,
+        supportsInverse: true,
+      }
+    }
+  },
+  topics: {
+    type: 'ENUM',
+    config: {
+      std: {
+        filterHandle: 'topics',
+        id2labelHandle: 'topics',
+        translations: {
+          count: 'filters.topics.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.topics.name',// translation path to a title for the popover and the button
+          description: 'filters.topics.description', // translation path for the filter description
+        }
+      },
+      specific: {
+        options: topics,
+        supportsInverse: true,
       }
     }
   },
@@ -351,6 +470,7 @@ export const commonFilters = {
       },
       specific: {
         options: typeStatus,
+        supportsInverse: true,
       }
     }
   },
@@ -369,7 +489,8 @@ export const commonFilters = {
       specific: {
         options: occurrenceIssue,
         supportsNegation: true,
-        supportsExist: true
+        supportsExist: true,
+        supportsInverse: true,
       }
     }
   },
@@ -386,7 +507,7 @@ export const commonFilters = {
         }
       },
       specific: {
-        options: mediaType,
+        options: mediaType
       }
     }
   },
@@ -438,6 +559,7 @@ export const commonFilters = {
       },
       specific: {
         options: license,
+        supportsInverse: true,
       }
     }
   },
@@ -547,6 +669,7 @@ export const commonFilters = {
       specific: {
         options: month,
         supportsExist: true,
+        supportsInverse: true,
       }
     }
   },
@@ -564,6 +687,7 @@ export const commonFilters = {
       },
       specific: {
         options: continent,
+        supportsInverse: true,
       }
     }
   },
@@ -581,6 +705,7 @@ export const commonFilters = {
       },
       specific: {
         options: endpointType,
+        supportsInverse: true,
       }
     }
   },
@@ -651,7 +776,6 @@ export const commonFilters = {
       specific: {
         // suggestHandle: 'recordedBy',
         // suggestHandle: 'recordedByWildcard',
-        id2labelHandle: 'recordedBy',
         placeholder: 'Search by recorded by',
         supportsExist: true,
         query: `
@@ -704,6 +828,24 @@ export const commonFilters = {
       },
       specific: {
         placeholder: 'Search by collection code',
+        supportsExist: true,
+      }
+    }
+  },
+  projectId: {
+    type: 'SIMPLE_TEXT',
+    config: {
+      std: {
+        filterHandle: 'projectId',
+        id2labelHandle: 'projectId',
+        translations: {
+          count: 'filters.projectId.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.projectId.name',// translation path to a title for the popover and the button
+          description: 'filters.projectId.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        placeholder: 'Search by project ID',
         supportsExist: true,
       }
     }
@@ -1131,6 +1273,24 @@ export const commonFilters = {
       }
     }
   },
+  personalCollection: {
+    type: 'ENUM',
+    config: {
+      std: {
+        filterHandle: 'personalCollection',
+        id2labelHandle: 'yesNo',
+        translations: {
+          count: 'filters.personalCollection.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.personalCollection.name',// translation path to a title for the popover and the button
+          description: 'filters.personalCollection.description', // translation path for the filter description
+        }
+      },
+      specific: {
+        options: ['true', 'false'],
+        isRadio: true
+      }
+    }
+  },
   datasetType: {
     type: 'ENUM',
     config: {
@@ -1235,7 +1395,7 @@ export const commonFilters = {
         },
       },
       specific: {
-        placeholder: 'Search by institution name',
+        placeholder: "filters.name.searchPlaceholder",
         singleSelect: true
       }
     }
@@ -1359,6 +1519,7 @@ export const commonFilters = {
       },
       specific: {
         options: literatureType,
+        supportsInverse: true,
       }
     }
   },
@@ -1375,7 +1536,8 @@ export const commonFilters = {
         }
       },
       specific: {
-        options: dwcaExtension
+        options: dwcaExtension,
+        supportsInverse: true,
       }
     }
   },
@@ -1483,6 +1645,131 @@ export const commonFilters = {
       }
     }
   },
+  iucnRedListCategory: {
+      type: 'ENUM',
+      config: {
+        std: {
+          filterHandle: 'iucnRedListCategory',
+          id2labelHandle: 'iucnRedListCategory',
+          translations: {
+            count: 'filters.iucnRedListCategory.count', // translation path to display names with counts. e.g. "3 scientific names"
+            name: 'filters.iucnRedListCategory.name',// translation path to a title for the popover and the button
+            description: 'filters.iucnRedListCategory.description', // translation path for the filter description
+          }
+        },
+        specific: {
+          options: iucnRedListCategory,
+          supportsInverse: true,
+        }
+      }
+    },
+  alternativeCode: {
+    type: 'SIMPLE_TEXT',
+    config: {
+      std: {
+        filterHandle: 'alternativeCode',
+        id2labelHandle: 'alternativeCode',
+        translations: {
+          count: 'filters.alternativeCode.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.alternativeCode.name',// translation path to a title for the popover and the button
+          description: 'filters.alternativeCode.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        placeholder: 'E.g. NHM-K',
+        singleSelect: true
+      }
+    }
+  },
+  identifier: {
+    type: 'SIMPLE_TEXT',
+    config: {
+      std: {
+        filterHandle: 'identifier',
+        id2labelHandle: 'identifier',
+        translations: {
+          count: 'filters.identifier.count', // translation path to display names with counts. e.g. "3 scientific names"
+          name: 'filters.identifier.name',// translation path to a title for the popover and the button
+          description: 'filters.identifier.description', // translation path for the filter description
+        },
+      },
+      specific: {
+        placeholder: '264378',
+        singleSelect: true
+      }
+    }
+  },
+  institutionType: {
+      type: 'ENUM',
+      config: {
+        std: {
+          filterHandle: 'institutionType',
+          id2labelHandle: 'institutionType',
+          translations: {
+            count: 'filters.institutionType.count', // translation path to display names with counts. e.g. "3 scientific names"
+            name: 'filters.institutionType.name',// translation path to a title for the popover and the button
+            description: 'filters.institutionType.description', // translation path for the filter description
+          }
+        },
+        specific: {
+          options: institutionType,
+          isRadio: true
+        }
+      }
+    },
+  discipline: {
+      type: 'ENUM',
+      config: {
+        std: {
+          filterHandle: 'discipline',
+          id2labelHandle: 'discipline',
+          translations: {
+            count: 'filters.discipline.count', // translation path to display names with counts. e.g. "3 scientific names"
+            name: 'filters.discipline.name',// translation path to a title for the popover and the button
+            description: 'filters.discipline.description', // translation path for the filter description
+          }
+        },
+        specific: {
+          options: discipline,
+          supportsInverse: true,
+        }
+      }
+    },
+  collectionContentType: {
+      type: 'ENUM',
+      config: {
+        std: {
+          filterHandle: 'collectionContentType',
+          id2labelHandle: 'collectionContentType',
+          translations: {
+            count: 'filters.collectionContentType.count', // translation path to display names with counts. e.g. "3 scientific names"
+            name: 'filters.collectionContentType.name',// translation path to a title for the popover and the button
+            description: 'filters.collectionContentType.description', // translation path for the filter description
+          }
+        },
+        specific: {
+          options: collectionContentType
+        }
+      }
+    },
+  preservationType: {
+      type: 'ENUM',
+      config: {
+        std: {
+          filterHandle: 'preservationType',
+          id2labelHandle: 'preservationType',
+          translations: {
+            count: 'filters.preservationType.count', // translation path to display names with counts. e.g. "3 scientific names"
+            name: 'filters.preservationType.name',// translation path to a title for the popover and the button
+            description: 'filters.preservationType.description', // translation path for the filter description
+          }
+        },
+        specific: {
+          options: preservationType,
+          supportsInverse: true,
+        }
+      }
+    },
   // -- Add filters above this line (required by plopfile.js) --
   q: {
     type: 'CUSTOM_STANDARD',

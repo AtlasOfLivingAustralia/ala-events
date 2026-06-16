@@ -6,19 +6,30 @@ const typeDef = gql`
       limit: Int
       offset: Int
       q: String
+      """
+      deprecated field, use institutionKey instead
+      """
       institution: [GUID]
+      institutionKey: [GUID]
       contact: ID
       code: String
       name: String
       fuzzyName: String
       city: String
-      country: Country
+      country: [Country]
       alternativeCode: String
+      identifier: String
       active: Boolean
+      personalCollection: Boolean
       numberSpecimens: String
+      occurrenceCount: String
+      contentType: [CollectionContentType]
+      preservationType: [PreservationType]
       displayOnNHCPortal: Boolean
+      sortBy: CollectionsSortField
+      sortOrder: SortOrder
       ): CollectionSearchResults
-    collection(key: String!): Collection
+    collection(key: ID!): Collection
   }
 
   type CollectionSearchResults {

@@ -6,6 +6,14 @@ export const commonLabels = {
     type: 'TRANSLATION',
     template: id => `enums.basisOfRecord.${id}`
   },
+  topics: {
+    type: 'TRANSLATION',
+    template: id => `enums.topics.${id}`
+  },
+  relevance: {
+    type: 'TRANSLATION',
+    template: id => `enums.relevance.${id}`
+  },
   typeStatus: {
     type: 'TRANSLATION',
     template: id => `enums.typeStatus.${id}`
@@ -98,6 +106,10 @@ export const commonLabels = {
     type: 'CUSTOM',
     component: rangeOrEqualLabel('intervals.compactMeters')
   },
+  interval: {
+    type: 'CUSTOM',
+    component: rangeOrEqualLabel('intervals.compact')
+  },
   measurementOrFactCount: {
     type: 'CUSTOM',
     component: rangeOrEqualLabel('intervals.compact')
@@ -133,18 +145,12 @@ export const commonLabels = {
   establishmentMeansVocabulary: {
     type: 'ENDPOINT',
     template: ({ id, api }) => `${api.v1.endpoint}/vocabularies/EstablishmentMeans/concepts/${id}`,
-    transform: (result, { localeContext } = {}) => {
-      const vocabularyLocale = localeContext?.localeMap?.vocabulary || 'en';
-      return { title: result.label[vocabularyLocale] || result.label.en };
-    }
+    transform: getVocabularyLabel
   },
   eventTypeVocabulary: {
     type: 'ENDPOINT',
     template: ({ id, api }) => `${api.v1.endpoint}/vocabularies/EventType/concepts/${id}`,
-    transform: (result, { localeContext } = {}) => {
-      const vocabularyLocale = localeContext?.localeMap?.vocabulary || 'en';
-      return { title: result.label[vocabularyLocale] || result.label.en };
-    }
+    transform: getVocabularyLabel
   },
   catalogNumber: {
     type: 'TRANSLATION',
@@ -185,7 +191,7 @@ export const commonLabels = {
   },
   institutionKey: {
     type: 'GQL',
-    query: `query label($id: String!){
+    query: `query label($id: ID!){
       institution(key: $id) {
         name
       }
@@ -194,7 +200,7 @@ export const commonLabels = {
   },
   collectionKey: {
     type: 'GQL',
-    query: `query label($id: String!){
+    query: `query label($id: ID!){
       collection(key: $id) {
         name
       }
@@ -222,6 +228,17 @@ export const commonLabels = {
     type: 'CUSTOM',
     component: rangeOrEqualLabel('intervals.compact')
   },
+  // geoDistance: {
+  //   type: 'TRANSLATION_VALUES',
+  //   template: 'intervals.geoDistance.short'
+  // },
+  geoDistance: {
+    type: 'CUSTOM',
+    component: ({ id }) => {
+      const { distance, latitude, longitude } = id;
+      return formatCoordinates({lat: latitude, lng: longitude, locale: 'en'}) + ' ±' + distance;
+    }
+  },
   identityFn: {
     type: 'TRANSFORM',
     transform: ({ id }) => id.value || id
@@ -236,9 +253,47 @@ export const commonLabels = {
       if (id.type === 'like' && typeof id.value === 'string') {
         return <i>{displayValue}</i>;
       }
-      
+
       return displayValue;
     }
-  }
+  },
+  threatStatus: {
+    type: 'TRANSLATION',
+    template: id => `enums.threatStatus.${id}`
+  },
+  collectionContentType: {
+    type: 'TRANSLATION',
+    template: id => `enums.collectionContentType.${id}`
+  },
+  preservationType: {
+    type: 'TRANSLATION',
+    template: id => `enums.preservationType.${id}`
+  },
   // -- Add labels above this line (required by plopfile.js) --
 }
+
+function getVocabularyLabel(result, { localeContext } = {}) {
+  const vocabularyLocale = localeContext?.localeMap?.vocabulary || 'en';
+
+  // transform result labels to an object with language as keys
+  const labels = result.label.reduce((acc, label) => {
+    acc[label.language] = label.value;
+    return acc;
+  }, {});
+
+  let title = labels[vocabularyLocale] || labels.en || result.name || 'Unknown';
+  return { title };
+}
+
+function formatCoordinates({lat, lng, locale}) {
+  if (isNaN(lat) || isNaN(lng)) {
+      return 'Invalid coordinates';
+  } else {
+      // return as formatted number
+      const latString = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(Number(lat));
+      const lngString = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(Number(lng));
+      const la = latString + (lat < 0 ? 'S' : 'N');
+      var lo = lngString + (lng < 0 ? 'W' : 'E');
+      return la + ', ' + lo;
+  }
+};

@@ -286,6 +286,10 @@ const config =
       "type": "keyword",
       "field": "issues"
     },
+    "iucnRedListCategory": {
+      "type": "keyword",
+      "field": "gbifClassification.iucnRedListCategoryCode"
+    },
     "lastCrawled": {
       "type": "date",
       "field": "lastCrawled",
@@ -440,7 +444,7 @@ const config =
       "type": "keyword",
       "field": "preparations.keyword"
     },
-    "programmeAcronym": {
+    "programme": {
       "type": "keyword",
       "field": "programmeAcronym"
     },
@@ -521,6 +525,13 @@ const config =
       "field": "scoordinates",
       "get": {
         "type": "within"
+      }
+    },
+    "geoDistance": {
+      "type": "geo_distance",
+      "field": "coordinates",
+      "get": {
+        "type": "geo_distance"
       }
     },
     "sex": {
@@ -723,10 +734,10 @@ const config =
         "type": "fuzzy"
       }
     },
-    "gbifClassification_acceptedUsage_rank": {
-      "type": "keyword",
-      "field": "gbifClassification.acceptedUsage.rank"
-    },
+    // "gbifClassification_acceptedUsage_rank": {
+    //   "type": "keyword",
+    //   "field": "gbifClassification.acceptedUsage.rank"
+    // },
     "gbifClassification_classification_key": {
       "type": "numeric",
       "field": "gbifClassification.classification.key",

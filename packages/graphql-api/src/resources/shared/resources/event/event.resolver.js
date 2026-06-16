@@ -4,7 +4,8 @@ import {
   getOccurrenceFacet,
   getStats,
   getTemporal,
-  getCardinality, getMultiFacet,
+  getCardinality,
+  getMultiFacet,
 } from './helpers/getMetrics';
 import { formattedCoordinates } from '#/helpers/utils';
 import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport';
@@ -122,12 +123,12 @@ export default {
   EventFacet,
   EventMultiFacet: {
     locationIDStateProvince: (parent, query, { dataSources }) => {
-      let result = getMultiFacet(parent, query, {
-        fields: Array('locationID', 'stateProvince'),
-        searchApi: dataSources.eventAPI.searchEvents
-      })
+      const result = getMultiFacet(parent, query, {
+        fields: ['locationID', 'stateProvince'],
+        searchApi: dataSources.eventAPI.searchEvents,
+      });
       return result;
-    }
+    },
   },
   EventOccurrenceFacet,
   EventCardinality: {
@@ -224,6 +225,20 @@ export default {
         .then((response) => {
           return response.total;
         });
+    },
+    extensions: ({ key }, args, { dataSources }) => {
+      if (typeof key === 'undefined') return null;
+      return dataSources.eventAPI
+        .searchEvents({
+          query: {
+            datasetKey: key,
+            facet: 'extensions',
+            size: 0,
+          },
+        })
+        .then(({ aggregations }) =>
+          aggregations.extensions_facet.buckets.map(({ key: facetKey }) => facetKey),
+        );
     },
     events: facetEventSearch,
     archive: ({ key }, args, { dataSources }) => {

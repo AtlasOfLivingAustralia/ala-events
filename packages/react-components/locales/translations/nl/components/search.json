@@ -4,14 +4,46 @@
     "gallery": "Afbeeldingen",
     "map": "Kaart",
     "datasets": "Datasets",
-    "download": "Downloaden"
+    "events": "",
+    "download": "Downloaden",
+    "clusters": "",
+    "dashboard": "Dashboard",
+    "sites": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
   },
   "table": {
     "lockColumn": "Vergrendel kolom"
   },
   "placeholders": {
     "default": "Zoeken",
-    "range": "Bereik of enkele waarde"
+    "range": "Bereik of enkele waarde",
+    "locationID": ""
   },
-  "loadMore": "Meer"
+  "ternary": {
+    "yes": "",
+    "no": "",
+    "either": "Vindt objecten met overeenkomende tekst in een van alle tekstvelden. Gebruik een specifiek filter om tekst in een specifiek veld te doorzoeken, zoals het filter voor \"Wetenschappelijke Naam\"."
+  },
+  "loadMore": "Meer",
+  "occurrenceClustersView": {
+    "about": "Over",
+    "clusters": "",
+    "legend": "",
+    "differentPublishers": "",
+    "samePublishers": "",
+    "entryPoint": "",
+    "hasMultipleTaxonKeys": "",
+    "aboutLink": "",
+    "isCapped": "",
+    "isDeleted": "",
+    "similarities": "",
+    "currentRecord": "",
+    "nodeType": {
+      "IMAGE": "Afbeelding",
+      "TYPE": "Soort specimen",
+      "TREATMENT": "Behandeling",
+      "OBSERVATION": "Waarneming",
+      "SPECIMEN": "Exemplaar",
+      "SEQUENCE": ""
+    }
+  }
 }

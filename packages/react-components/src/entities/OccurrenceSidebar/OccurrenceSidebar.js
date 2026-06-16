@@ -85,7 +85,7 @@ export function OccurrenceSidebarCore({
             <ClusterIcon />
           </Tab>}
           {hasExtensions && <Tab tabId="extensions" direction="left">
-            <MdExtension />
+            <MdExtension title="Extensions"/>
           </Tab>}
         </TabList>
       </Col>
@@ -186,6 +186,8 @@ query occurrence($key: ID!){
       type
       format
       identifier
+      thumbnail: thumbor(height: 240, fitIn: true)
+      large: thumbor(height: 1000, fitIn: true)
       created
       creator
       license

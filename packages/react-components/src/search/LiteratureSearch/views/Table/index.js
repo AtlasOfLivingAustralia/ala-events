@@ -3,6 +3,9 @@ import StandardSearchTable from '../../../StandardSearchTable';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import { AltmetricDonut } from '../../../../components';
 import { MdLink } from 'react-icons/md';
+import { InlineFilterChip } from "../../../../widgets/Filter/utils/FilterChip";
+import queryString from 'query-string';
+import env from '../../../../../.env.json';
 
 const QUERY = `
 query list($predicate: Predicate, $publisher:[String], $source: [String], $doi: [String], $gbifDownloadKey: [ID], $openAccess: Boolean, $peerReview: Boolean, $publishingOrganizationKey: [ID], $topics: [String], $relevance: [String], $year: [String], $literatureType: [String], $countriesOfCoverage: [Country], $countriesOfResearcher: [Country], $gbifDatasetKey: [ID], $q: String, $offset: Int, $limit: Int, ){
@@ -30,6 +33,8 @@ query list($predicate: Predicate, $publisher:[String], $source: [String], $doi: 
       results {
         title
         abstract
+        topics
+        relevance
         authors {
           firstName
           lastName
@@ -90,15 +95,38 @@ const defaultTableConfig = {
         key: 'literatureType',
         labelHandle: 'literatureType',
         hideFalsy: true
-      }
+      },
+      filterKey: 'literatureType',
+      cellFilter: true,
     },
     {
       trKey: 'filters.year.name',
       value: {
-        filterKey: 'year',
         key: 'year',
         hideFalsy: true
-      }
+      },
+      cellFilter: true,
+      filterKey: 'year',
+    },
+    {
+      trKey: 'filters.relevance.name',
+      value: {
+        key: 'relevance',
+        labelHandle: 'relevance',
+        hideFalsy: true
+      },
+      filterKey: 'relevance',
+      cellFilter: true,
+    },
+    {
+      trKey: 'filters.topics.name',
+      value: {
+        key: 'topics',
+        labelHandle: 'topics',
+        hideFalsy: true
+      },
+      filterKey: 'topics',
+      cellFilter: true,
     },
     // {
     //   trKey: 'tableHeaders.occurrences',
@@ -120,7 +148,12 @@ const defaultTableConfig = {
 };
 
 function Table() {
-  return <StandardSearchTable graphQuery={QUERY} resultKey='literatureSearch' defaultTableConfig={defaultTableConfig} />
+  return <StandardSearchTable 
+    graphQuery={QUERY} 
+    resultKey='literatureSearch' 
+    defaultTableConfig={defaultTableConfig}
+    exportTemplate={({filter}) => `${env.API_V1}/literature/export?format=TSV&${filter ? queryString.stringify(filter) : ''}`}
+    />
 }
 
 export default Table;

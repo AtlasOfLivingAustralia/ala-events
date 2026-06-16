@@ -3,8 +3,9 @@ const compression = require('compression');
 const _ = require('lodash');
 const cors = require('cors');
 const config = require('./config');
-
 var queue = require('express-queue');
+const { loggingMiddleware, errorLoggingMiddleware } = require('./middleware');
+
 const queueOptions = {
   activeLimit: 10,
   queuedLimit: 2000,
@@ -14,8 +15,11 @@ const queueOptions = {
   }
 };
 
-let literature, occurrence, eventOccurrence, dataset, event;
-if (config.literature) {
+let content, literature, occurrence, eventOccurrence, dataset, event;
+if (config.content) {
+  content = require('./resources/content');
+}
+if (config.content) {
   literature = require('./resources/literature');
 }
 if (config.eventOccurrence) {
@@ -52,6 +56,9 @@ if (!config.debug) {
   app.use(setCache)
 }
 
+// Add logging middleware
+app.use(loggingMiddleware);
+
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -85,6 +92,15 @@ const temporaryAuthMiddleware = function (req, res, next) {
 }
 // use per route instead
 // app.use(temporaryAuthMiddleware)
+
+if (content) {
+  app.post('/content/meta', asyncMiddleware(postMetaOnly(content)));
+  app.get('/content/meta', asyncMiddleware(getMetaOnly(content)));
+
+  app.post('/content', queue(queueOptions), asyncMiddleware(searchResource(content)));
+  app.get('/content', queue(queueOptions), asyncMiddleware(searchResource(content)));
+  app.get('/content/key/:id', asyncMiddleware(keyResource(content)));
+}
 
 if (literature) {
   app.post('/literature/meta', asyncMiddleware(postMetaOnly(literature)));
@@ -145,10 +161,10 @@ function searchResource(resource) {
     try {
       // console.log(`queueLength: ${eventQueue.queue.getLength()}`);
 
-      const { metrics, predicate, size, from, randomSeed, randomize, includeMeta } = parseQuery(req, res, next, { get2predicate, get2metric });
+      const { metrics, predicate, size, from, randomSeed, randomize, includeMeta, sortBy, sortOrder } = parseQuery(req, res, next, { get2predicate, get2metric });
       const aggs = metric2aggs(metrics);
       const query = predicate2query(predicate);
-      const { result, esBody } = await dataSource.query({ query, aggs, size, from, metrics, randomSeed, randomize, req });
+      const { result, esBody } = await dataSource.query({ query, aggs, size, from, metrics, randomSeed, randomize, sortBy, sortOrder, req });
       const meta = {
         GET: req.query,
         predicate,
@@ -192,6 +208,8 @@ function parseQuery(req, res, next, { get2predicate, get2metric }) {
       randomSeed,
       randomize,
       includeMeta = false,
+      sortBy,
+      sortOrder,
       ...otherParams
     } = query;
 
@@ -214,7 +232,7 @@ function parseQuery(req, res, next, { get2predicate, get2metric }) {
     const intFrom = parseInt(from);
     const intSeed = parseInt(randomSeed);
     const boolRandomize = (randomize + '').toLowerCase() === 'true';
-    const result = { metrics, predicate, size: intSize, from: intFrom, randomSeed: intSeed, randomize: boolRandomize, includeMeta };
+    const result = { metrics, predicate, size: intSize, from: intFrom, randomSeed: intSeed, randomize: boolRandomize, includeMeta, sortBy, sortOrder };
     return result;
   } catch (err) {
     next(err);
@@ -279,6 +297,7 @@ function getMetaOnly(resource) {
 
 app.use(unknownRouteHandler);
 app.use(errorHandler);
+app.use(errorLoggingMiddleware);
 
 app.listen(config.port, () =>
   console.log(`🚀 Server ready at http://localhost:${config.port}`)

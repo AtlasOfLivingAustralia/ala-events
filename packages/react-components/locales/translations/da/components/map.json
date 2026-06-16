@@ -11,5 +11,10 @@
         "MERCATOR": "Mercator",
         "ANTARCTIC": "Antarktis",
         "PLATE_CAREE": "Plade Carée"
-    }
+    },
+    "failedToGetUserLocation": {
+        "title": "GBIF annoteret Arkiv",
+        "message": "GBIF annoteret Arkiv"
+    },
+    "filterByView": ""
 }

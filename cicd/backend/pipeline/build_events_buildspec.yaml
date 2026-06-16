@@ -1,0 +1,51 @@
+version: 0.2
+###
+# This build project builds the events sub services - es, es2vt and graphql and pushes the Docker images
+# to Amazon ECR
+
+env:
+  shell: bash
+  variables:
+    JAVA_TOOL_OPTIONS: -Dhttps.protocols=TLSv1.2
+  secrets-manager:
+    DOCKER_PASSWORD: $ALA_SECRETS_NAME:dockerhub-password
+  exported-variables:
+    - BUILD_TAG_ES_API
+    - BUILD_TAG_ES2VT
+    - BUILD_TAG_GRAPHQL_API
+phases:
+  install:
+    commands:
+      #- echo Installing dependencies...
+
+  build:
+    commands:
+      - echo Build started on $(date)
+      - echo Logging in to Amazon ECR...
+      - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - |
+        SERVICES=("es-api" "es2vt" "graphql-api")
+        for SERVICE in "${SERVICES[@]}"; do
+          BUILD_TAG="$SERVICE-$CLEAN_BRANCH-$CODEBUILD_BUILD_NUMBER"
+          UPPER=$(echo "$SERVICE" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+          echo "BUILD_TAG_${UPPER}=$BUILD_TAG" >> build.env
+          export "BUILD_TAG_${UPPER}=${BUILD_TAG}" 
+          echo "Building Docker image for $SERVICE..."
+          docker build -t "$IMAGE_NAME-$SERVICE:$IMAGE_TAG" -f "packages/$SERVICE/Dockerfile" "packages/$SERVICE"
+          aws ecr get-login-password | docker login -u AWS --password-stdin "https://$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+          echo "Tagging Docker image for $SERVICE..."
+          docker tag "$IMAGE_NAME-$SERVICE:$IMAGE_TAG" "$ECR_REPO:$BUILD_TAG"
+          docker tag "$IMAGE_NAME-$SERVICE:$IMAGE_TAG" "$ECR_REPO:$SERVICE-$IMAGE_TAG"
+          echo "Pushing Docker image for $SERVICE..."
+          docker push "$ECR_REPO:$BUILD_TAG"
+          docker push "$ECR_REPO:$SERVICE-$IMAGE_TAG"
+        done
+
+  post_build:
+    commands:
+      - echo Post-build phase...
+      - echo Build completed on $(date)
+
+artifacts:
+  files:
+    - build.env

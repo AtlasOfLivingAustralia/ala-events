@@ -12,8 +12,6 @@ import { MVT as MVTFormat } from 'ol/format';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import klokantech from './openlayers/styles/klokantech.json';
 
-// import mapboxBright from './openlayers/styles/klokantech2.json';
-const token = 'pk.eyJ1IjoiZ2JpZiIsImEiOiJja3VmZm50Z3kxcm1vMnBtdnBmeGd5cm9hIn0.M2z2n9QP9fRHZUCw9vbgOA';
 var interactions = olInteraction.defaults({ altShiftDragRotate: false, pinchRotate: false, mouseWheelZoom: true });
 
 const mapStyles = {
@@ -69,7 +67,17 @@ class Map extends Component {
         this.zoomIn();
       } else if (this.props.latestEvent?.type === 'ZOOM_OUT') {
         this.zoomOut();
+      } else if (this.props.latestEvent?.type === 'ZOOM_TO') {
+        const currentProjection = projections[this.props.mapConfig?.projection || 'EPSG_3031'];
+        const newView = currentProjection.getView(this.props.latestEvent.lat, this.props.latestEvent.lng, this.props.latestEvent.zoom);
+        this.map.setView(newView);
+      } else if (this.props.latestEvent?.type === 'EXPLORE_AREA') {
+        this.exploreArea();
       }
+    }
+    // check if the size of the map container has changed and if so resize the map
+    if ((prevProps.height !== this.props.height || prevProps.width !== this.props.width) && this.mapLoaded) {
+      this.map.updateSize();
     }
 
     // TODO: monitor theme and update maps accordingly
@@ -110,6 +118,18 @@ class Map extends Component {
     var view = this.map.getView();
     view.setZoom(view.getZoom() - 1);
   };
+
+  exploreArea() {
+    // get the current view of the map as a bounding box and send it to the parent component
+    const { listener } = this.props;
+    if (!listener || typeof listener !== 'function') return;
+    const view = this.map.getView();
+    const extent = view.calculateExtent(this.map.getSize());
+    const leftTop = transform([extent[0], extent[3]], view.getProjection(), 'EPSG:4326');
+    const rightBottom = transform([extent[2], extent[1]], view.getProjection(), 'EPSG:4326');
+    
+    listener({ type: 'EXPLORE_AREA', bbox: {top: leftTop[1], left: leftTop[0], bottom: rightBottom[1], right: rightBottom[0]} });
+  }
 
   removeLayer(name) {
     this.map.getLayers().getArray()
@@ -302,8 +322,8 @@ class Map extends Component {
   }
 
   render() {
-    const { query, onMapClick, onPointClick, predicateHash, ...props } = this.props;
-    return <div ref={this.myRef} {...props} />
+    const { query, onMapClick, onPointClick, predicateHash, className, ...props } = this.props;
+    return <div ref={this.myRef} className={className} />
   }
 }
 

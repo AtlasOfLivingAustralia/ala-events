@@ -18,9 +18,9 @@ var client = new Client({
   requestTimeout: env.literature.requestTimeout || 60000
 });
 
-async function query({ query, aggs, size = 20, from = 0, req }) {
-  if (parseInt(from) + parseInt(size) > env.literature.maxResultWindow) {
-    throw new ResponseError(400, 'BAD_REQUEST', `'from' + 'size' must be ${env.literature.maxResultWindow} or less`);
+async function query({ query, aggs, size = 20, from = 0, metrics, req }) {
+  if (parseInt(from) + parseInt(size) > env.content.maxResultWindow) {
+    throw new ResponseError(400, 'BAD_REQUEST', `'from' + 'size' must be ${env.content.maxResultWindow} or less`);
   }
   const esQuery = {
     sort: [
