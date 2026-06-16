@@ -1,4 +1,4 @@
 import hashMiddleware from './hash';
-import injectQuery from './injectQuery';
+import mutateQuery from './query';
 
-export { hashMiddleware, injectQuery };
+export { hashMiddleware, mutateQuery };

@@ -14,7 +14,7 @@ import depthLimit from 'graphql-depth-limit';
 
 // Local imports
 import config from './config';
-import { hashMiddleware, injectQuery } from './middleware';
+import { hashMiddleware, mutateQuery } from './middleware';
 import health from './health';
 // get the full schema of what types, enums, scalars and queries are available
 import getSchema from './typeDefs';
@@ -84,12 +84,10 @@ async function initializeServer() {
   );
   app.use(express.static('public'));
   app.use(express.json());
+  app.use(mutateQuery);
 
   // extract query and variables from store if a hash is provided instead of a query or variable
   app.use('/graphql', hashMiddleware);
-
-  // Add script tag to playground with linked query
-  app.use('/graphql', injectQuery);
 
   // link to query and variables
   app.get('/getIds', (req, res) => {
