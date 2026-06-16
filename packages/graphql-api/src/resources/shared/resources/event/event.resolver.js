@@ -171,8 +171,8 @@ export default {
       query,
       { dataSources },
     ) => {
-      if (typeof key === 'undefined' || key === null) return null;
-      return dataSources.eventAPI.getEventByKey({ key, datasetKey });
+      if (key == null || key === '' || datasetKey == null) return null;
+      return dataSources.eventAPI.getEventByKey({ eventID: key, datasetKey });
     },
     dataset: ({ datasetKey }, query, { dataSources }) => {
       if (typeof datasetKey === 'undefined' || datasetKey === null) return null;
