@@ -34,8 +34,7 @@ const hashMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const isPOST = req.method === 'POST';
   const query = isPOST ? req.body.query : req.query.query;
   const queryId = isPOST ? req.body.queryId : req.query.queryId;
-  // const { variables } = req.body; // Do not cache variables that come as GET
-  const variables = null;
+  const { variables } = req.body || {}; // Do not cache variables that come as GET
   const variablesId = isPOST ? req.body.variablesId : req.query.variablesId;
 
   // used to track if the provided ids are unknown
