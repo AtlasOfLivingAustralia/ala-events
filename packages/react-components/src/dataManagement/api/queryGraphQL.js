@@ -8,9 +8,12 @@ const queues = {};
 let CancelToken = axios.CancelToken;
 const maxGETLength = 1000;
 
-function query(query, { variables, client }, {name: queueName, concurrent = 1, interval = 0} = {}) {
+function query(query, { variables, client }, { name: queueName, concurrent = 1, interval = 0 } = {}) {
   const graphqlEndpoint = client?.endpoint;
-  const headers = client?.headers;
+  const headers = {
+    ...(client?.headers || {}),
+    'Apollo-Require-Preflight': true
+  };
   const queryId = hash(query);
   const queryParams = { queryId, strict: true };
   const variablesTooLongForGET = variables && encodeURIComponent(JSON.stringify(variables)).length > maxGETLength;
@@ -54,9 +57,9 @@ function query(query, { variables, client }, {name: queueName, concurrent = 1, i
             resolve(netWorkErrorResponse(error));
           }
         })
-       if (!queueName) {
+      if (!queueName) {
         startRequest();
-       } else {
+      } else {
         if (!queues[queueName]) {
           queues[queueName] = new Queue({
             concurrent,
@@ -65,7 +68,7 @@ function query(query, { variables, client }, {name: queueName, concurrent = 1, i
           });
         }
         queues[queueName].enqueue(startRequest);
-       }
+      }
     }),
     cancel: reason => cancel(reason || 'CANCELED')
   }
