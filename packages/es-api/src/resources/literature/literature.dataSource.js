@@ -15,7 +15,12 @@ const agent = () => new Agent({
 var client = new Client({
   nodes: env.literature.hosts,
   maxRetries: env.literature.maxRetries || 3,
-  requestTimeout: env.literature.requestTimeout || 60000
+  requestTimeout: env.literature.requestTimeout || 60000,
+  auth: {
+    username: env.event.username,
+    password: env.event.password
+  },
+  httpAuth: `${env.event.username}:${env.event.password}`
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, req }) {

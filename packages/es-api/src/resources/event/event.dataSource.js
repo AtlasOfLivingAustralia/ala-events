@@ -7,9 +7,6 @@ const { queryReducer } = require('../../responseAdapter');
 
 const searchIndex = env.event.index || 'event';
 
-// this isn't an ideal solution, but we keep changing between using an http and https agent. vonfig should require code change as well
-const isHttpsEndpoint = env.event.hosts[0].startsWith('https');
-
 const client = new Client({
   nodes: env.event.hosts,
   maxRetries: env.event.maxRetries || 3,
@@ -18,6 +15,7 @@ const client = new Client({
     username: env.event.username,
     password: env.event.password
   },
+  httpAuth: `${env.event.username}:${env.event.password}`
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, randomSeed, randomize, req }) {

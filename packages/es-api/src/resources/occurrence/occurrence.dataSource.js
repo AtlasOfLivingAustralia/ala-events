@@ -10,7 +10,12 @@ const searchIndex = env.occurrence.index || 'occurrence';
 const client = new Client({
   nodes: env.occurrence.hosts,
   maxRetries: env.occurrence.maxRetries || 3,
-  requestTimeout: env.occurrence.requestTimeout || 60000
+  requestTimeout: env.occurrence.requestTimeout || 60000,
+  auth: {
+    username: env.eventOccurrence.username,
+    password: env.eventOccurrence.password
+  },
+  httpAuth: `${env.eventOccurrence.username}:${env.eventOccurrence.password}`
 });
 
 async function query({ query, aggs, size = 20, from = 0, metrics, req }) {
