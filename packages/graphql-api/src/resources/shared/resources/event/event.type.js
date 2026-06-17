@@ -115,7 +115,6 @@ export default gql`
     get dataset information via EML
     """
     dataset: JSON!
-    extensions: EventExtensions
     """
     Get number of distinct species for this event and its children
     """

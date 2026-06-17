@@ -24,6 +24,9 @@ import resolvers from './resolvers';
 import api from './dataSources';
 // we will attach a user if an authorization header is present.
 import extractUser from './helpers/auth/extractUser';
+import ipController from './api-utils/ip2country.ctrl.js';
+import polygonName from './api-utils/polygonName.ctrl.js';
+// import { loggingPlugin } from './plugins/loggingPlugin';
 
 type DataSources = Record<string, DataSource>;
 type DataSourcesFn = () => DataSources;
@@ -71,7 +74,8 @@ async function initializeServer() {
       ApolloServerPluginCacheControl({
         defaultMaxAge: config.debug ? 0 : 600,
       }),
-      ApolloDataSources(({ dataSources: dataSourcesFn }))
+      ApolloDataSources(({ dataSources: dataSourcesFn })),
+      // loggingPlugin,
     ],
     logger: console,
   });
@@ -125,6 +129,8 @@ async function initializeServer() {
           abortController: controller,
           userAgent: get(req, 'headers.User-Agent') || 'GBIF_GRAPHQL_API',
           referer: get(req, 'headers.referer') || null,
+          locale: get(req, 'headers.locale') || 'en-GB',
+          preview: get(req, 'headers.preview') === 'true',
         };
       },
     }),
