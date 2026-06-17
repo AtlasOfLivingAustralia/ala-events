@@ -5,6 +5,9 @@ import env from '../../../.env.json';
 const client = new ApiClient({
   gql: {
     endpoint: env.GRAPH_API,
+    headers: {
+      'Apollo-Require-Preflight': true
+    }
   },
   v1: {
     endpoint: env.API_V1
@@ -17,7 +20,7 @@ const client = new ApiClient({
   },
   utils: {
     endpoint: env.UTILS_API
-  }
+  },
 });
 
 // A context to share state for the full app/component
