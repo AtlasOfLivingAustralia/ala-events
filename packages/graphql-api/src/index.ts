@@ -86,7 +86,7 @@ async function initializeServer() {
     cors({
       origin: '*',
       methods: ['GET', 'POST', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Apollo-Require-Preflight'],
     }),
   );
   app.use(express.static('public'));
