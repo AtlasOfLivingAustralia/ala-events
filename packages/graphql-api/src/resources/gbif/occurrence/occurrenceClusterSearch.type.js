@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-server';
 
 const typeDef = gql`
   extend type Query {
@@ -32,4 +32,4 @@ const typeDef = gql`
   }
 `;
 
-export default typeDef;
+module.exports = typeDef;

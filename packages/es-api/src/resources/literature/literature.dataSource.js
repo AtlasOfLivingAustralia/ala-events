@@ -1,4 +1,5 @@
 const { Client } = require('@elastic/elasticsearch');
+const Agent = require('agentkeepalive');
 const { ResponseError } = require('../errorHandler');
 const { search } = require('../esRequest');
 const env = require('../../config');
@@ -13,13 +14,10 @@ const agent = () => new Agent({
 });
 
 var client = new Client({
-  nodes: env.literature.hosts,
-  maxRetries: env.literature.maxRetries || 3,
-  requestTimeout: env.literature.requestTimeout || 60000,
-  auth: {
-    username: env.event.username,
-    password: env.event.password
-  },
+  nodes: env.content.hosts,
+  maxRetries: env.content.maxRetries || 3,
+  requestTimeout: env.content.requestTimeout || 60000,
+  agent,
   httpAuth: `${env.event.username}:${env.event.password}`
 });
 
@@ -43,7 +41,7 @@ async function query({ query, aggs, size = 20, from = 0, metrics, req }) {
   body.hits.hits = body.hits.hits.map(n => reduce(n));
   return {
     esBody: esQuery,
-    result: queryReducer({ body, size, from })
+    result: queryReducer({ body, size, from, metrics })
   };
 }
 

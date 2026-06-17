@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const compression = require('compression');
 const _ = require('lodash');
 const cors = require('cors');
@@ -40,7 +41,7 @@ const app = express();
 app.use(cors());
 app.use(compression());
 app.use(express.static('public'));
-app.use(express.json());
+app.use(bodyParser.json());
 
 let setCache = function (req, res, next) {
   const period = 600; // unit seconds
@@ -75,18 +76,8 @@ const temporaryAuthMiddleware = function (req, res, next) {
   } else if (apiKey !== config.apiKey || !config.apiKey) {
     next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
   }
-
-  // Express 5 Safe: Redefine the query object without the apiKey property
-  const updatedQuery = { ...req.query };
-  delete updatedQuery.apiKey;
-
-  Object.defineProperty(req, 'query', {
-    value: updatedQuery,
-    writable: true,
-    configurable: true,
-    enumerable: true
-  });
-
+  // the apiKey shouldn't be used elsewhere and shouldn't be interpreted as a es query param
+  delete req.query.apiKey;
   // Pass to next layer of middleware
   next()
 }
@@ -295,10 +286,10 @@ function getMetaOnly(resource) {
   }
 }
 
-app.use(unknownRouteHandler);
+app.get('*', unknownRouteHandler);
 app.use(errorHandler);
 app.use(errorLoggingMiddleware);
 
-app.listen(config.port, () =>
+app.listen({ port: config.port }, () =>
   console.log(`🚀 Server ready at http://localhost:${config.port}`)
 );

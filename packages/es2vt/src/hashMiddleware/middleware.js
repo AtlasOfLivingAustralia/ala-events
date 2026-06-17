@@ -45,7 +45,7 @@ const hashMiddleware = function (req, res, next) {
     res.set('X-query-ID', queryKey);
     if (queryId && queryId !== queryKey) {
       // A hash has been provided that conflicts with the server hash. return an error
-      return sendHashError(req, res, next, { error: 'HASH_QUERY_CONFLICT' });
+      return sendHashError(req, res, next, {error: 'HASH_QUERY_CONFLICT'});
     }
   }
 
@@ -57,7 +57,7 @@ const hashMiddleware = function (req, res, next) {
       console.log('no stored query')
     } else {
       if (req.method === 'POST') req.body.query = storedQuery;
-      if (req.method === 'GET') res.locals.query = storedQuery;
+      if (req.method === 'GET') req.query.query = storedQuery;
     }
   }
 
@@ -67,7 +67,7 @@ const hashMiddleware = function (req, res, next) {
       unknownQueryId
     });
   }
-
+  
   next();
 }
 
