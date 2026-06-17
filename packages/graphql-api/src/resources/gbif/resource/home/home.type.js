@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-core");
+import gql from 'graphql-tag';
 
 const typeDef = gql`
   extend type Query {
