@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server';
+import gql from 'graphql-tag';
 
 export default gql`
   extend type Query {
@@ -115,6 +115,7 @@ export default gql`
     get dataset information via EML
     """
     dataset: JSON!
+    extensions: EventExtensions
     """
     Get number of distinct species for this event and its children
     """

@@ -13,7 +13,8 @@ const cliOptions = [
   { name: 'port', alias: 'p', type: Number },
   { name: 'environment', type: String },
 ];
-const options = commandLineArgs(cliOptions);
+
+const options = commandLineArgs(cliOptions, { partial: true });
 
 const config = _.merge(
   { environment: 'dev' },

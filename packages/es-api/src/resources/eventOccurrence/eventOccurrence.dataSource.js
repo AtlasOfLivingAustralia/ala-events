@@ -1,6 +1,5 @@
 // const elasticsearch = require('elasticsearch');
 const { Client } = require('@elastic/elasticsearch');
-const Agent = require('agentkeepalive');
 const { ResponseError } = require('../errorHandler');
 const { search } = require('../esRequest');
 const env = require('../../config');
@@ -9,20 +8,11 @@ const { queryReducer } = require('../../responseAdapter');
 
 const searchIndex = env.eventOccurrence.index || 'eventOccurrence';
 
-// this isn't an ideal solution, but we keep changing between using an http and https agent. vonfig should require code change as well
-const isHttpsEndpoint = env.eventOccurrence.hosts[0].startsWith('https');
-const AgentType = isHttpsEndpoint ? Agent.HttpsAgent : Agent;
-
-const agent = () => new AgentType({
-  maxSockets: 1000, // Default = Infinity
-  keepAlive: true
-});
 
 const client = new Client({
   nodes: env.eventOccurrence.hosts,
   maxRetries: env.eventOccurrence.maxRetries || 3,
   requestTimeout: env.eventOccurrence.requestTimeout || 60000,
-  agent,
   auth: {
     username: env.eventOccurrence.username,
     password: env.eventOccurrence.password

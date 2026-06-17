@@ -13,8 +13,7 @@ export default {
         taxon: key,
         size,
         from,
-        params,
-        dataSources,
+        params
       }),
   },
 };

@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const compression = require('compression');
 const config = require('./config');
 const eventSource = require('./resources/event');
@@ -12,7 +11,7 @@ const { asyncMiddleware, ResponseError, errorHandler, unknownRouteHandler } = re
 const app = express();
 app.use(compression());
 app.use(express.static('public'));
-app.use(bodyParser.json());
+app.use(express.json());
 
 let setCache = function (req, res, next) {
   const period = 600; // unit seconds
@@ -47,10 +46,20 @@ app.post('/register', function (req, res, next) {
   } else if (apiKey !== config.apiKey || !config.apiKey) {
     next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
   }
-  delete req.query.apiKey;
+
+  // Express 5 Safe: Redefine the query object without the apiKey property
+  const updatedQuery = { ...req.query };
+  delete updatedQuery.apiKey;
+
+  Object.defineProperty(req, 'query', {
+    value: updatedQuery,
+    writable: true,
+    configurable: true,
+    enumerable: true
+  });
 
   //now save the filter and return a token
-  res.json({queryId: res.get('X-query-ID')})
+  res.json({ queryId: res.get('X-query-ID') })
 });
 
 // get a vactor tile passing a token as a query parameter to filter
@@ -62,8 +71,8 @@ function searchMvt(dataSource) {
       return next(new ResponseError(403, 'temporaryAuthentication', `Missing queryId`));
     }
     try {
-      const query = req?.query?.query;
-      const tile = await eventSource.queryMvt({ query, tileParams: {...req.params} });
+      const query = res?.locals?.query;
+      const tile = await eventSource.queryMvt({ query, tileParams: { ...req.params } });
       res.writeHead(200, {
         'content-disposition': 'inline',
         'content-length': tile ? `${tile.body.length}` : `0`,
@@ -81,9 +90,9 @@ function searchMvt(dataSource) {
 }
 
 
-app.get('*', unknownRouteHandler);
+app.use(unknownRouteHandler);
 app.use(errorHandler);
 
-app.listen({ port: config.port }, () =>
+app.listen(config.port, () =>
   console.log(`🚀 Server ready at http://localhost:${config.port}`)
 );
