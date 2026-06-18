@@ -10,10 +10,7 @@ const maxGETLength = 1000;
 
 function query(query, { variables, client }, { name: queueName, concurrent = 1, interval = 0 } = {}) {
   const graphqlEndpoint = client?.endpoint;
-  const headers = {
-    ...(client?.headers || {}),
-    'Apollo-Require-Preflight': true
-  };
+  const headers = client?.headers;
   const queryId = hash(query);
   const queryParams = { queryId, strict: true };
   const variablesTooLongForGET = variables && encodeURIComponent(JSON.stringify(variables)).length > maxGETLength;
