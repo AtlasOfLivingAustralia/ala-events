@@ -11,7 +11,6 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.17.14",
     "command-line-args": "^6.0.2",
-    "compression": "^1.8.1",
     "express": "^5.2.1",
     "lodash": "^4.18.1",
     "lru-cache": "^11.5.1",

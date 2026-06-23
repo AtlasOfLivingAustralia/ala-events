@@ -1,5 +1,4 @@
 const express = require('express');
-const compression = require('compression');
 const _ = require('lodash');
 const cors = require('cors');
 const config = require('./config');
@@ -38,7 +37,6 @@ const { asyncMiddleware, ResponseError, errorHandler, unknownRouteHandler } = re
 
 const app = express();
 app.use(cors());
-app.use(compression());
 app.use(express.static('public'));
 app.use(express.json());
 

@@ -1,5 +1,4 @@
 const express = require('express');
-const compression = require('compression');
 const config = require('./config');
 const eventSource = require('./resources/event');
 const _ = require('lodash');
@@ -9,7 +8,6 @@ const { hashMiddleware } = require('./hashMiddleware');
 const { asyncMiddleware, ResponseError, errorHandler, unknownRouteHandler } = require('./resources/errorHandler');
 
 const app = express();
-app.use(compression());
 app.use(express.static('public'));
 app.use(express.json());
 
