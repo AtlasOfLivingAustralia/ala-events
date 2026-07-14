@@ -133,7 +133,7 @@ export function EventDatasetSidebar({
                       {dataset.citation}
                     </V>
                   </>}
-                  {dataset?.methods.length > 0 && <>
+                  {dataset?.methods?.length > 0 && <>
                     <T>Methods</T>
                     {dataset.methods.map((method, i) => {
                       if (typeof method !== 'object') return <V>Unspecified</V>;
