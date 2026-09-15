@@ -7,6 +7,11 @@ metadata:
     app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es-api
 spec:
   replicas: {{ .Values.esApi.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       {{- include "ala-events.selectorLabels" . | nindent 6 }}
@@ -31,6 +36,7 @@ spec:
             - containerPort: 4001
           resources:
             {{- toYaml .Values.esApi.resources | nindent 12 }}
+          {{- include "ala-events.probes" .Values.esApi | nindent 10 }}
           volumeMounts:
             - name: events-config
               mountPath: /usr/src/.env
@@ -49,6 +55,11 @@ metadata:
     app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-es2vt
 spec:
   replicas: {{ .Values.es2vt.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       {{- include "ala-events.selectorLabels" . | nindent 6 }}
@@ -70,6 +81,9 @@ spec:
             value: "0"
         ports:
         - containerPort: 4002
+        resources:
+          {{- toYaml .Values.es2vt.resources | nindent 10 }}
+        {{- include "ala-events.probes" .Values.es2vt | nindent 8 }}
         volumeMounts:
         - name: events-config
           mountPath: /usr/src/.env
@@ -88,6 +102,11 @@ metadata:
     app.kubernetes.io/name: {{ include "ala-events.fullname" . }}-graphql-api
 spec:
   replicas: {{ .Values.graphqlApi.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       {{- include "ala-events.selectorLabels" . | nindent 6 }}
@@ -106,26 +125,13 @@ spec:
         image: "{{ .Values.graphqlApi.image.repository }}:{{ .Values.graphqlApi.image.tag }}"
         ports:
         - containerPort: 4000
+        resources:
+          {{- toYaml .Values.graphqlApi.resources | nindent 10 }}
+        {{- include "ala-events.probes" .Values.graphqlApi | nindent 8 }}
         volumeMounts:
         - name: events-config
           mountPath: /usr/src/.env
           subPath: graphql-api.env
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 4000
-          initialDelaySeconds: 15
-          periodSeconds: 20
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 4000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
       volumes:
         - name: events-config
           configMap:
