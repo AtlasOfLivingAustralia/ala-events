@@ -78,6 +78,41 @@ esApi:
     port: 4001
     targetPort: 4001
 
+  # / on port 4001 returns 200 once the Express app is listening.
+  startupProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 4001
+      scheme: HTTP
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 24 # 24 failures * 5s + 5s initial delay
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 4001
+      scheme: HTTP
+    initialDelaySeconds: 0
+    periodSeconds: 20
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 4001
+      scheme: HTTP
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
 es2vt:
 
   replicaCount: 1
@@ -117,6 +152,41 @@ es2vt:
     port: 4002
     targetPort: 4002
 
+  # / on port 4002 returns 200 once the Express app is listening.
+  startupProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 4002
+      scheme: HTTP
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 24 # 24 failures * 5s + 5s initial delay
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 4002
+      scheme: HTTP
+    initialDelaySeconds: 0
+    periodSeconds: 20
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 4002
+      scheme: HTTP
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
 graphqlApi:
 
   replicaCount: 1
@@ -155,6 +225,41 @@ graphqlApi:
     type: ClusterIP
     port: 4000
     targetPort: 4000
+
+  # /health on port 4000 returns 200 once the Express app is listening.
+  startupProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 4000
+      scheme: HTTP
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 24 # 24 failures * 5s + 5s initial delay
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 4000
+      scheme: HTTP
+    initialDelaySeconds: 0
+    periodSeconds: 20
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 4000
+      scheme: HTTP
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
 
 # rds:
 #   externalName: "mysql-rds"

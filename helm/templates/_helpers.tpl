@@ -74,3 +74,45 @@ Create a comma seperated list of ES node names
 {{ $protocol }}://{{ $clusterName }}-{{ $nodeGroup }}-{{ $index0 }}:{{ $httpPort }}{{ if ne $index1 $nodeCount }},{{ end }}
   {{- end -}}
 {{- end -}}
+{{/*
+Render startup/liveness/readiness probes for one of the sub-services.
+Called with that service's values block, e.g. (include "ala-events.probes" .Values.esApi).
+*/}}
+{{- define "ala-events.probes" -}}
+{{- if .startupProbe.enabled }}
+startupProbe:
+  httpGet:
+    path: {{ .startupProbe.httpGet.path }}
+    port: {{ .startupProbe.httpGet.port }}
+    scheme: {{ .startupProbe.httpGet.scheme }}
+  initialDelaySeconds: {{ .startupProbe.initialDelaySeconds }}
+  periodSeconds: {{ .startupProbe.periodSeconds }}
+  timeoutSeconds: {{ .startupProbe.timeoutSeconds }}
+  successThreshold: {{ .startupProbe.successThreshold }}
+  failureThreshold: {{ .startupProbe.failureThreshold }}
+{{- end }}
+{{- if .livenessProbe.enabled }}
+livenessProbe:
+  httpGet:
+    path: {{ .livenessProbe.httpGet.path }}
+    port: {{ .livenessProbe.httpGet.port }}
+    scheme: {{ .livenessProbe.httpGet.scheme }}
+  initialDelaySeconds: {{ .livenessProbe.initialDelaySeconds }}
+  periodSeconds: {{ .livenessProbe.periodSeconds }}
+  timeoutSeconds: {{ .livenessProbe.timeoutSeconds }}
+  successThreshold: {{ .livenessProbe.successThreshold }}
+  failureThreshold: {{ .livenessProbe.failureThreshold }}
+{{- end }}
+{{- if .readinessProbe.enabled }}
+readinessProbe:
+  httpGet:
+    path: {{ .readinessProbe.httpGet.path }}
+    port: {{ .readinessProbe.httpGet.port }}
+    scheme: {{ .readinessProbe.httpGet.scheme }}
+  initialDelaySeconds: {{ .readinessProbe.initialDelaySeconds }}
+  periodSeconds: {{ .readinessProbe.periodSeconds }}
+  timeoutSeconds: {{ .readinessProbe.timeoutSeconds }}
+  successThreshold: {{ .readinessProbe.successThreshold }}
+  failureThreshold: {{ .readinessProbe.failureThreshold }}
+{{- end }}
+{{- end }}
