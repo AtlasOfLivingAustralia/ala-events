@@ -248,6 +248,28 @@ const config =
       "type": "keyword",
       "field": "occurrence.eventTypeHierarchyJoined",
     },
+    "eventType": {
+      "parentJoin": "event",
+      "config": {
+        "options": {
+          "eventType": {
+            "type": "keyword",
+            "field": "event.eventType.concept"
+          }
+        }
+      }
+    },
+    "measurementOrFactTypes": {
+      "parentJoin": "event",
+      "config": {
+        "options": {
+          "measurementOrFactTypes": {
+            "type": "keyword",
+            "field": "event.measurementOrFactTypes.keyword"
+          }
+        }
+      }
+    },
     "gadmGid": {
       "type": "keyword",
       "field": "occurrence.gadm.gids"
@@ -744,7 +766,7 @@ const config =
     },
     "gbifClassification_acceptedUsage_key": {
       "type": "keyword",
-      "field": "occurrence.gbifClassification.acceptedUsage.guid",
+      "field": "occurrence.gbifClassification.acceptedUsage.guid"
     },
     "gbifClassification_acceptedUsage_name": {
       "type": "text",

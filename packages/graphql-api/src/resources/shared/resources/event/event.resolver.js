@@ -137,6 +137,11 @@ export default {
         field: 'species',
         searchApi: dataSources.eventAPI.searchOccurrences,
       }),
+    taxa: (parent, query, { dataSources }) =>
+      getCardinality(parent._predicate, query, {
+        field: 'gbifClassification_acceptedUsage_key',
+        searchApi: dataSources.eventAPI.searchOccurrences,
+      }),
     datasetKey: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'datasetKey',

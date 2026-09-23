@@ -234,7 +234,7 @@ const getStats =
  */
 const getCardinality = (
   predicate,
-  { precision_threshold: precisionThreshhold = 10000 },
+  { precision_threshold: precisionThreshhold = 40000 },
   { searchApi, field },
 ) => {
   // generate the event search facet query, by inherting from the parent query, and map limit/offset to facet equivalents
