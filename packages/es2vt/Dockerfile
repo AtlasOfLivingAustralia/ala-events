@@ -1,4 +1,4 @@
-FROM node:24.18.0-alpine
+FROM node:24.21.0-alpine
 WORKDIR /usr/src/
 COPY package*.json ./
 RUN npm install
