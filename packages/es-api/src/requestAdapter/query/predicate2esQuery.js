@@ -58,6 +58,14 @@ function transform(p, config, isRootQuery) {
           }
         }
   }
+  if (config?.options?.[p.key]?.parentJoin) {
+    return {
+      has_parent: {
+        parent_type: config.options[p.key].parentJoin,
+        query: transform(p, config.options[p.key].config)
+      }
+    }
+  }
   // for making nested fields easier to query
   if (config?.options?.[p.key]?.type === 'flatNested') {
     return {

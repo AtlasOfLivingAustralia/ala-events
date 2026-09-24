@@ -123,7 +123,7 @@ function metric2aggs(metrics = {}, config) {
           aggs[name] = {
             cardinality: {
               field: conf.field,
-              precision_threshold: metric.precision_threshold || 10000
+              precision_threshold: metric.precision_threshold || 40000
             }
           };
           break;

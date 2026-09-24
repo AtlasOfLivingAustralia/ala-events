@@ -210,6 +210,10 @@ export default gql`
 
   type EventCardinality {
     species: Int!
+    """
+    Number of distinct accepted taxa (any rank) among occurrences matching the search
+    """
+    taxa: Int!
     datasetKey: Int!
     locationID: Int!
     parentEventID: Int!
