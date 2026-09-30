@@ -1,4 +1,4 @@
-import taxonMediaAPI from './taxonMedia.source';
+import taxonMediaAPI from './taxonMedia.source.js';
 
 export default {
   dataSource: {

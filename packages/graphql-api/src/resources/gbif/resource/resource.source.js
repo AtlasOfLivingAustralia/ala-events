@@ -1,10 +1,10 @@
-import { translateContentfulResponse, objectToQueryString } from '#/helpers/utils';
-import { RESTDataSource } from 'apollo-datasource-rest';
+import { translateContentfulResponse, objectToQueryString } from '../../../helpers/utils.js';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 
-export class ResourceAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
+export class ResourceAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async getEntryById({ id, preview, locale }) {
@@ -16,14 +16,16 @@ export class ResourceAPI extends RESTDataSource {
   }
 }
 
-export class ResourceSearchAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiEs;
+export class ResourceSearchAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiEs;
   }
 
   search = async (params, locale) => {
-    const response = await this.get(`/content`, objectToQueryString(params));
+    const response = await this.get(`/content`, {
+      params: objectToQueryString(params),
+    });
     return translateContentfulResponse(response.documents, locale);
   }
 

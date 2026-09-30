@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { LRUCache } from 'lru-cache';
 import hash from 'object-hash';
-import { ParsedQs } from 'qs';
+import type { ParsedQs } from 'qs';
 
 const queryCache = new LRUCache({ max: 10000 });
 const variablesCache = new LRUCache({ max: 10000 });
@@ -32,10 +32,14 @@ const hashMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
   // extract based on POST or GET
   const isPOST = req.method === 'POST';
-  const query = isPOST ? req.body.query : req.query.query;
-  const queryId = isPOST ? req.body.queryId : req.query.queryId;
-  const { variables } = req.body || {}; // Do not cache variables that come as GET
-  const variablesId = isPOST ? req.body.variablesId : req.query.variablesId;
+  if (isPOST && !req.body) {
+    req.body = {};
+  }
+  const body = req.body || {};
+  const query = isPOST ? body.query : req.query.query;
+  const queryId = isPOST ? body.queryId : req.query.queryId;
+  const { variables } = body; // Do not cache variables that come as GET
+  const variablesId = isPOST ? body.variablesId : req.query.variablesId;
 
   // used to track if the provided ids are unknown
   let unknownQueryId;

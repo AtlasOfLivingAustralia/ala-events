@@ -1,6 +1,6 @@
-import resolver from './organization.resolver';
-import typeDef from './organization.type';
-import organizationAPI from './organization.source';
+import resolver from './organization.resolver.js';
+import typeDef from './organization.type.js';
+import organizationAPI from './organization.source.js';
 
 export default {
   resolver,

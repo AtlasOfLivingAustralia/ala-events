@@ -6,12 +6,12 @@ import {
   getTemporal,
   getCardinality,
   getMultiFacet,
-} from './helpers/getMetrics';
-import { formattedCoordinates } from '#/helpers/utils';
-import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport';
-import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport';
-import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport';
-import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport';
+} from './helpers/getMetrics.js';
+import { formattedCoordinates } from '../../../../helpers/utils.js';
+import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport.js';
+import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport.js';
+import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport.js';
+import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport.js';
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {
   dictionary[facetName] = getFacet(facetName);

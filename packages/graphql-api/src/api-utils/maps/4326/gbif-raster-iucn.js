@@ -1,5 +1,5 @@
-import gbifTileAttribution from '../gbif-tile-attribution';
-import config from '../../../config';
+import gbifTileAttribution from '../gbif-tile-attribution.js';
+import config from '../../../config.js';
 
 export default function ({ iucnTaxonID, styleName, language, pixelRatio }) {
   let template = {

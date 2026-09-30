@@ -1,5 +1,5 @@
-import resolver from './scalars.resolver';
-import typeDef from './scalars.type';
+import resolver from './scalars.resolver.js';
+import typeDef from './scalars.type.js';
 
 export default {
   resolver,

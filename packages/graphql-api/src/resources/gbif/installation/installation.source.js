@@ -1,19 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class InstallationAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class InstallationAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchInstallations({ query }) {
-    return this.get('/installation', stringify(query, { indices: false }));
+    return this.get('/installation', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getInstallationByKey({ key }) {
@@ -21,10 +18,9 @@ class InstallationAPI extends RESTDataSource {
   }
 
   async getDatasets({ key, query }) {
-    return this.get(
-      `/installation/${key}/dataset`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/installation/${key}/dataset`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 }
 

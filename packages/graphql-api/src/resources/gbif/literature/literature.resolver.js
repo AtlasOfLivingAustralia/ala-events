@@ -1,18 +1,18 @@
-import { excerpt } from '#/helpers/utils';
+import { excerpt } from '../../../helpers/utils.js';
 import {
   getFacet,
   getStats,
   getCardinality,
   getHistogram,
   getAutoDateHistogram,
-} from '../getMetrics';
+} from '../getMetrics.js';
 import {
   facetFields,
   statsFields,
   cardinalityFields,
   histogramFields,
   dateHistogramFields,
-} from './helpers/fields';
+} from './helpers/fields/index.js';
 
 const getSourceSearch = (dataSources) => args => dataSources.literatureAPI.searchLiterature.call(dataSources.literatureAPI, args);
 

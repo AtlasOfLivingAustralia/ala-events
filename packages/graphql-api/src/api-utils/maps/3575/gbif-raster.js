@@ -1,4 +1,4 @@
-import gbifTileAttribution from '../gbif-tile-attribution';
+import gbifTileAttribution from '../gbif-tile-attribution.js';
 
 export default {
   version: 8,

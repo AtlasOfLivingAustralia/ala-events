@@ -1,6 +1,6 @@
-import resolver from './installation.resolver';
-import typeDef from './installation.type';
-import installationAPI from './installation.source';
+import resolver from './installation.resolver.js';
+import typeDef from './installation.type.js';
+import installationAPI from './installation.source.js';
 
 export default {
   resolver,

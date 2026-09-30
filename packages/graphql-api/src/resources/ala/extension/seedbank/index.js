@@ -1,4 +1,4 @@
-import typeDef from './seedbank.type';
+import typeDef from './seedbank.type.js';
 
 export default {
 	typeDef,

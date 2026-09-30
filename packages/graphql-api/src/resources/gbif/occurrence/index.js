@@ -1,8 +1,8 @@
-import resolver from './occurrence.resolver';
-import typeDef from './occurrence.type';
-import searchTypeDef from './occurrenceSearch.type';
-import searchClusterTypeDef from './occurrenceClusterSearch.type';
-import occurrenceAPI from './occurrence.source';
+import resolver from './occurrence.resolver.js';
+import typeDef from './occurrence.type.js';
+import searchTypeDef from './occurrenceSearch.type.js';
+import searchClusterTypeDef from './occurrenceClusterSearch.type.js';
+import occurrenceAPI from './occurrence.source.js';
 
 export default {
   resolver,

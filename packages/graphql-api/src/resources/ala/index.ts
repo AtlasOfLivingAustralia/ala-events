@@ -1,10 +1,10 @@
-export { default as scalars } from '../shared/scalars';
-export { default as event } from '../shared/resources/event';
-export { default as taxon } from './taxon';
+export { default as scalars } from '../shared/scalars/index.js';
+export { default as event } from '../shared/resources/event/index.ts';
+export { default as taxon } from './taxon/index.js';
 
 // Seed bank extension type
-export { default as seedBankExtension } from './extension/seedbank';
+export { default as seedBankExtension } from './extension/seedbank/index.js';
 
 // Taxon media querying using ALA Biocache source
-export { default as taxonMedia } from '../shared/resources/taxonMedia';
-export { default as taxonMediaBiocache } from './taxonMedia';
+export { default as taxonMedia } from '../shared/resources/taxonMedia/index.js';
+export { default as taxonMediaBiocache } from './taxonMedia/index.js';

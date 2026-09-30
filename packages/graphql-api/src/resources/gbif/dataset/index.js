@@ -1,7 +1,7 @@
-import datasetAPI from './dataset.source';
-import * as resolver from './dataset.resolver';
-import typeDef from './dataset.type';
-import checklistBankTypeDef from './checklistBankDataset.type';
+import datasetAPI from './dataset.source.js';
+import * as resolver from './dataset.resolver.js';
+import typeDef from './dataset.type.js';
+import checklistBankTypeDef from './checklistBankDataset.type.js';
 
 export default {
   resolver,

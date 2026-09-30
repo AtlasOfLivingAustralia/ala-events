@@ -1,6 +1,6 @@
-import resolver from './staffMember.resolver';
-import typeDef from './staffMember.type';
-import staffMemberAPI from './staffMember.source';
+import resolver from './staffMember.resolver.js';
+import typeDef from './staffMember.type.js';
+import staffMemberAPI from './staffMember.source.js';
 
 export default {
   resolver,

@@ -1,25 +1,26 @@
 /* eslint-disable class-methods-use-this */
 
-import { get } from 'lodash';
-import { RESTDataSource } from 'apollo-datasource-rest';
+import lodash from 'lodash';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import wikibase from 'wikibase-sdk';
-import { decorateProperty, getItemData, getIUCNRedListData } from './helpers';
+import { decorateProperty, getItemData, getIUCNRedListData } from './helpers.js';
+const { get } = lodash;
 
 const USER_AGENT = 'gbif-graphql/1.0';
 const WIKI_GBIF_TAXON_IDENTIFIER = 'P846';
 const IUCN_TAXON_IDENTIFIER = 'P627';
 const IUCN_CONSERVATION_STATUS = 'P141';
 
-class WikiDataAPI extends RESTDataSource {
-  constructor(config) {
-    super();
+class WikiDataAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
     this.baseURL = '';
-    this.wdk = wikibase(config.wikidata);
+    this.wdk = wikibase(options.config.wikidata);
   }
 
-  willSendRequest(request) {
-    request.headers.set('User-Agent', USER_AGENT);
-    request.headers.set('Accept', 'application/json');
+  willSendRequest(_path, request) {
+    request.headers['user-agent'] = USER_AGENT;
+    request.headers.Accept = 'application/json';
   }
 
   async getReverseClaims(property, value) {
@@ -222,9 +223,8 @@ class WikiDataAPI extends RESTDataSource {
         query,
       )}`,
     );
-    // apollo only accept a few content types so we have to parse it as JSON https://github.com/apollographql/apollo-server/issues/1976
-    // const entitiesIds = this.wdk.simplify.sparqlResults(response);
-    return JSON.parse(response);
+    // application/sparql-results+json is parsed by the REST client
+    return response;
   }
 
   getFirstMatch({ response }) {

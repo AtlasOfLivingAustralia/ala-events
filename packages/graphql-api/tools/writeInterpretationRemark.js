@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { getLatestInterpretationRemark } from '../src/health/components/interpretationRemark';
+import { getLatestInterpretationRemark } from '../src/health/components/interpretationRemark.js';
 
 const writeInterpretationRemark = async () => {
   try {
@@ -10,7 +10,7 @@ const writeInterpretationRemark = async () => {
 
     return fs
       .writeFile(
-        `${__dirname}/../src/helpers/enums/interpretationRemark.json`,
+        `${import.meta.dirname}/../src/helpers/enums/interpretationRemark.json`,
         JSON.stringify(interpretationremark, null, 2),
       )
       .then(() => console.log('Done.'));

@@ -1,5 +1,5 @@
-import resolver from './call.resolver';
-import typeDef from './call.type';
+import resolver from './call.resolver.js';
+import typeDef from './call.type.js';
 
 export default {
   resolver,

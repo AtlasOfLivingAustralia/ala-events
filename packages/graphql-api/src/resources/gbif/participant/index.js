@@ -1,6 +1,6 @@
-import resolver from './participant.resolver';
-import typeDef from './participant.type';
-import participantAPI from './participant.source';
+import resolver from './participant.resolver.js';
+import typeDef from './participant.type.js';
+import participantAPI from './participant.source.js';
 
 export default {
   resolver,

@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { KNOWN_BLOCK_TYPES, KNOWN_CAROUSEL_BLOCKS, KNOWN_FEATURE_TYPES } from "./acceptedTypes";
+import { KNOWN_BLOCK_TYPES, KNOWN_CAROUSEL_BLOCKS, KNOWN_FEATURE_TYPES } from "./acceptedTypes.js";
 
 const typeDef = gql`
   extend type Query {

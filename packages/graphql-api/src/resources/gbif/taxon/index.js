@@ -1,9 +1,10 @@
-import { merge } from 'lodash';
-import taxonResolver from './taxon.resolver';
-import taxonDetailsResolver from './taxonDetails.resolver';
-import taxonTypeDef from './taxon.type';
-import taxonDetailsTypeDef from './taxonDetails.type';
-import taxonAPI from './taxon.source';
+import lodash from 'lodash';
+import taxonResolver from './taxon.resolver.js';
+import taxonDetailsResolver from './taxonDetails.resolver.js';
+import taxonTypeDef from './taxon.type.js';
+import taxonDetailsTypeDef from './taxonDetails.type.js';
+import taxonAPI from './taxon.source.js';
+const { merge } = lodash;
 
 export default {
   resolver: merge({}, taxonResolver, taxonDetailsResolver),

@@ -1,19 +1,20 @@
-import { get } from 'lodash';
-import { RESTDataSource } from 'apollo-datasource-rest';
+import lodash from 'lodash';
+import GbifRESTDataSource from '../../../../datasources/GbifRESTDataSource.js';
 import { Parser } from 'xml2js';
+const { get } = lodash;
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
 
-class EventAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.config = config;
-    this.baseURL = config.apiEs;
+class EventAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiEs;
   }
 
-  willSendRequest(request) {
+  willSendRequest(path, request) {
     // now that we make a public version, we might as well just make it open since the key is shared with everyone
-    request.headers.set('Authorization', `ApiKey-v1 ${this.config.apiEsKey}`);
+    request.headers.Authorization = `ApiKey-v1 ${this.config.apiEsKey}`;
+    super.willSendRequest(path, request);
   }
 
   async searchEventDocuments({ query }) {
@@ -68,13 +69,13 @@ class EventAPI extends RESTDataSource {
     const body = { ...query, includeMeta: true };
     let response;
     if (JSON.stringify(body).length < urlSizeLimit) {
-      response = await this.get(
-        '/event',
-        { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
-      );
+      response = await this.get('/event', {
+        params: { body: JSON.stringify(body) },
+        signal: this.context.abortController.signal,
+      });
     } else {
-      response = await this.post('/event', body, {
+      response = await this.post('/event', {
+        body,
         signal: this.context.abortController.signal,
       });
     }
@@ -98,10 +99,10 @@ class EventAPI extends RESTDataSource {
       ...(year && { year })
     };
 
-    let response = await this.get(
-      '/event-occurrence', params,
-      { signal: this.context.abortController.signal },
-    );
+    let response = await this.get('/event-occurrence', {
+      params,
+      signal: this.context.abortController.signal,
+    });
 
     // map to support APIv1 naming
     response.documents.count = response.documents.total;
@@ -114,13 +115,13 @@ class EventAPI extends RESTDataSource {
     const body = { ...query, includeMeta: true };
     let response;
     if (JSON.stringify(body).length < urlSizeLimit) {
-      response = await this.get(
-        '/event-occurrence',
-        { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
-      );
+      response = await this.get('/event-occurrence', {
+        params: { body: JSON.stringify(body) },
+        signal: this.context.abortController.signal,
+      });
     } else {
-      response = await this.post('/event-occurrence', body, {
+      response = await this.post('/event-occurrence', {
+        body,
         signal: this.context.abortController.signal,
       });
     }
@@ -167,17 +168,16 @@ class EventAPI extends RESTDataSource {
 
   async getLocation({ locationID }) {
     const query = JSON.stringify({ locationID });
-    const response = await this.get(
-      '/event',
-      { body: query },
-      { signal: this.context.abortController.signal },
-    );
+    const response = await this.get('/event', {
+      params: { body: query },
+      signal: this.context.abortController.signal,
+    });
     return response.documents.results[0];
   }
 
   async meta({ query }) {
     const body = { ...query };
-    const response = await this.post('/event/meta', body);
+    const response = await this.post('/event/meta', { body });
     return response;
   }
 
@@ -187,8 +187,10 @@ class EventAPI extends RESTDataSource {
       const { query } = metaResponse;
       const response = await this.post(
         `${this.config.es2vt}/register`,
-        { query: { query, grid_type: 'centroid' } },
-        { signal: this.context.abortController.signal },
+        {
+          body: { query: { query, grid_type: 'centroid' } },
+          signal: this.context.abortController.signal,
+        },
       );
       return response.queryId;
     } catch (err) {

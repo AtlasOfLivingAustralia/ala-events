@@ -1,6 +1,6 @@
-import wikidataAPI from './wikidata.source';
-import resolver from './wikidata.resolver';
-import typeDef from './wikidata.type';
+import wikidataAPI from './wikidata.source.js';
+import resolver from './wikidata.resolver.js';
+import typeDef from './wikidata.type.js';
 
 export default {
   resolver,

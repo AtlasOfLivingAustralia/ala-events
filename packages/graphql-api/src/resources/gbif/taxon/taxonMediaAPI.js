@@ -1,18 +1,16 @@
 /* eslint-disable class-methods-use-this */
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import axios from 'axios';
 
-class TaxonMediaAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-    this.config = config;
+class TaxonMediaAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
-    request.headers.set('Accept', 'application/json');
+  willSendRequest(path, request) {
+    request.headers.Accept = 'application/json';
+    super.willSendRequest(path, request);
   }
 
   async getRepresentativeImages({ taxon, size = 1, from, params, dataSources }) {

@@ -1,10 +1,11 @@
 import got from 'got';
 import hash from 'object-hash';
-import { get, zipObject, difference } from 'lodash';
+import lodash from 'lodash';
 import gql from 'graphql-tag';
-import config from '#/config';
-import { getSchema } from '#/helpers/enums';
-import prevVersionEnums from '#/helpers/enums/enums.json';
+import config from '../../config.js';
+import { getSchema } from '../../helpers/enums/index.js';
+import prevVersionEnums from '../../helpers/enums/enums.json' with { type: "json" };
+const { get, zipObject, difference } = lodash;
 
 const { apiv1: API_V1 } = config;
 const interval = get(config, 'healthUpdateFrequency.enums', 30000);

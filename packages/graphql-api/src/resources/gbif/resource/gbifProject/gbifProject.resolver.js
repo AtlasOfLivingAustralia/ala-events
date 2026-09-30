@@ -1,4 +1,4 @@
-import { getHtml, excerpt, createLocalizedGbifHref } from "#/helpers/utils";
+import { getHtml, excerpt, createLocalizedGbifHref } from "../../../../helpers/utils.js";
 
 function isNoneEmptyArray(source) {
   return source != null && Array.isArray(source) && source.length > 0;

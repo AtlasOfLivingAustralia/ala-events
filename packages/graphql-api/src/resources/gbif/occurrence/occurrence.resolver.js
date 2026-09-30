@@ -1,27 +1,27 @@
 /* eslint-disable no-param-reassign */
 import md5 from 'md5';
 import _ from 'lodash';
-import getGlobe from '#/helpers/globe';
+import getGlobe from '../../../helpers/globe/index.js';
 import {
   getFacet,
   getStats,
   getCardinality,
   getHistogram,
   getAutoDateHistogram,
-} from '../getMetrics';
+} from '../getMetrics.js';
 import {
   facetFields,
   statsFields,
   cardinalityFields,
   histogramFields,
   dateHistogramFields,
-} from './helpers/fields';
-import { formattedCoordinates, isOccurrenceSequenced, simplifyUrlObjectKeys } from '#/helpers/utils';
-import groupResolver from './helpers/groups/occurrenceGroups';
-import termResolver from './helpers/terms/occurrenceTerms';
-import predicate2v1 from './helpers/predicate2v1';
-import getLongitudeBounds from './helpers/longitudeBounds';
-import config from '../../../config';
+} from './helpers/fields/index.js';
+import { formattedCoordinates, isOccurrenceSequenced, simplifyUrlObjectKeys } from '../../../helpers/utils.js';
+import groupResolver from './helpers/groups/occurrenceGroups.js';
+import termResolver from './helpers/terms/occurrenceTerms.js';
+import predicate2v1 from './helpers/predicate2v1.js';
+import getLongitudeBounds from './helpers/longitudeBounds.js';
+import config from '../../../config.js';
 
 const getSourceSearch = (dataSources) => args => dataSources.occurrenceAPI.searchOccurrences.call(dataSources.occurrenceAPI, args);
 

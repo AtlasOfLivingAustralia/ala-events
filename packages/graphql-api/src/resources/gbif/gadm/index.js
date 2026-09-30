@@ -1,6 +1,6 @@
-import resolver from './gadm.resolver';
-import typeDef from './gadm.type';
-import gadmAPI from './gadm.source';
+import resolver from './gadm.resolver.js';
+import typeDef from './gadm.type.js';
+import gadmAPI from './gadm.source.js';
 
 export default {
   resolver,

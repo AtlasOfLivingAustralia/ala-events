@@ -1,5 +1,5 @@
-import { getHtml, excerpt } from "#/helpers/utils";
-import { untrustedHeaderOptions } from "#/helpers/sanitize-html";
+import { getHtml, excerpt } from "../../../../helpers/utils.js";
+import { untrustedHeaderOptions } from '../../../../helpers/sanitize-html.ts';
 
 /**
  * fieldName: (parent, args, context, info) => data;

@@ -1,6 +1,6 @@
-import resolver from './directoryPerson.resolver';
-import typeDef from './directoryPerson.type';
-import directoryPersonAPI from './directoryPerson.source';
+import resolver from './directoryPerson.resolver.js';
+import typeDef from './directoryPerson.type.js';
+import directoryPersonAPI from './directoryPerson.source.js';
 
 export default {
   resolver,

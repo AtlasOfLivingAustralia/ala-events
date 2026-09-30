@@ -1,6 +1,7 @@
-import { get, merge } from 'lodash';
-import * as resources from './resources';
-import config from './config';
+import lodash from 'lodash';
+import * as resources from './resources/index.ts';
+import config from './config.js';
+const { get, merge } = lodash;
 
 const organization = config.organization;
 

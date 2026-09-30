@@ -1,22 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class InstitutionAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class InstitutionAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchInstitutions({ query }) {
-    return this.get(
-      '/grscicoll/institution',
-      stringify(query, { indices: false }),
-    );
+    return this.get('/grscicoll/institution', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getInstitutionByKey({ key }) {

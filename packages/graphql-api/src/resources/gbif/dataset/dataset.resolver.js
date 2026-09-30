@@ -1,5 +1,5 @@
-import { getHtml, excerpt } from '#/helpers/utils';
-import { getContributors } from './helpers/contributors';
+import { getHtml, excerpt } from '../../../helpers/utils.js';
+import { getContributors } from './helpers/contributors.js';
 /**
  * Convinent wrapper to generate the facet resolvers.
  * Given a string (facet name) then generate a query a map the result

@@ -2,13 +2,14 @@
 Notes for discussion with Tim and Thomas
 
 ## Project structure
-Use node 16.*
-Run in dev (watch) with `npm start`. You will need an .env file with
+Use node 24.*
+Run in dev (watch) with `npm run develop`. You will need an .env file with
 ```
 API_V1=https://api.gbif.org/v1
 APP_KEY
 APP_SECRET
 ```
+Build with `npm run build` and run the built server with `npm start`.
 
 ## How deep to go
 How far to resolve.

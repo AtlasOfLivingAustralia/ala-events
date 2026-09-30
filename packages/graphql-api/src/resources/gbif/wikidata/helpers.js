@@ -1,4 +1,5 @@
-import { get, find } from 'lodash';
+import lodash from 'lodash';
+const { get, find } = lodash;
 
 const URL_TEMPLATE = 'P1630'; // the wikidata property for an url template such as https://www.gbif.org/species/{id}
 const REDLIST_CATEGORIES = {

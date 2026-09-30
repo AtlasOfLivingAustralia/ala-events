@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import { deepEqual } from 'assert';
-import predicate2v1 from './predicate2v1';
+import predicate2v1 from './predicate2v1.js';
 
 describe('Array', () => {
   describe('#predicate2v1()', () => {

@@ -1,14 +1,14 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 
-class DownloadAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
+class DownloadAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async datasetDownloads({ query }) {
     const { datasetKey, ...params } = query;
-    return this.get(`/occurrence/download/dataset/${datasetKey}`, params);
+    return this.get(`/occurrence/download/dataset/${datasetKey}`, { params });
   }
 
   async getDownloadByKey({ key }) {

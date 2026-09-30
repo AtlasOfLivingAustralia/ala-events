@@ -1,4 +1,4 @@
-import hashMiddleware from './hash';
-import mutateQuery from './query';
+import hashMiddleware from './hash.ts';
+import mutateQuery from './query.ts';
 
 export { hashMiddleware, mutateQuery };

@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../../../datasources/GbifRESTDataSource.js';
 
 function reduce(response) {
   if (!response?.viafID) return undefined;
@@ -25,14 +25,15 @@ function reduce(response) {
   };
 }
 
-class ViafAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.viaf.api;
+class ViafAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.viaf.api;
   }
 
-  willSendRequest(request) {
-    request.headers.set('Accept', 'application/json');
+  willSendRequest(path, request) {
+    request.headers.Accept = 'application/json';
+    super.willSendRequest(path, request);
   }
 
   async getViafByKey({ key }) {

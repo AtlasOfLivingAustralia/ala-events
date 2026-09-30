@@ -1,14 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class StaffMemberAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
+class StaffMemberAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchStaff({ query }) {
-    return this.get('/grscicoll/person', stringify(query, { indices: false }));
+    return this.get('/grscicoll/person', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getStaffByKey({ key }) {

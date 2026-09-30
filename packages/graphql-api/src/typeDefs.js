@@ -1,8 +1,9 @@
 import gql from 'graphql-tag';
-import { get } from 'lodash';
-import { getEnumTypeDefs } from '#/helpers/enums';
-import * as resources from './resources';
-import config from './config';
+import lodash from 'lodash';
+import { getEnumTypeDefs } from './helpers/enums/index.js';
+import * as resources from './resources/index.ts';
+import config from './config.js';
+const { get } = lodash;
 
 const inputTypeDef = gql`
   input Predicate {

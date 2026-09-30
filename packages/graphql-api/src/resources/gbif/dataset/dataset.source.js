@@ -1,23 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class DatasetAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-    this.config = config;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class DatasetAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchDatasets({ query }) {
-    const response = await this.get(
-      '/dataset/search',
-      stringify(query, { indices: false }),
-    );
+    const response = await this.get('/dataset/search', {
+      params: stringify(query, { indices: false }),
+    });
     response._query = query;
     return response;
   }
@@ -32,31 +25,27 @@ class DatasetAPI extends RESTDataSource {
   }
 
   async getConstituents({ key, query }) {
-    return this.get(
-      `/dataset/${key}/constituents`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/dataset/${key}/constituents`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getNetworks({ key, query }) {
-    return this.get(
-      `/dataset/${key}/networks`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/dataset/${key}/networks`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getMetrics({ key, query }) {
-    return this.get(
-      `/dataset/${key}/metrics`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/dataset/${key}/metrics`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getGridded({ key, query }) {
-    return this.get(
-      `/dataset/${key}/gridded`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/dataset/${key}/gridded`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getFromChecklistBank({ key }) {
@@ -70,14 +59,14 @@ class DatasetAPI extends RESTDataSource {
       }
       throw err;
     });
-}
+  }
 
   async getChecklistBankImport({ key, query = { state: 'finished', limit: 1 } }) {
-  return this.get(
-    `${this.config.checklistBank}/dataset/${key}/import`,
-    stringify(query, { indices: false }),
-  );
-}
+    return this.get(
+      `${this.config.checklistBank}/dataset/${key}/import`,
+      { params: stringify(query, { indices: false }) },
+    );
+  }
 }
 
 export default DatasetAPI;

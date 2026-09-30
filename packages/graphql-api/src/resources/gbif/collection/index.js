@@ -1,6 +1,6 @@
-import collectionAPI from './collection.source';
-import resolver from './collection.resolver';
-import typeDef from './collection.type';
+import collectionAPI from './collection.source.js';
+import resolver from './collection.resolver.js';
+import typeDef from './collection.type.js';
 
 export default {
   resolver,

@@ -1,4 +1,4 @@
-import { SEARCH_RESULT_OPTIONS } from './resourceSearch.constants';
+import { SEARCH_RESULT_OPTIONS } from './resourceSearch.constants.js';
 
 function emumContentTypeToElasticSearchType(enumContentType) {
   return SEARCH_RESULT_OPTIONS.find(option => option.enumContentType === enumContentType).elasticSearchType;

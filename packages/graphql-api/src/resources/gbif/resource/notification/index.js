@@ -1,5 +1,5 @@
-import typeDef from './notification.type';
-import resolver from './notification.resolver';
+import typeDef from './notification.type.js';
+import resolver from './notification.resolver.js';
 
 export default {
   typeDef,

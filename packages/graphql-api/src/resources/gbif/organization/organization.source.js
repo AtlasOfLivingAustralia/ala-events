@@ -1,19 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class OrganizationAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class OrganizationAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchOrganizations({ query }) {
-    return this.get('/organization', stringify(query, { indices: false }));
+    return this.get('/organization', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getOrganizationByKey({ key }) {
@@ -27,24 +24,21 @@ class OrganizationAPI extends RESTDataSource {
   }
 
   async getHostedDatasets({ key, query }) {
-    return this.get(
-      `/organization/${key}/hostedDataset`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/organization/${key}/hostedDataset`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getPublishedDatasets({ key, query }) {
-    return this.get(
-      `/organization/${key}/publishedDataset`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/organization/${key}/publishedDataset`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getInstallations({ key, query }) {
-    return this.get(
-      `/organization/${key}/installation`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/organization/${key}/installation`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 }
 

@@ -2,12 +2,13 @@
  * get app configuration
  * cli arguments take priority, then comes .env file, then default values.
  */
-import { merge } from 'lodash';
+import lodash from 'lodash';
 import commandLineArgs from 'command-line-args';
 import YAML from 'yaml';
 import fs from 'fs';
+const { merge } = lodash;
 
-const file = fs.readFileSync(`${__dirname}/../.env`, 'utf8');
+const file = fs.readFileSync(`${import.meta.dirname}/../.env`, 'utf8');
 const env = YAML.parse(file);
 
 const cliOptions = [

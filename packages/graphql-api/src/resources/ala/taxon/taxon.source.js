@@ -1,9 +1,8 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 
-class TaxonAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.config = config;
+class TaxonAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
   }
 
   async getTaxonByKey({ key, useBie }) {

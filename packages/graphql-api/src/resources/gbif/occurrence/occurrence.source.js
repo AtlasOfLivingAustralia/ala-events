@@ -1,28 +1,18 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
 
-class OccurrenceAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiEs;
-    this.config = config;
+class OccurrenceAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiEs;
   }
 
-  willSendRequest(request) {
-    // if (this.context.user) {
-    //   // this of course do not make much sense. Currently is simply means, that you have to provide credentials to seach occurrences
-    //   request.params.set('apiKey', apiEsKey);
-    //   // request.headers.set('Authorization', `ApiKey-v1 ${this.config.apiEsKey}`);
-    // } else {
-    //   console.log('unauthorized attempt to do an occurrence search');
-    // }
-
+  willSendRequest(path, request) {
     // now that we make a public version, we might as well just make it open since the key is shared with everyone
-    request.headers.set('Authorization', `ApiKey-v1 ${this.config.apiEsKey}`);
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+    request.headers.Authorization = `ApiKey-v1 ${this.config.apiEsKey}`;
+    super.willSendRequest(path, request);
   }
 
   async searchOccurrenceDocuments({ query }) {
@@ -34,13 +24,13 @@ class OccurrenceAPI extends RESTDataSource {
     const body = { ...query, includeMeta: true };
     let response;
     if (JSON.stringify(body).length < urlSizeLimit) {
-      response = await this.get(
-        '/occurrence',
-        { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
-      );
+      response = await this.get('/occurrence', {
+        params: { body: JSON.stringify(body) },
+        signal: this.context.abortController.signal,
+      });
     } else {
-      response = await this.post('/occurrence', body, {
+      response = await this.post('/occurrence', {
+        body,
         signal: this.context.abortController.signal,
       });
     }
@@ -70,12 +60,12 @@ class OccurrenceAPI extends RESTDataSource {
     const { datasetKey, occurrenceID } = occurrence;
     return this.get(
       `https://bionomia.net/occurrences/search?datasetKey=${datasetKey}&occurrenceID=${occurrenceID}`,
-    ).then((x) => JSON.parse(x));
+    );
   }
 
   async meta({ query }) {
     const body = { ...query };
-    const response = await this.post('/occurrence/meta', body);
+    const response = await this.post('/occurrence/meta', { body });
     return response;
   }
 
@@ -83,8 +73,10 @@ class OccurrenceAPI extends RESTDataSource {
     try {
       return await this.post(
         `${this.config.apiv2}/map/occurrence/adhoc/predicate/`,
-        predicate,
-        { signal: this.context.abortController.signal },
+        {
+          body: predicate,
+          signal: this.context.abortController.signal,
+        },
       );
     } catch (err) {
       return {
@@ -97,17 +89,15 @@ class OccurrenceAPI extends RESTDataSource {
   }
 
   async getMapCapabilities(query) {
-    return this.get(
-      `${this.config.apiv2}/map/occurrence/density/capabilities.json?`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`${this.config.apiv2}/map/occurrence/density/capabilities.json?`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async searchCollections({ query }) {
-    return this.get(
-      '/grscicoll/collection',
-      stringify(query, { indices: false }),
-    );
+    return this.get('/grscicoll/collection', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   /*
