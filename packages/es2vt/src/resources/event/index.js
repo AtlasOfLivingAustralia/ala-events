@@ -23,7 +23,7 @@ async function queryMvt({ query: body, tileParams }) {
     exact_bounds, 
     extent, fields, 
     grid_precision, 
-    grid_type = 'points', 
+    grid_type = 'point', 
     query, 
     runtime_mappings, 
     size = 0, 

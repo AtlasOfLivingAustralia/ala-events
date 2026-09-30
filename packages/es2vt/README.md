@@ -1,7 +1,7 @@
 # A small wrapper around ES vector tiles
 
 # Install
-requires node v16.13.1
+requires Node.js 18 or newer (Express 5). The Docker image uses Node 24.
 `npm i`
 
 # env file

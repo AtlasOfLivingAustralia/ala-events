@@ -40,12 +40,13 @@ app.post('/register', function (req, res, next) {
   // first check that the user is allowed to register a filter
   const apiKey = _.get(req, 'query.apiKey') || _.get(req, 'body.apiKey') || _.get(req, 'headers.Authorization', '').substr(10) || _.get(req, 'headers.authorization', '').substr(10);
   if (!apiKey) {
-    next(new ResponseError(401, 'temporaryAuthentication', 'You need to provide an apiKey in the url'));
+    return next(new ResponseError(401, 'temporaryAuthentication', 'You need to provide an apiKey in the url'));
   } else if (apiKey !== config.apiKey || !config.apiKey) {
-    next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
+    return next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
   }
 
-  // Express 5 Safe: Redefine the query object without the apiKey property
+  // req.query is a getter in Express 5 and is re-parsed on every access, so deleting
+  // a property does not stick. Replace it with a copy that omits apiKey, only after auth succeeds.
   const updatedQuery = { ...req.query };
   delete updatedQuery.apiKey;
 
@@ -56,8 +57,13 @@ app.post('/register', function (req, res, next) {
     enumerable: true
   });
 
-  //now save the filter and return a token
-  res.json({ queryId: res.get('X-query-ID') })
+  // hashMiddleware sets this when a query was stored. Without it there is no token to return.
+  const queryId = res.get('X-query-ID');
+  if (!queryId) {
+    return next(new ResponseError(400, 'badRequest', 'Missing query'));
+  }
+
+  res.json({ queryId })
 });
 
 // get a vactor tile passing a token as a query parameter to filter
@@ -69,7 +75,12 @@ function searchMvt(dataSource) {
       return next(new ResponseError(403, 'temporaryAuthentication', `Missing queryId`));
     }
     try {
-      const query = res?.locals?.query;
+      const query = res.locals?.query;
+      // Cache lookup stores the registered query on res.locals. A queryId that did not
+      // resolve (or a non-object value) must not be destructured in queryMvt.
+      if (query == null || typeof query !== 'object') {
+        return next(new ResponseError(400, 'badRequest', 'Unknown queryId'));
+      }
       const tile = await eventSource.queryMvt({ query, tileParams: { ...req.params } });
       res.writeHead(200, {
         'content-disposition': 'inline',
@@ -91,6 +102,14 @@ function searchMvt(dataSource) {
 app.use(unknownRouteHandler);
 app.use(errorHandler);
 
-app.listen(config.port, () =>
-  console.log(`🚀 Server ready at http://localhost:${config.port}`)
-);
+// Express 5 invokes this callback with an error when listen fails, and that same
+// callback is a one-shot 'error' listener. Keep a durable listener so a bind
+// failure exits instead of logging success and leaving the process up.
+const server = app.listen(config.port, (err) => {
+  if (err) return;
+  console.log(`🚀 Server ready at http://localhost:${config.port}`);
+});
+server.on('error', (err) => {
+  console.error(err);
+  process.exit(1);
+});
