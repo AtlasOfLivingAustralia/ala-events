@@ -69,12 +69,13 @@ app.use(function (req, res, next) {
 const temporaryAuthMiddleware = function (req, res, next) {
   const apiKey = _.get(req, 'query.apiKey') || _.get(req, 'body.apiKey') || _.get(req, 'headers.Authorization', '').substr(10) || _.get(req, 'headers.authorization', '').substr(10);
   if (!apiKey) {
-    next(new ResponseError(401, 'temporaryAuthentication', 'You need to provide an apiKey in the url'));
+    return next(new ResponseError(401, 'temporaryAuthentication', 'You need to provide an apiKey in the url'));
   } else if (apiKey !== config.apiKey || !config.apiKey) {
-    next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
+    return next(new ResponseError(403, 'temporaryAuthentication', `Invalid apiKey: ${apiKey}`));
   }
 
-  // Express 5 Safe: Redefine the query object without the apiKey property
+  // req.query is a getter in Express 5 and is re-parsed on every access, so deleting
+  // a property does not stick. Replace it with a copy that omits apiKey.
   const updatedQuery = { ...req.query };
   delete updatedQuery.apiKey;
 
@@ -159,7 +160,7 @@ function searchResource(resource) {
     try {
       // console.log(`queueLength: ${eventQueue.queue.getLength()}`);
 
-      const { metrics, predicate, size, from, randomSeed, randomize, includeMeta, sortBy, sortOrder } = parseQuery(req, res, next, { get2predicate, get2metric });
+      const { metrics, predicate, size, from, randomSeed, randomize, includeMeta, sortBy, sortOrder } = parseQuery(req, { get2predicate, get2metric });
       const aggs = metric2aggs(metrics);
       const query = predicate2query(predicate);
       const { result, esBody } = await dataSource.query({ query, aggs, size, from, metrics, randomSeed, randomize, sortBy, sortOrder, req });
@@ -180,61 +181,58 @@ function searchResource(resource) {
   }
 }
 
-function parseQuery(req, res, next, { get2predicate, get2metric }) {
-  try {
-    // get body from POST or GET
-    let body = req.body || {};
-    // if GET and body in url, then use that
-    if (req.method === 'GET' && req.query.body) {
-      try {
-        body = JSON.parse(req.query.body);
-      } catch (err) {
-        return next(new ResponseError(400, 'badRequest', `Malformed body`));
-      }
+function parseQuery(req, { get2predicate, get2metric }) {
+  // get body from POST or GET
+  let body = req.body || {};
+  // if GET and body in url, then use that
+  if (req.method === 'GET' && req.query.body) {
+    try {
+      body = JSON.parse(req.query.body);
+    } catch (err) {
+      throw new ResponseError(400, 'badRequest', `Malformed body`);
     }
-
-    // take anything but the body from the url query
-    const { body: getBody, ...getQuery } = req.query;
-    // then merge body (from POST or GET) with the url params giving preference to the body
-    const query = { ...getQuery, ...body };
-
-    const {
-      predicate: jsonPredicate,
-      metrics: jsonMetrics,
-      size = 20,
-      from = 0,
-      randomSeed,
-      randomize,
-      includeMeta = false,
-      sortBy,
-      sortOrder,
-      ...otherParams
-    } = query;
-
-    // get any metrics and predicate defined in v1 style. 
-    let v1Predicate = get2predicate(otherParams);
-    let v1Metrics = get2metric(otherParams);
-
-    // merge get style and post style metrics request, giving priority to post style as that is more precise
-    let metrics = Object.assign({}, v1Metrics, jsonMetrics)
-
-    // AND queries: If user sends both post style and v1 style query, then join them with an "add" predicate
-    if (jsonPredicate && v1Predicate) {
-      predicate = { type: 'and', predicates: [jsonPredicate, v1Predicate] }
-    } else {
-      // if both aren't set, then choose which ever is set
-      predicate = v1Predicate ? v1Predicate : jsonPredicate;
-    }
-
-    const intSize = parseInt(size);
-    const intFrom = parseInt(from);
-    const intSeed = parseInt(randomSeed);
-    const boolRandomize = (randomize + '').toLowerCase() === 'true';
-    const result = { metrics, predicate, size: intSize, from: intFrom, randomSeed: intSeed, randomize: boolRandomize, includeMeta, sortBy, sortOrder };
-    return result;
-  } catch (err) {
-    next(err);
   }
+
+  // take anything but the body from the url query
+  const { body: getBody, ...getQuery } = req.query;
+  // then merge body (from POST or GET) with the url params giving preference to the body
+  const query = { ...getQuery, ...body };
+
+  const {
+    predicate: jsonPredicate,
+    metrics: jsonMetrics,
+    size = 20,
+    from = 0,
+    randomSeed,
+    randomize,
+    includeMeta = false,
+    sortBy,
+    sortOrder,
+    ...otherParams
+  } = query;
+
+  // get any metrics and predicate defined in v1 style. 
+  let v1Predicate = get2predicate(otherParams);
+  let v1Metrics = get2metric(otherParams);
+
+  // merge get style and post style metrics request, giving priority to post style as that is more precise
+  let metrics = Object.assign({}, v1Metrics, jsonMetrics)
+
+  // AND queries: If user sends both post style and v1 style query, then join them with an "and" predicate
+  let predicate;
+  if (jsonPredicate && v1Predicate) {
+    predicate = { type: 'and', predicates: [jsonPredicate, v1Predicate] }
+  } else {
+    // if both aren't set, then choose which ever is set
+    predicate = v1Predicate ? v1Predicate : jsonPredicate;
+  }
+
+  const intSize = parseInt(size);
+  const intFrom = parseInt(from);
+  const intSeed = parseInt(randomSeed);
+  const boolRandomize = (randomize + '').toLowerCase() === 'true';
+  const result = { metrics, predicate, size: intSize, from: intFrom, randomSeed: intSeed, randomize: boolRandomize, includeMeta, sortBy, sortOrder };
+  return result;
 }
 
 function keyResource(resource) {
@@ -297,6 +295,14 @@ app.use(unknownRouteHandler);
 app.use(errorHandler);
 app.use(errorLoggingMiddleware);
 
-app.listen(config.port, () =>
-  console.log(`🚀 Server ready at http://localhost:${config.port}`)
-);
+// Express 5 invokes this callback with an error when listen fails, and that same
+// callback is a one-shot 'error' listener. Keep a durable listener so a bind
+// failure exits instead of logging success and leaving the process up.
+const server = app.listen(config.port, (err) => {
+  if (err) return;
+  console.log(`🚀 Server ready at http://localhost:${config.port}`);
+});
+server.on('error', (err) => {
+  console.error(err);
+  process.exit(1);
+});

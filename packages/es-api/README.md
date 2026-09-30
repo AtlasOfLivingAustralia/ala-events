@@ -25,7 +25,7 @@ The result format is done with a reducer that maps the ES response to something 
 The current configurations are generated from the ES `_mapping` endpoint. But not dynamically, but upon request. It is far from perfect, but it is a help instead of typing everything by hand.
 
 # Install
-requires node v16.13.1
+requires Node.js 18 or newer (Express 5). The Docker image uses Node 24.
 `npm i`
 
 # env file
