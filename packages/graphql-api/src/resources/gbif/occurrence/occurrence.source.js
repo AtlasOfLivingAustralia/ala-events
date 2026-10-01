@@ -1,5 +1,6 @@
-import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
+import { createMetricBatcher } from '../../../helpers/batchMetricSearch.js';
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
 
@@ -7,6 +8,16 @@ class OccurrenceAPI extends GbifRESTDataSource {
   constructor(options) {
     super(options);
     this.baseURL = this.config.apiEs;
+    this.enqueueMetric = createMetricBatcher((batch) =>
+      this.searchOccurrences({
+        query: {
+          predicate: batch.predicate,
+          size: 0,
+          metrics: batch.metrics,
+        },
+        includeMeta: batch.includeMeta,
+      }),
+    );
   }
 
   willSendRequest(path, request) {
@@ -20,12 +31,13 @@ class OccurrenceAPI extends GbifRESTDataSource {
     return response.documents;
   }
 
-  async searchOccurrences({ query }) {
-    const body = { ...query, includeMeta: true };
+  async searchOccurrences({ query, includeMeta = false }) {
+    const body = includeMeta ? { ...query, includeMeta: true } : { ...query };
+    const serializedBody = JSON.stringify(body);
     let response;
-    if (JSON.stringify(body).length < urlSizeLimit) {
+    if (serializedBody.length < urlSizeLimit) {
       response = await this.get('/occurrence', {
-        params: { body: JSON.stringify(body) },
+        params: { body: serializedBody },
         signal: this.context.abortController.signal,
       });
     } else {
@@ -89,9 +101,12 @@ class OccurrenceAPI extends GbifRESTDataSource {
   }
 
   async getMapCapabilities(query) {
-    return this.get(`${this.config.apiv2}/map/occurrence/density/capabilities.json?`, {
-      params: stringify(query, { indices: false }),
-    });
+    return this.get(
+      `${this.config.apiv2}/map/occurrence/density/capabilities.json?`,
+      {
+        params: stringify(query, { indices: false }),
+      },
+    );
   }
 
   async searchCollections({ query }) {

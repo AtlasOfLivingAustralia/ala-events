@@ -1,14 +1,40 @@
 import lodash from 'lodash';
-import GbifRESTDataSource from '../../../../datasources/GbifRESTDataSource.js';
+import { LRUCache } from 'lru-cache';
 import { Parser } from 'xml2js';
+import GbifRESTDataSource from '../../../../datasources/GbifRESTDataSource.js';
+import {
+  createMetricBatcher,
+  stableStringify,
+} from '../../../../helpers/batchMetricSearch.js';
+
 const { get } = lodash;
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
+const emlParser = new Parser();
+// EventAPI is constructed per request, so queryIds live here and are reused across requests.
+const queryIdCache = new LRUCache({
+  max: 1000,
+  ttl: 10 * 60 * 1000,
+});
 
 class EventAPI extends GbifRESTDataSource {
   constructor(options) {
     super(options);
     this.baseURL = this.config.apiEs;
+    this.enqueueMetric = createMetricBatcher((batch) => {
+      const query = {
+        predicate: batch.predicate,
+        size: 0,
+        metrics: batch.metrics,
+      };
+      if (batch.endpoint === 'event-occurrence') {
+        return this.searchOccurrences({
+          query,
+          includeMeta: batch.includeMeta,
+        });
+      }
+      return this.searchEvents({ query, includeMeta: batch.includeMeta });
+    });
   }
 
   willSendRequest(path, request) {
@@ -27,9 +53,25 @@ class EventAPI extends GbifRESTDataSource {
     return response.documents;
   }
 
-  async searchEventOccurrences({ eventID, datasetKey, locationID, month, year, size, from }) {
-    const response = await this.eventOccurrences({ eventID, datasetKey, locationID, month, year, size, from });
-    let results = response.documents.results.map(doc => {
+  async searchEventOccurrences({
+    eventID,
+    datasetKey,
+    locationID,
+    month,
+    year,
+    size,
+    from,
+  }) {
+    const response = await this.eventOccurrences({
+      eventID,
+      datasetKey,
+      locationID,
+      month,
+      year,
+      size,
+      from,
+    });
+    let results = response.documents.results.map((doc) => {
       return {
         key: doc.key,
         scientificName: doc.acceptedScientificName,
@@ -65,12 +107,13 @@ class EventAPI extends GbifRESTDataSource {
     }
   }
 
-  searchEvents = async ({ query }) => {
-    const body = { ...query, includeMeta: true };
+  searchEvents = async ({ query, includeMeta = false }) => {
+    const body = includeMeta ? { ...query, includeMeta: true } : { ...query };
+    const serializedBody = JSON.stringify(body);
     let response;
-    if (JSON.stringify(body).length < urlSizeLimit) {
+    if (serializedBody.length < urlSizeLimit) {
       response = await this.get('/event', {
-        params: { body: JSON.stringify(body) },
+        params: { body: serializedBody },
         signal: this.context.abortController.signal,
       });
     } else {
@@ -87,8 +130,15 @@ class EventAPI extends GbifRESTDataSource {
     return response;
   };
 
-  eventOccurrences = async ({ eventID, datasetKey, locationID, month, year, size, from }) => {
-
+  eventOccurrences = async ({
+    eventID,
+    datasetKey,
+    locationID,
+    month,
+    year,
+    size,
+    from,
+  }) => {
     const params = {
       size,
       from,
@@ -96,7 +146,7 @@ class EventAPI extends GbifRESTDataSource {
       ...(datasetKey && { datasetKey }),
       ...(locationID && { locationID }),
       ...(month && { month }),
-      ...(year && { year })
+      ...(year && { year }),
     };
 
     let response = await this.get('/event-occurrence', {
@@ -111,12 +161,13 @@ class EventAPI extends GbifRESTDataSource {
     return response;
   };
 
-  searchOccurrences = async ({ query }) => {
-    const body = { ...query, includeMeta: true };
+  searchOccurrences = async ({ query, includeMeta = false }) => {
+    const body = includeMeta ? { ...query, includeMeta: true } : { ...query };
+    const serializedBody = JSON.stringify(body);
     let response;
-    if (JSON.stringify(body).length < urlSizeLimit) {
+    if (serializedBody.length < urlSizeLimit) {
       response = await this.get('/event-occurrence', {
-        params: { body: JSON.stringify(body) },
+        params: { body: serializedBody },
         signal: this.context.abortController.signal,
       });
     } else {
@@ -138,10 +189,9 @@ class EventAPI extends GbifRESTDataSource {
   }
 
   async getDatasetEML({ datasetKey }) {
-    const parser = new Parser();
     const url = this.config.datasetEml.replace('{datasetKey}', datasetKey);
     const xml = await this.get(url);
-    const datasetJson = await parser.parseStringPromise(xml);
+    const datasetJson = await emlParser.parseStringPromise(xml);
     const dataset = get(datasetJson, "['eml:eml'].dataset[0]");
     const additionalMetadata = get(
       datasetJson,
@@ -182,16 +232,29 @@ class EventAPI extends GbifRESTDataSource {
   }
 
   async registerPredicate({ predicate }) {
+    const cacheKey = stableStringify(predicate);
+    const cached = queryIdCache.get(cacheKey);
+    if (cached) return cached;
+
+    const pending = this.loadTileQueryId(predicate);
+    queryIdCache.set(cacheKey, pending);
+    const queryId = await pending;
+    if (typeof queryId === 'string') {
+      queryIdCache.set(cacheKey, queryId);
+    } else {
+      queryIdCache.delete(cacheKey);
+    }
+    return queryId;
+  }
+
+  async loadTileQueryId(predicate) {
     try {
       const metaResponse = await this.meta({ query: { predicate } });
       const { query } = metaResponse;
-      const response = await this.post(
-        `${this.config.es2vt}/register`,
-        {
-          body: { query: { query, grid_type: 'centroid' } },
-          signal: this.context.abortController.signal,
-        },
-      );
+      const response = await this.post(`${this.config.es2vt}/register`, {
+        body: { query: { query, grid_type: 'centroid' } },
+        signal: this.context.abortController.signal,
+      });
       return response.queryId;
     } catch (err) {
       console.log(err);

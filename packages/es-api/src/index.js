@@ -13,6 +13,8 @@ const queueOptions = {
     res.json({ error: 429, message: 'Too many concurrent requests. This threshold is shared across users, so it is not only your requests.' });
   }
 };
+// express-queue creates a new limiter per call, so every ES route must share this instance.
+const esQueue = queue(queueOptions);
 
 let content, literature, occurrence, eventOccurrence, dataset, event;
 if (config.content) {
@@ -96,59 +98,57 @@ if (content) {
   app.post('/content/meta', asyncMiddleware(postMetaOnly(content)));
   app.get('/content/meta', asyncMiddleware(getMetaOnly(content)));
 
-  app.post('/content', queue(queueOptions), asyncMiddleware(searchResource(content)));
-  app.get('/content', queue(queueOptions), asyncMiddleware(searchResource(content)));
-  app.get('/content/key/:id', asyncMiddleware(keyResource(content)));
+  app.post('/content', esQueue, asyncMiddleware(searchResource(content)));
+  app.get('/content', esQueue, asyncMiddleware(searchResource(content)));
+  app.get('/content/key/:id', esQueue, asyncMiddleware(keyResource(content)));
 }
 
 if (literature) {
   app.post('/literature/meta', asyncMiddleware(postMetaOnly(literature)));
   app.get('/literature/meta', asyncMiddleware(getMetaOnly(literature)));
 
-  app.post('/literature', queue(queueOptions), asyncMiddleware(searchResource(literature)));
-  app.get('/literature', queue(queueOptions), asyncMiddleware(searchResource(literature)));
-  app.get('/literature/key/:id', asyncMiddleware(keyResource(literature)));
+  app.post('/literature', esQueue, asyncMiddleware(searchResource(literature)));
+  app.get('/literature', esQueue, asyncMiddleware(searchResource(literature)));
+  app.get('/literature/key/:id', esQueue, asyncMiddleware(keyResource(literature)));
 }
 
 if (occurrence) {
   app.post('/occurrence/meta', asyncMiddleware(postMetaOnly(occurrence)));
   app.get('/occurrence/meta', asyncMiddleware(getMetaOnly(occurrence)));
 
-  app.post('/occurrence', queue(queueOptions), temporaryAuthMiddleware, asyncMiddleware(searchResource(occurrence)));
-  app.get('/occurrence', queue(queueOptions), temporaryAuthMiddleware, asyncMiddleware(searchResource(occurrence)));
-  app.get('/occurrence/key/:id', asyncMiddleware(keyResource(occurrence)));
+  app.post('/occurrence', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(occurrence)));
+  app.get('/occurrence', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(occurrence)));
+  app.get('/occurrence/key/:id', esQueue, asyncMiddleware(keyResource(occurrence)));
 
-  app.get('/occurrence/suggest/:key', temporaryAuthMiddleware, asyncMiddleware(suggestResource(occurrence)));
+  app.get('/occurrence/suggest/:key', esQueue, temporaryAuthMiddleware, asyncMiddleware(suggestResource(occurrence)));
 }
 
 if (eventOccurrence) {
   app.post('/event-occurrence/meta', asyncMiddleware(postMetaOnly(eventOccurrence)));
   app.get('/event-occurrence/meta', asyncMiddleware(getMetaOnly(eventOccurrence)));
 
-  app.post('/event-occurrence', queue(queueOptions), temporaryAuthMiddleware, asyncMiddleware(searchResource(eventOccurrence)));
-  app.get('/event-occurrence', queue(queueOptions), temporaryAuthMiddleware, asyncMiddleware(searchResource(eventOccurrence)));
-  app.get('/event-occurrence/key/:id', asyncMiddleware(keyResource(eventOccurrence)));
+  app.post('/event-occurrence', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(eventOccurrence)));
+  app.get('/event-occurrence', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(eventOccurrence)));
+  app.get('/event-occurrence/key/:id', esQueue, asyncMiddleware(keyResource(eventOccurrence)));
 
-  app.get('/event-occurrence/suggest/:key', temporaryAuthMiddleware, asyncMiddleware(suggestResource(eventOccurrence)));
+  app.get('/event-occurrence/suggest/:key', esQueue, temporaryAuthMiddleware, asyncMiddleware(suggestResource(eventOccurrence)));
 }
 
 if (dataset) {
-  app.post('/dataset', queue(queueOptions), temporaryAuthMiddleware, asyncMiddleware(searchResource(dataset)));
-  app.get('/dataset', queue(queueOptions), temporaryAuthMiddleware, asyncMiddleware(searchResource(dataset)));
-  app.get('/dataset/key/:id', asyncMiddleware(keyResource(dataset)));
+  app.post('/dataset', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(dataset)));
+  app.get('/dataset', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(dataset)));
+  app.get('/dataset/key/:id', esQueue, asyncMiddleware(keyResource(dataset)));
 }
 
-let eventQueue
 if (event) {
-  eventQueue = queue(queueOptions);
   app.post('/event/meta', asyncMiddleware(postMetaOnly(event)));
   app.get('/event/meta', asyncMiddleware(getMetaOnly(event)));
 
-  app.post('/event', eventQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(event)));
-  app.get('/event', eventQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(event)));
-  app.get('/event/key/:qualifier/:id', temporaryAuthMiddleware, asyncMiddleware(keyResource(event)));
+  app.post('/event', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(event)));
+  app.get('/event', esQueue, temporaryAuthMiddleware, asyncMiddleware(searchResource(event)));
+  app.get('/event/key/:qualifier/:id', esQueue, temporaryAuthMiddleware, asyncMiddleware(keyResource(event)));
 
-  app.get('/event/suggest/taxonKey', asyncMiddleware(async (req, res) => {
+  app.get('/event/suggest/taxonKey', esQueue, asyncMiddleware(async (req, res) => {
     const body = await event.scientificNameSuggest({ q: req.query.q, req });
     res.json(body);
   }));
@@ -158,22 +158,23 @@ function searchResource(resource) {
   const { dataSource, get2predicate, predicate2query, get2metric, metric2aggs } = resource;
   return async (req, res, next) => {
     try {
-      // console.log(`queueLength: ${eventQueue.queue.getLength()}`);
+      // console.log(`queueLength: ${esQueue.queue.getLength()}`);
 
       const { metrics, predicate, size, from, randomSeed, randomize, includeMeta, sortBy, sortOrder } = parseQuery(req, { get2predicate, get2metric });
       const aggs = metric2aggs(metrics);
       const query = predicate2query(predicate);
       const { result, esBody } = await dataSource.query({ query, aggs, size, from, metrics, randomSeed, randomize, sortBy, sortOrder, req });
-      const meta = {
-        GET: req.query,
-        predicate,
-        metrics,
-        esBody
-      };
 
       res.json({
         ...result,
-        ...(includeMeta && { meta }),
+        ...(includeMeta && {
+          meta: {
+            GET: req.query,
+            predicate,
+            metrics,
+            esBody
+          }
+        }),
       });
     } catch (err) {
       next(err);

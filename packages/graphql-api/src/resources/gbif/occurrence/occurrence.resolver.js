@@ -23,7 +23,12 @@ import predicate2v1 from './helpers/predicate2v1.js';
 import getLongitudeBounds from './helpers/longitudeBounds.js';
 import config from '../../../config.js';
 
-const getSourceSearch = (dataSources) => args => dataSources.occurrenceAPI.searchOccurrences.call(dataSources.occurrenceAPI, args);
+const getSourceSearch = (dataSources) => {
+  const api = dataSources.occurrenceAPI;
+  const searchApi = (args) => api.searchOccurrences(args);
+  searchApi.enqueueMetric = (metric) => api.enqueueMetric(metric);
+  return searchApi;
+};
 
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {

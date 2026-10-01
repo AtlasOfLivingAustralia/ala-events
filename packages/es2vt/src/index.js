@@ -6,6 +6,7 @@ const _ = require('lodash');
 const { hashMiddleware } = require('./hashMiddleware');
 
 const { asyncMiddleware, ResponseError, errorHandler, unknownRouteHandler } = require('./resources/errorHandler');
+const { TILE_CACHE_MAX_AGE_SECONDS, getCachedTile, tileCacheKey, tileResponseBody } = require('./tileCache');
 
 const app = express();
 app.use(express.static('public'));
@@ -81,16 +82,20 @@ function searchMvt(dataSource) {
       if (query == null || typeof query !== 'object') {
         return next(new ResponseError(400, 'badRequest', 'Unknown queryId'));
       }
-      const tile = await eventSource.queryMvt({ query, tileParams: { ...req.params } });
+      const { z, x, y } = req.params;
+      const body = await getCachedTile(tileCacheKey(req.query.queryId, z, x, y), async () => {
+        const tile = await eventSource.queryMvt({ query, tileParams: { ...req.params } });
+        return tileResponseBody(tile.body);
+      });
       res.writeHead(200, {
         'content-disposition': 'inline',
-        'content-length': tile ? `${tile.body.length}` : `0`,
+        'content-length': `${body.length}`,
         'Content-Type': 'application/x-protobuf',
-        'Cache-Control': `public, max-age=0`,
+        'Cache-Control': `public, max-age=${TILE_CACHE_MAX_AGE_SECONDS}`,
         'Last-Modified': `${new Date().toUTCString()}`
       });
 
-      res.end(Buffer.from(tile.body, 'binary'));
+      res.end(body);
 
     } catch (err) {
       next(err);

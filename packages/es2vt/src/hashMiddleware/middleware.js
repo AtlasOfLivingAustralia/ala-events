@@ -54,7 +54,6 @@ const hashMiddleware = function (req, res, next) {
     const storedQuery = queryCache.get(queryId);
     if (!storedQuery) {
       unknownQueryId = true;
-      console.log('no stored query')
     } else {
       if (req.method === 'POST') req.body.query = storedQuery;
       if (req.method === 'GET') res.locals.query = storedQuery;

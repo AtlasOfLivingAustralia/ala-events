@@ -1,127 +1,114 @@
+function mapFacetBuckets(data, field) {
+  return data.aggregation.buckets.map((bucket) => {
+    const predicate = {
+      type: 'equals',
+      key: field,
+      value: bucket.key,
+    };
+    const joinedPredicate = data.meta.predicate
+      ? {
+          type: 'and',
+          predicates: [data.meta.predicate, predicate],
+        }
+      : predicate;
+    return {
+      key: bucket.key,
+      count: bucket.doc_count,
+      // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
+      _predicate: joinedPredicate,
+      _parentPredicate: data.meta.predicate,
+    };
+  });
+}
+
 /**
  * Convinent wrapper to generate the facet resolvers.
  * Given a string (facet name) then generate a query and map the result
  * @param {String} field
  */
-const getFacet = (field) => (parent, { size = 100, from = 0, include }, { dataSources }) => {
-    // generate the event search facet query, by inheriting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      predicate: parent._predicate,
-      size: 0,
-      metrics: {
-        facet: {
+const getFacet =
+  (field) =>
+  (parent, { size = 100, from = 0, include }, { dataSources }) => {
+    // Same-predicate facets share one size-0 search. The metric name is unique per field.
+    return dataSources.eventAPI
+      .enqueueMetric({
+        endpoint: 'event',
+        predicate: parent._predicate,
+        name: `facet_${field}`,
+        includeMeta: true,
+        metric: {
           type: 'facet',
           key: field,
           size,
           from,
           include,
         },
-      },
-    };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.eventAPI.searchEvents({ query }).then((data) => {
-      return data.aggregations.facet.buckets.map((bucket) => {
-        const predicate = {
-          type: 'equals',
-          key: field,
-          value: bucket.key,
-        };
-        const joinedPredicate = data.meta.predicate
-          ? {
-              type: 'and',
-              predicates: [data.meta.predicate, predicate],
-            }
-          : predicate;
-        return {
-          key: bucket.key,
-          count: bucket.doc_count,
-          // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
-          _predicate: joinedPredicate,
-          _parentPredicate: data.meta.predicate,
-        };
-      });
-    });
+      })
+      .then((data) => mapFacetBuckets(data, field));
   };
 
-const getMultiFacet = ({ _predicate, size, from }, {}, { searchApi, fields } ) => {
-      // generate the event search facet query, by inheriting from the parent query, and map limit/offset to facet equivalents
-      const query = {
-        predicate: _predicate,
-        size: 0,
-        metrics: {
-          multifacet: {
-            type: 'multifacet',
-            keys: fields,
-            size: size,
-            from: from
-          },
-        },
+const getMultiFacet = (
+  { _predicate, size, from },
+  {},
+  { searchApi, fields },
+) => {
+  // generate the event search facet query, by inheriting from the parent query, and map limit/offset to facet equivalents
+  const query = {
+    predicate: _predicate,
+    size: 0,
+    metrics: {
+      multifacet: {
+        type: 'multifacet',
+        keys: fields,
+        size: size,
+        from: from,
+      },
+    },
+  };
+  // query the API, and throw away anything but the facet counts
+  return searchApi({ query, includeMeta: true }).then((data) => {
+    return data.aggregations.multifacet.buckets.map((bucket) => {
+      const predicate = {
+        type: 'equals',
+        key: fields[0],
+        value: bucket.key[0],
       };
-      // query the API, and throw away anything but the facet counts
-      return searchApi({ query }).then( (data) => {
-        return data.aggregations.multifacet.buckets.map((bucket) => {
-          const predicate = {
-            type: 'equals',
-            key: fields[0],
-            value: bucket.key[0],
-          };
-          const joinedPredicate = data.meta.predicate
-            ? {
-              type: 'and',
-              predicates: [data.meta.predicate, predicate],
-            }
-            : predicate;
-          return {
-            keys: bucket.key,
-            count: bucket.doc_count,
-            // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
-            _predicate: joinedPredicate,
-            _parentPredicate: data.meta.predicate,
-          };
-        });
-      });
-    };
+      const joinedPredicate = data.meta.predicate
+        ? {
+            type: 'and',
+            predicates: [data.meta.predicate, predicate],
+          }
+        : predicate;
+      return {
+        keys: bucket.key,
+        count: bucket.doc_count,
+        // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
+        _predicate: joinedPredicate,
+        _parentPredicate: data.meta.predicate,
+      };
+    });
+  });
+};
 
 const getOccurrenceFacet =
   (field) =>
   (parent, { size = 100, from = 0, include }, { dataSources }) => {
     // generate the event search facet query, by inheriting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      predicate: parent._predicate,
-      size: 0,
-      metrics: {
-        facet: {
+    return dataSources.eventAPI
+      .enqueueMetric({
+        endpoint: 'event-occurrence',
+        predicate: parent._predicate,
+        name: `facet_${field}`,
+        includeMeta: true,
+        metric: {
           type: 'facet',
           key: field,
           size,
           from,
           include,
         },
-      },
-    };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.eventAPI.searchOccurrences({ query }).then((data) => {
-      return data.aggregations.facet.buckets.map((bucket) => {
-        const predicate = {
-          type: 'equals',
-          key: field,
-          value: bucket.key,
-        };
-        const joinedPredicate = data.meta.predicate
-          ? {
-              type: 'and',
-              predicates: [data.meta.predicate, predicate],
-            }
-          : predicate;
-        return {
-          key: bucket.key,
-          count: bucket.doc_count,
-          // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
-          _predicate: joinedPredicate,
-          _parentPredicate: data.meta.predicate,
-        };
-      });
-    });
+      })
+      .then((data) => mapFacetBuckets(data, field));
   };
 
 /**
@@ -164,42 +151,44 @@ const getTemporal =
       },
     };
     // query the API, and throw away anything but the facet counts
-    return dataSources.eventAPI.searchEvents({ query }).then((data) => {
-      return {
-        cardinality: data.aggregations.cardinality.value,
-        results: data.aggregations.facet.buckets.map((bucket) => {
-          const predicate = {
-            type: 'equals',
-            key: field,
-            value: bucket.key,
-          };
-          const joinedPredicate = data.meta.predicate
-            ? {
-                type: 'and',
-                predicates: [data.meta.predicate, predicate],
-              }
-            : predicate;
+    return dataSources.eventAPI
+      .searchEvents({ query, includeMeta: true })
+      .then((data) => {
+        return {
+          cardinality: data.aggregations.cardinality.value,
+          results: data.aggregations.facet.buckets.map((bucket) => {
+            const predicate = {
+              type: 'equals',
+              key: field,
+              value: bucket.key,
+            };
+            const joinedPredicate = data.meta.predicate
+              ? {
+                  type: 'and',
+                  predicates: [data.meta.predicate, predicate],
+                }
+              : predicate;
 
-          const years = bucket.year_facet.buckets.map((obj) => ({
-            y: obj.key,
-            c: obj.doc_count,
-            ms: obj.month_facet.buckets.map((monthBucket) => ({
-              m: monthBucket.key,
-              c: monthBucket.doc_count,
-            })),
-          }));
+            const years = bucket.year_facet.buckets.map((obj) => ({
+              y: obj.key,
+              c: obj.doc_count,
+              ms: obj.month_facet.buckets.map((monthBucket) => ({
+                m: monthBucket.key,
+                c: monthBucket.doc_count,
+              })),
+            }));
 
-          return {
-            key: bucket.key,
-            count: bucket.doc_count,
-            breakdown: years,
-            // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
-            _predicate: joinedPredicate,
-            _parentPredicate: data.meta.predicate,
-          };
-        }),
-      };
-    });
+            return {
+              key: bucket.key,
+              count: bucket.doc_count,
+              breakdown: years,
+              // create a new predicate that joins the base with the facet. This enables us to dig deeper for multidimensional metrics
+              _predicate: joinedPredicate,
+              _parentPredicate: data.meta.predicate,
+            };
+          }),
+        };
+      });
   };
 
 /**
@@ -211,20 +200,17 @@ const getStats =
   (field) =>
   (parent, args, { dataSources }) => {
     // generate the event search facet query, by inherting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      predicate: parent._predicate,
-      size: 0,
-      metrics: {
-        stats: {
+    return dataSources.eventAPI
+      .enqueueMetric({
+        endpoint: 'event',
+        predicate: parent._predicate,
+        name: `stats_${field}`,
+        metric: {
           type: 'stats',
           key: field,
         },
-      },
-    };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.eventAPI
-      .searchEvents({ query })
-      .then((data) => data.aggregations.stats);
+      })
+      .then((data) => data.aggregation);
   };
 
 /**
@@ -235,24 +221,20 @@ const getStats =
 const getCardinality = (
   predicate,
   { precision_threshold: precisionThreshhold = 40000 },
-  { searchApi, field },
+  { api, endpoint, field },
 ) => {
-  // generate the event search facet query, by inherting from the parent query, and map limit/offset to facet equivalents
-  const query = {
-    predicate,
-    size: 0,
-    metrics: {
-      cardinality: {
+  return api
+    .enqueueMetric({
+      endpoint,
+      predicate,
+      name: `cardinality_${field}`,
+      metric: {
         type: 'cardinality',
         key: field,
         precision_threshold: precisionThreshhold,
       },
-    },
-  };
-  // query the API, and throw away anything but the facet counts
-  return searchApi({ query }).then(
-    (data) => data.aggregations.cardinality.value,
-  );
+    })
+    .then((data) => data.aggregation.value);
 };
 
 /**

@@ -8,24 +8,21 @@ const getFacet =
   (field) =>
   (parent, { size = 10, from = 0, include }, { dataSources }) => {
     // generate the occurrence search facet query, by inherting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      predicate: parent._predicate,
-      size: 0,
-      metrics: {
-        facet: {
+    return dataSources.occurrenceAPI
+      .enqueueMetric({
+        predicate: parent._predicate,
+        name: `facet_${field}`,
+        includeMeta: true,
+        metric: {
           type: 'facet',
           key: field,
           size,
           from,
           include,
         },
-      },
-    };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.occurrenceAPI
-      .searchOccurrences({ query })
+      })
       .then((data) => {
-        return data.aggregations.facet.buckets.map((bucket) => {
+        return data.aggregation.buckets.map((bucket) => {
           const predicate = {
             type: 'equals',
             key: field,
@@ -57,20 +54,16 @@ const getStats =
   (field) =>
   (parent, args, { dataSources }) => {
     // generate the occurrence search facet query, by inherting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      predicate: parent._predicate,
-      size: 0,
-      metrics: {
-        stats: {
+    return dataSources.occurrenceAPI
+      .enqueueMetric({
+        predicate: parent._predicate,
+        name: `stats_${field}`,
+        metric: {
           type: 'stats',
           key: field,
         },
-      },
-    };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.occurrenceAPI
-      .searchOccurrences({ query })
-      .then((data) => data.aggregations.stats);
+      })
+      .then((data) => data.aggregation);
   };
 
 /**
@@ -82,21 +75,17 @@ const getCardinality =
   (field) =>
   (parent, { precision_threshold = 10000 }, { dataSources }) => {
     // generate the occurrence search facet query, by inherting from the parent query, and map limit/offset to facet equivalents
-    const query = {
-      predicate: parent._predicate,
-      size: 0,
-      metrics: {
-        cardinality: {
+    return dataSources.occurrenceAPI
+      .enqueueMetric({
+        predicate: parent._predicate,
+        name: `cardinality_${field}`,
+        metric: {
           type: 'cardinality',
           key: field,
           precision_threshold,
         },
-      },
-    };
-    // query the API, and throw away anything but the facet counts
-    return dataSources.occurrenceAPI
-      .searchOccurrences({ query })
-      .then((data) => data.aggregations.cardinality.value);
+      })
+      .then((data) => data.aggregation.value);
   };
 
 /**
@@ -152,7 +141,12 @@ const getAutoDateHistogram =
       .then((data) => ({
         bucketSize: buckets,
         ...data.aggregations.autoDateHistogram,
-        buckets: data.aggregations.autoDateHistogram.buckets.map(x => ({...x, date: x.key_as_string, count: x.doc_count})) }));
+        buckets: data.aggregations.autoDateHistogram.buckets.map((x) => ({
+          ...x,
+          date: x.key_as_string,
+          count: x.doc_count,
+        })),
+      }));
   };
 
 export {
