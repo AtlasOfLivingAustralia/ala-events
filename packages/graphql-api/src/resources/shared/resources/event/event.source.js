@@ -253,7 +253,6 @@ class EventAPI extends GbifRESTDataSource {
       const { query } = metaResponse;
       const response = await this.post(`${this.config.es2vt}/register`, {
         body: { query: { query, grid_type: 'centroid' } },
-        signal: this.context.abortController.signal,
       });
       return response.queryId;
     } catch (err) {
