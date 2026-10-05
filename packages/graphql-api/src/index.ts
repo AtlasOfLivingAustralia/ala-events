@@ -51,7 +51,7 @@ async function initializeServer() {
       ApolloServerPluginCacheControl({
         defaultMaxAge: config.debug ? 0 : 600,
       }),
-      loggingPlugin as ApolloServerPlugin<ContextWithDataSources>,
+      // Keep loggingPlugin disabled until both logging paths redact sensitive headers.
     ],
     logger: console,
   });
