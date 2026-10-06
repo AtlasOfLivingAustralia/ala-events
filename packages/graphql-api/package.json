@@ -83,5 +83,9 @@
     "ignore": [
       "src/enums/*.json"
     ]
+  },
+  "allowScripts": {
+    "@apollo/protobufjs@1.2.8": true,
+    "core-js-pure@3.20.3": true
   }
 }
