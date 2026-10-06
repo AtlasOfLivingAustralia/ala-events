@@ -278,8 +278,13 @@ class EventAPI extends GbifRESTDataSource {
   async loadTileQuery(predicate) {
     try {
       const metaResponse = await this.meta({ query: { predicate } });
-      if (!isTileQuery(metaResponse?.query)) return registrationFailure();
-      return metaResponse.query;
+      const esQuery =
+        metaResponse?.query ??
+        (predicate == null && metaResponse != null && typeof metaResponse === 'object'
+          ? { match_all: {} }
+          : undefined);
+      if (!isTileQuery(esQuery)) return registrationFailure();
+      return esQuery;
     } catch (err) {
       console.log(err);
       return registrationFailure();
