@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import assert from 'assert';
-import { createMetricBatcher, stableStringify } from './batchMetricSearch.js';
+import { createMetricBatcher } from './batchMetricSearch.js';
 
 const predicate = { type: 'equals', key: 'country', value: 'AU' };
 
@@ -23,13 +23,6 @@ function enqueuePair(enqueue, endpoint) {
 }
 
 describe('batchMetricSearch', () => {
-  it('stringifies objects with stable key order', () => {
-    assert.strictEqual(
-      stableStringify({ b: 1, a: { d: 2, c: 3 } }),
-      stableStringify({ a: { c: 3, d: 2 }, b: 1 }),
-    );
-  });
-
   it('coalesces same endpoint and predicate into one search', async () => {
     const calls = [];
     const enqueue = createMetricBatcher((batch) => {

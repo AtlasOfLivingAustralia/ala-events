@@ -30,6 +30,7 @@
     "dompurify": "^3.4.10",
     "express": "^5.2.1",
     "express-interceptor": "^1.2.0",
+    "fast-json-stable-stringify": "^2.1.0",
     "got": "^15.0.5",
     "graphql": "^16.14.2",
     "graphql-depth-limit": "^1.1.0",

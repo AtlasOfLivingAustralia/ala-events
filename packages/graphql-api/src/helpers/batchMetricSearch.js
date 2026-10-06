@@ -1,19 +1,4 @@
-/**
- * Coalesce size-0 metric searches that share an endpoint and predicate.
- * Resolvers enqueue during the current turn; one search runs on the next tick.
- */
-
-export function stableStringify(value) {
-  if (value === undefined) return 'undefined';
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
-  }
-  const keys = Object.keys(value).sort();
-  return `{${keys
-    .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`)
-    .join(',')}}`;
-}
+import stableStringify from 'fast-json-stable-stringify';
 
 function uniqueMetricName(metrics, name) {
   if (!Object.prototype.hasOwnProperty.call(metrics, name)) return name;
@@ -61,6 +46,10 @@ function flushMetricBatch(batch, runSearch) {
   );
 }
 
+/**
+ * Coalesce size-0 metric searches that share an endpoint and predicate.
+ * Resolvers enqueue during the current turn; one search runs on the next tick.
+ */
 export function createMetricBatcher(runSearch) {
   const batches = new Map();
 

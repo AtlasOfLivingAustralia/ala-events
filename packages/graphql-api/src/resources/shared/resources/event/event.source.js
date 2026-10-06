@@ -1,21 +1,42 @@
+import stableStringify from 'fast-json-stable-stringify';
 import lodash from 'lodash';
 import { LRUCache } from 'lru-cache';
 import { Parser } from 'xml2js';
 import GbifRESTDataSource from '../../../../datasources/GbifRESTDataSource.js';
-import {
-  createMetricBatcher,
-  stableStringify,
-} from '../../../../helpers/batchMetricSearch.js';
+import { createMetricBatcher } from '../../../../helpers/batchMetricSearch.js';
 
 const { get } = lodash;
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
 const emlParser = new Parser();
-// EventAPI is constructed per request, so queryIds live here and are reused across requests.
-const queryIdCache = new LRUCache({
+// Predicate to ES query. This does not depend on es2vt, so it can be reused.
+const tileQueryCache = new LRUCache({
   max: 1000,
   ttl: 10 * 60 * 1000,
 });
+// In-flight registrations only. es2vt keeps the query in memory, so a resolved
+// queryId must not be reused: the map's tile HTTP 400 retry is the same predicate
+// and has to register again after a restart or eviction.
+const inflightRegistrations = new Map();
+
+function isRegistrationFailure(value) {
+  return value?.err?.error === 'FAILED_TO_REGISTER_PREDICATE';
+}
+
+function isTileQuery(value) {
+  return (
+    value != null && typeof value === 'object' && !isRegistrationFailure(value)
+  );
+}
+
+function registrationFailure() {
+  return {
+    err: {
+      error: 'FAILED_TO_REGISTER_PREDICATE',
+    },
+    predicate: null,
+  };
+}
 
 class EventAPI extends GbifRESTDataSource {
   constructor(options) {
@@ -232,37 +253,66 @@ class EventAPI extends GbifRESTDataSource {
   }
 
   async registerPredicate({ predicate }) {
-    const cacheKey = stableStringify(predicate);
-    const cached = queryIdCache.get(cacheKey);
-    if (cached) return cached;
-
-    const pending = this.loadTileQueryId(predicate);
-    queryIdCache.set(cacheKey, pending);
-    const queryId = await pending;
-    if (typeof queryId === 'string') {
-      queryIdCache.set(cacheKey, queryId);
-    } else {
-      queryIdCache.delete(cacheKey);
-    }
-    return queryId;
+    const esQuery = await this.cachedTileQuery(predicate);
+    if (!isTileQuery(esQuery)) return esQuery;
+    return this.registerTileQuery(esQuery);
   }
 
-  async loadTileQueryId(predicate) {
+  async cachedTileQuery(predicate) {
+    const cacheKey = stableStringify(predicate);
+    const cached = tileQueryCache.get(cacheKey);
+    if (cached) return cached;
+
+    const pending = this.loadTileQuery(predicate);
+    tileQueryCache.set(cacheKey, pending);
+    const esQuery = await pending;
+    if (tileQueryCache.get(cacheKey) !== pending) return esQuery;
+    if (isTileQuery(esQuery)) {
+      tileQueryCache.set(cacheKey, esQuery);
+    } else {
+      tileQueryCache.delete(cacheKey);
+    }
+    return esQuery;
+  }
+
+  async loadTileQuery(predicate) {
     try {
       const metaResponse = await this.meta({ query: { predicate } });
-      const { query } = metaResponse;
+      if (!isTileQuery(metaResponse?.query)) return registrationFailure();
+      return metaResponse.query;
+    } catch (err) {
+      console.log(err);
+      return registrationFailure();
+    }
+  }
+
+  registerTileQuery(esQuery) {
+    const body = { query: { query: esQuery, grid_type: 'centroid' } };
+    const cacheKey = stableStringify(body);
+    const existing = inflightRegistrations.get(cacheKey);
+    if (existing) return existing;
+
+    const pending = this.postTileRegistration(body);
+    inflightRegistrations.set(cacheKey, pending);
+    const clear = () => {
+      if (inflightRegistrations.get(cacheKey) === pending) {
+        inflightRegistrations.delete(cacheKey);
+      }
+    };
+    pending.then(clear, clear);
+    return pending;
+  }
+
+  async postTileRegistration(body) {
+    try {
       const response = await this.post(`${this.config.es2vt}/register`, {
-        body: { query: { query, grid_type: 'centroid' } },
+        body,
       });
+      if (typeof response?.queryId !== 'string') return registrationFailure();
       return response.queryId;
     } catch (err) {
       console.log(err);
-      return {
-        err: {
-          error: 'FAILED_TO_REGISTER_PREDICATE',
-        },
-        predicate: null,
-      };
+      return registrationFailure();
     }
   }
 }
