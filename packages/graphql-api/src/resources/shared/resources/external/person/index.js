@@ -1,6 +1,6 @@
-import resolver from './person.resolver';
-import typeDef from './person.type';
-import personAPI from './person.source';
+import resolver from './person.resolver.js';
+import typeDef from './person.type.js';
+import personAPI from './person.source.js';
 
 export default {
   resolver,

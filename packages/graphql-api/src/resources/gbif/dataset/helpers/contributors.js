@@ -1,14 +1,5 @@
-import {
-  isArray,
-  isEmpty,
-  union,
-  cloneDeep,
-  uniqWith,
-  get,
-  remove,
-  isNil,
-  intersection,
-} from 'lodash';
+import lodash from 'lodash';
+const { isArray, isEmpty, union, cloneDeep, uniqWith, get, remove, isNil, intersection } = lodash;
 
 /**
  * The same person can appear multiple times in the list of dataset contacts

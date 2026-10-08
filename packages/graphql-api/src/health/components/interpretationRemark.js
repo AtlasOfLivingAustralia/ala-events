@@ -1,8 +1,9 @@
-import { get, difference, keyBy } from 'lodash';
+import lodash from 'lodash';
 import hash from 'object-hash';
-import { getEnumData } from './enum';
-import config from '#/config';
-import prev from '#/helpers/enums/interpretationRemark.json';
+import { getEnumData } from './enum.js';
+import config from '../../config.js';
+import prev from '../../helpers/enums/interpretationRemark.json' with { type: "json" };
+const { get, difference, keyBy } = lodash;
 const prevMap = keyBy(prev, 'id');
 
 const interval = get(config, 'healthUpdateFrequency.enums', 30000);

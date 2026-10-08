@@ -1,26 +1,27 @@
 /* eslint-disable camelcase */
 import { Router } from 'express';
-import { render } from 'mustache';
+import mustache from 'mustache';
+const { render } = mustache;
 // import satellitefrom './experiments/satellite';
-// import maptilerSatellite from './experiments/maptilerSatellite';
-// import hillshade from './experiments/hillshade';
-// import positron from './experiments/positron';
-// import positronMercator from './experiments/positron_mercator';
-// import positron4326 from './experiments/positron_4326';
-// import epsg4326 from './experiments/4326';
+// import maptilerSatellite from './experiments/maptilerSatellite.json' with { type: "json" };
+// import hillshade from './experiments/hillshade.json' with { type: "json" };
+// import positron from './experiments/positron.json' with { type: "json" };
+// import positronMercator from './experiments/positron_mercator.json' with { type: "json" };
+// import positron4326 from './experiments/positron_4326.json' with { type: "json" };
+// import epsg4326 from './experiments/4326.json' with { type: "json" };
 
-import gbifRaster3575 from './3575/gbif-raster';
-import gbifRaster3031 from './3031/gbif-raster';
-import gbifRaster3857 from './3857/gbif-raster';
-import gbifRasterHillshade3857 from './3857/gbif-raster-hillshade';
-import gbifRaster4326 from './4326/gbif-raster';
-import gbifRasterIUCN4326 from './4326/gbif-raster-iucn';
+import gbifRaster3575 from './3575/gbif-raster.js';
+import gbifRaster3031 from './3031/gbif-raster.js';
+import gbifRaster3857 from './3857/gbif-raster.js';
+import gbifRasterHillshade3857 from './3857/gbif-raster-hillshade.js';
+import gbifRaster4326 from './4326/gbif-raster.js';
+import gbifRasterIUCN4326 from './4326/gbif-raster-iucn.js';
 
-import satellite3031 from './3031/satellite';
-import satellite3857_maptiler from './3857/satellite_maptiler';
-import satellite3857_bing from './3857/satellite_bing';
+import satellite3031 from './3031/satellite.json' with { type: "json" };
+import satellite3857_maptiler from './3857/satellite_maptiler.json' with { type: "json" };
+import satellite3857_bing from './3857/satellite_bing.json' with { type: "json" };
 import axios from 'axios';
-import config from '../../config';
+import config from '../../config.js';
 
 const router = Router();
 

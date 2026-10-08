@@ -1,6 +1,6 @@
-import resolver from './viaf.resolver';
-import typeDef from './viaf.type';
-import viafAPI from './viaf.source';
+import resolver from './viaf.resolver.js';
+import typeDef from './viaf.type.js';
+import viafAPI from './viaf.source.js';
 
 export default {
   resolver,

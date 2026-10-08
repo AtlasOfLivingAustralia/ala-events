@@ -1,4 +1,4 @@
-import { getHtml, excerpt, createLocalizedGbifHref } from "#/helpers/utils";
+import { getHtml, excerpt, createLocalizedGbifHref } from "../../../../helpers/utils.js";
 
 /**
  * fieldName: (parent, args, context, info) => data;

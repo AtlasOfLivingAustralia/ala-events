@@ -5,7 +5,7 @@
  * context: An object shared by all resolvers in a GraphQL operation. We use the context to contain per-request state such as authentication information and access our data sources.
  * info: Information about the execution state of the operation which should only be used in advanced cases
  */
-module.exports = {
+export default {
   Query: {
     staffMemberSearch: (parent, args, { dataSources }) =>
       dataSources.staffMemberAPI.searchStaff({ query: args }),

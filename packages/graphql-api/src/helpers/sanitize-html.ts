@@ -1,9 +1,10 @@
-import sanitize, { AllowedAttribute, IOptions, Transformer } from 'sanitize-html';
-import { ParserOptions } from 'htmlparser2';
+import sanitize from 'sanitize-html';
+import type { AllowedAttribute, IOptions, Transformer } from 'sanitize-html';
 import * as cheerio from 'cheerio';
-import { merge } from 'lodash';
-import config from '#/config';
-import logger from '#/logger';
+import lodash from 'lodash';
+import config from '../config.js';
+import logger from '../logger.ts';
+const { merge } = lodash;
 
 const DEFAULT_TRUST_LEVEL = 'untrusted';
 
@@ -12,7 +13,7 @@ type DefaultOptions = {
   allowedAttributes: Record<string, AllowedAttribute[]>;
   allowedIframeHostnames?: string[];
   transformTags?: Record<string, string | Transformer>;
-  parser?: ParserOptions;
+  parser?: IOptions['parser'];
 }
 
 const untrustedDefaultOptions: DefaultOptions = {
@@ -87,7 +88,7 @@ const trustedDefaultOptions = merge<DefaultOptions, DefaultOptions>(untrustedDef
   },
   allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com', 'vimeo.com'],
   transformTags: {
-    'img': function (tagName, attr) {
+    'img': function (tagName: string, attr: Record<string, string>) {
       attr.src = prefixLinkUrl(attr.src);
       return {
         tagName,
@@ -168,7 +169,7 @@ function createIOptions(options: SanitizeOptions): IOptions {
   let transformTags = defaultOptions.transformTags;
   if (transformTags == null) transformTags = {};
 
-  transformTags['a'] = function (tagName, attr) {
+  transformTags['a'] = function (tagName: string, attr: Record<string, string>) {
     attr.href = prefixLinkUrl(attr.href, options.locale);
     return {
       tagName,
@@ -219,7 +220,12 @@ export function prefixLinkUrl(str = '', locale?: string) {
   }
 
   // Locale handling
-  if (locale && locale !== 'en-GB' && supportedLocales.includes(locale)) {
+  if (
+    locale &&
+    locale !== 'en-GB' &&
+    config.gbifLinkTargetOrigin &&
+    supportedLocales.includes(locale)
+  ) {
     // Construct a regex pattern to check if the URL is already localized
     const localePattern = new RegExp(`${config.gbifLinkTargetOrigin}/(${supportedLocales.join('|')})/`);
     // Check if the URL is already localized by looking for any of the supported locales

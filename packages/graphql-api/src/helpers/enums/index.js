@@ -1,10 +1,10 @@
-import enumsJson from './enums.json';
+import enumsJson from './enums.json' with { type: "json" };
 /* 
 async function getLatestInterpretationRemark(){
   // Discretely write latest interpretationRemark
   try {
     const interpretationRemarkLatest = await getEnumData('enumeration/interpretationRemark')
-    await fs.writeFile(`${__dirname}/interpretationRemark.json`, JSON.stringify(interpretationRemarkLatest, null, 2));
+    await fs.writeFile(`${import.meta.dirname}/interpretationRemark.json`, JSON.stringify(interpretationRemarkLatest, null, 2));
    } catch(error){
      console.log("Failed to fetch latest interpretationRemark from API:")
      console.log(error)

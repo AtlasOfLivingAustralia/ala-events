@@ -1,6 +1,6 @@
-import resolver from './vocabulary.resolver';
-import typeDef from './vocabulary.type';
-import vocabularyAPI from './vocabulary.source';
+import resolver from './vocabulary.resolver.js';
+import typeDef from './vocabulary.type.js';
+import vocabularyAPI from './vocabulary.source.js';
 
 export default {
   resolver,

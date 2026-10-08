@@ -1,19 +1,67 @@
-import { get } from 'lodash';
-import { RESTDataSource } from 'apollo-datasource-rest';
+import stableStringify from 'fast-json-stable-stringify';
+import lodash from 'lodash';
+import { LRUCache } from 'lru-cache';
 import { Parser } from 'xml2js';
+import GbifRESTDataSource from '../../../../datasources/GbifRESTDataSource.js';
+import { createMetricBatcher } from '../../../../helpers/batchMetricSearch.js';
+
+const { get } = lodash;
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
+const emlParser = new Parser();
+// Predicate to ES query. This does not depend on es2vt, so it can be reused.
+const tileQueryCache = new LRUCache({
+  max: 1000,
+  ttl: 10 * 60 * 1000,
+});
+// In-flight registrations only. es2vt keeps the query in memory, so a resolved
+// queryId must not be reused: the map's tile HTTP 400 retry is the same predicate
+// and has to register again after a restart or eviction.
+const inflightRegistrations = new Map();
 
-class EventAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.config = config;
-    this.baseURL = config.apiEs;
+function isRegistrationFailure(value) {
+  return value?.err?.error === 'FAILED_TO_REGISTER_PREDICATE';
+}
+
+function isTileQuery(value) {
+  return (
+    value != null && typeof value === 'object' && !isRegistrationFailure(value)
+  );
+}
+
+function registrationFailure() {
+  return {
+    err: {
+      error: 'FAILED_TO_REGISTER_PREDICATE',
+    },
+    predicate: null,
+  };
+}
+
+class EventAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiEs;
+    this.enqueueMetric = createMetricBatcher((batch) => {
+      const query = {
+        predicate: batch.predicate,
+        size: 0,
+        metrics: batch.metrics,
+      };
+      if (batch.endpoint === 'event-occurrence') {
+        return this.searchOccurrences({
+          query,
+          includeMeta: batch.includeMeta,
+        });
+      }
+      return this.searchEvents({ query, includeMeta: batch.includeMeta });
+    });
   }
 
-  willSendRequest(request) {
+  willSendRequest(path, request) {
     // now that we make a public version, we might as well just make it open since the key is shared with everyone
-    request.headers.set('Authorization', `ApiKey-v1 ${this.config.apiEsKey}`);
+    request.headers.Authorization = `ApiKey-v1 ${this.config.apiEsKey}`;
+    super.willSendRequest(path, request);
   }
 
   async searchEventDocuments({ query }) {
@@ -26,9 +74,25 @@ class EventAPI extends RESTDataSource {
     return response.documents;
   }
 
-  async searchEventOccurrences({ eventID, datasetKey, locationID, month, year, size, from }) {
-    const response = await this.eventOccurrences({ eventID, datasetKey, locationID, month, year, size, from });
-    let results = response.documents.results.map(doc => {
+  async searchEventOccurrences({
+    eventID,
+    datasetKey,
+    locationID,
+    month,
+    year,
+    size,
+    from,
+  }) {
+    const response = await this.eventOccurrences({
+      eventID,
+      datasetKey,
+      locationID,
+      month,
+      year,
+      size,
+      from,
+    });
+    let results = response.documents.results.map((doc) => {
       return {
         key: doc.key,
         scientificName: doc.acceptedScientificName,
@@ -64,17 +128,18 @@ class EventAPI extends RESTDataSource {
     }
   }
 
-  searchEvents = async ({ query }) => {
-    const body = { ...query, includeMeta: true };
+  searchEvents = async ({ query, includeMeta = false }) => {
+    const body = includeMeta ? { ...query, includeMeta: true } : { ...query };
+    const serializedBody = JSON.stringify(body);
     let response;
-    if (JSON.stringify(body).length < urlSizeLimit) {
-      response = await this.get(
-        '/event',
-        { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
-      );
+    if (serializedBody.length < urlSizeLimit) {
+      response = await this.get('/event', {
+        params: { body: serializedBody },
+        signal: this.context.abortController.signal,
+      });
     } else {
-      response = await this.post('/event', body, {
+      response = await this.post('/event', {
+        body,
         signal: this.context.abortController.signal,
       });
     }
@@ -86,8 +151,15 @@ class EventAPI extends RESTDataSource {
     return response;
   };
 
-  eventOccurrences = async ({ eventID, datasetKey, locationID, month, year, size, from }) => {
-
+  eventOccurrences = async ({
+    eventID,
+    datasetKey,
+    locationID,
+    month,
+    year,
+    size,
+    from,
+  }) => {
     const params = {
       size,
       from,
@@ -95,13 +167,13 @@ class EventAPI extends RESTDataSource {
       ...(datasetKey && { datasetKey }),
       ...(locationID && { locationID }),
       ...(month && { month }),
-      ...(year && { year })
+      ...(year && { year }),
     };
 
-    let response = await this.get(
-      '/event-occurrence', params,
-      { signal: this.context.abortController.signal },
-    );
+    let response = await this.get('/event-occurrence', {
+      params,
+      signal: this.context.abortController.signal,
+    });
 
     // map to support APIv1 naming
     response.documents.count = response.documents.total;
@@ -110,17 +182,18 @@ class EventAPI extends RESTDataSource {
     return response;
   };
 
-  searchOccurrences = async ({ query }) => {
-    const body = { ...query, includeMeta: true };
+  searchOccurrences = async ({ query, includeMeta = false }) => {
+    const body = includeMeta ? { ...query, includeMeta: true } : { ...query };
+    const serializedBody = JSON.stringify(body);
     let response;
-    if (JSON.stringify(body).length < urlSizeLimit) {
-      response = await this.get(
-        '/event-occurrence',
-        { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
-      );
+    if (serializedBody.length < urlSizeLimit) {
+      response = await this.get('/event-occurrence', {
+        params: { body: serializedBody },
+        signal: this.context.abortController.signal,
+      });
     } else {
-      response = await this.post('/event-occurrence', body, {
+      response = await this.post('/event-occurrence', {
+        body,
         signal: this.context.abortController.signal,
       });
     }
@@ -137,10 +210,9 @@ class EventAPI extends RESTDataSource {
   }
 
   async getDatasetEML({ datasetKey }) {
-    const parser = new Parser();
     const url = this.config.datasetEml.replace('{datasetKey}', datasetKey);
     const xml = await this.get(url);
-    const datasetJson = await parser.parseStringPromise(xml);
+    const datasetJson = await emlParser.parseStringPromise(xml);
     const dataset = get(datasetJson, "['eml:eml'].dataset[0]");
     const additionalMetadata = get(
       datasetJson,
@@ -167,38 +239,85 @@ class EventAPI extends RESTDataSource {
 
   async getLocation({ locationID }) {
     const query = JSON.stringify({ locationID });
-    const response = await this.get(
-      '/event',
-      { body: query },
-      { signal: this.context.abortController.signal },
-    );
+    const response = await this.get('/event', {
+      params: { body: query },
+      signal: this.context.abortController.signal,
+    });
     return response.documents.results[0];
   }
 
   async meta({ query }) {
     const body = { ...query };
-    const response = await this.post('/event/meta', body);
+    const response = await this.post('/event/meta', { body });
     return response;
   }
 
   async registerPredicate({ predicate }) {
+    const esQuery = await this.cachedTileQuery(predicate);
+    if (!isTileQuery(esQuery)) return esQuery;
+    return this.registerTileQuery(esQuery);
+  }
+
+  async cachedTileQuery(predicate) {
+    const cacheKey = stableStringify(predicate);
+    const cached = tileQueryCache.get(cacheKey);
+    if (cached) return cached;
+
+    const pending = this.loadTileQuery(predicate);
+    tileQueryCache.set(cacheKey, pending);
+    const esQuery = await pending;
+    if (tileQueryCache.get(cacheKey) !== pending) return esQuery;
+    if (isTileQuery(esQuery)) {
+      tileQueryCache.set(cacheKey, esQuery);
+    } else {
+      tileQueryCache.delete(cacheKey);
+    }
+    return esQuery;
+  }
+
+  async loadTileQuery(predicate) {
     try {
       const metaResponse = await this.meta({ query: { predicate } });
-      const { query } = metaResponse;
-      const response = await this.post(
-        `${this.config.es2vt}/register`,
-        { query: { query, grid_type: 'centroid' } },
-        { signal: this.context.abortController.signal },
-      );
+      const esQuery =
+        metaResponse?.query ??
+        (predicate == null && metaResponse != null && typeof metaResponse === 'object'
+          ? { match_all: {} }
+          : undefined);
+      if (!isTileQuery(esQuery)) return registrationFailure();
+      return esQuery;
+    } catch (err) {
+      console.log(err);
+      return registrationFailure();
+    }
+  }
+
+  registerTileQuery(esQuery) {
+    const body = { query: { query: esQuery, grid_type: 'centroid' } };
+    const cacheKey = stableStringify(body);
+    const existing = inflightRegistrations.get(cacheKey);
+    if (existing) return existing;
+
+    const pending = this.postTileRegistration(body);
+    inflightRegistrations.set(cacheKey, pending);
+    const clear = () => {
+      if (inflightRegistrations.get(cacheKey) === pending) {
+        inflightRegistrations.delete(cacheKey);
+      }
+    };
+    pending.then(clear, clear);
+    return pending;
+  }
+
+  async postTileRegistration(body) {
+    try {
+      const response = await this.post(`${this.config.es2vt}/register`, {
+        body,
+      });
+      if (typeof response?.queryId !== 'string') return registrationFailure();
       return response.queryId;
     } catch (err) {
       console.log(err);
-      return {
-        err: {
-          error: 'FAILED_TO_REGISTER_PREDICATE',
-        },
-        predicate: null,
-      };
+      return registrationFailure();
     }
   }
 }

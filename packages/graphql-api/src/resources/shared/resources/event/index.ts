@@ -1,6 +1,6 @@
-import resolver from './event.resolver';
-import typeDef from './event.type';
-import eventAPI from './event.source';
+import resolver from './event.resolver.js';
+import typeDef from './event.type.js';
+import eventAPI from './event.source.js';
 
 export default {
   resolver,

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import assert from 'assert';
-import { getHtml } from './getHtml';
-import config from '../config';
+import { getHtml } from './getHtml.js';
+import config from '../config.js';
 
 describe('Transform to html and sanitize', () => {
   it('it transform markdown and wrap in paragraph', () => {

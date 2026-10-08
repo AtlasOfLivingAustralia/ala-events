@@ -1,6 +1,6 @@
-import resolver from './node.resolver';
-import typeDef from './node.type';
-import nodeAPI from './node.source';
+import resolver from './node.resolver.js';
+import typeDef from './node.type.js';
+import nodeAPI from './node.source.js';
 
 export default {
   resolver,

@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { snakeCase } from 'lodash';
+import lodash from 'lodash';
 import hash from 'object-hash';
+const { snakeCase } = lodash;
 
 const emptyAndHash = hash({ type: 'and', predicates: [] });
 

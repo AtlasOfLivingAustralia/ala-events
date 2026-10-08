@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { loadEnums, schemaIsValid } from '../src/health/components/enum';
+import { loadEnums, schemaIsValid } from '../src/health/components/enum.js';
 
 const writeEnums = async () => {
   try {
@@ -18,7 +18,7 @@ const writeEnums = async () => {
     }
     return fs
       .writeFile(
-        `${__dirname}/../src/helpers/enums/enums.json`,
+        `${import.meta.dirname}/../src/helpers/enums/enums.json`,
         JSON.stringify(enumMap, null, 2),
       )
       .then(() => console.log('Done.'));

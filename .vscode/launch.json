@@ -7,15 +7,13 @@
         {
             "name": "GRAPHQL",
             "request": "launch",
-            "runtimeArgs": [
-                "start"
-            ],
+            "type": "node",
+            "runtimeExecutable": "node",
+            "args": ["src/index.ts"],
             "cwd": "${workspaceFolder}/packages/graphql-api",
-            "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
-            ],
-            "type": "node"
+            ]
         },
         {
             "name": "REACT",

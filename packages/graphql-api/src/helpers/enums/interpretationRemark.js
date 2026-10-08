@@ -1,4 +1,4 @@
-/* module.exports = [
+/* export default [
   {
     "id": "ZERO_COORDINATE",
     "severity": "WARNING",
@@ -791,7 +791,7 @@
   }
 ] */
 
-import patchedData from './interpretationRemark.json';
-import getPatchedData from './patchInterpretationRemark';
+import patchedData from './interpretationRemark.json' with { type: "json" };
+import getPatchedData from './patchInterpretationRemark.js';
 
 export default getPatchedData(patchedData);

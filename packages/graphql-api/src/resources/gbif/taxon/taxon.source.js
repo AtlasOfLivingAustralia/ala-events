@@ -1,26 +1,20 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
-import { getParsedName } from '#/helpers/scientificName';
-import { uniqBy } from 'lodash';
+import { getParsedName } from '../../../helpers/scientificName/index.js';
+import lodash from 'lodash';
 import { matchSorter } from 'match-sorter'
+const { uniqBy } = lodash;
 
-class TaxonAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-    this.config = config;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class TaxonAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchTaxa({ query }) {
-    const response = await this.get(
-      '/species/search',
-      stringify(query, { indices: false }),
-    );
+    const response = await this.get('/species/search', {
+      params: stringify(query, { indices: false }),
+    });
     response._query = query;
     return response;
   }
@@ -35,10 +29,9 @@ class TaxonAPI extends RESTDataSource {
   }
 
   async getTaxonDetails({ resource, key, query }) {
-    const response = await this.get(
-      `/species/${key}/${resource}`,
-      stringify(query, { indices: false }),
-    );
+    const response = await this.get(`/species/${key}/${resource}`, {
+      params: stringify(query, { indices: false }),
+    });
     if (query) response._query = query;
     return response;
   }
@@ -56,10 +49,9 @@ class TaxonAPI extends RESTDataSource {
   }
 
   async getChecklistRoots({ key, query }) {
-    const response = await this.get(
-      `/species/root/${key}`,
-      stringify(query, { indices: false }),
-    );
+    const response = await this.get(`/species/root/${key}`, {
+      params: stringify(query, { indices: false }),
+    });
     response._query = query;
     return response;
   }

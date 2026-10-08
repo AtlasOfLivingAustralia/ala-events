@@ -1,6 +1,6 @@
-import countryAPI from './country.source';
-import resolver from './country.resolver';
-import typeDef from './country.type';
+import countryAPI from './country.source.js';
+import resolver from './country.resolver.js';
+import typeDef from './country.type.js';
 
 export default {
   resolver,

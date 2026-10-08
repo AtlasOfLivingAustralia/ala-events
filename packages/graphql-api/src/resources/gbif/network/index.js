@@ -1,6 +1,6 @@
-import resolver from './network.resolver';
-import typeDef from './network.type';
-import networkAPI from './network.source';
+import resolver from './network.resolver.js';
+import typeDef from './network.type.js';
+import networkAPI from './network.source.js';
 
 export default {
   resolver,

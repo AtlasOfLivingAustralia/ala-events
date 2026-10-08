@@ -1,5 +1,5 @@
 import NodeCache from 'node-cache';
-import { authenticatedGet } from './authenticatedGet';
+import { authenticatedGet } from './authenticatedGet.js';
 
 // users are cached for 30 seconds
 const userCache = new NodeCache({ stdTTL: 30, checkperiod: 40 });

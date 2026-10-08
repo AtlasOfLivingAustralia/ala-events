@@ -1,5 +1,5 @@
-import resolver from './document.resolver';
-import typeDef from './document.type';
+import resolver from './document.resolver.js';
+import typeDef from './document.type.js';
 
 export default {
   resolver,

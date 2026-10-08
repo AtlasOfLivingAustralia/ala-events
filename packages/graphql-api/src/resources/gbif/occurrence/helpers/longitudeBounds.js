@@ -1,6 +1,6 @@
-import keyBy from 'lodash/keyBy';
-import maxBy from 'lodash/maxBy';
-import get from 'lodash/get';
+import keyBy from 'lodash/keyBy.js';
+import maxBy from 'lodash/maxBy.js';
+import get from 'lodash/get.js';
 
 function getLongitudeBounds(buckets, intervalSize) {
   if (buckets.length === 0) return null;

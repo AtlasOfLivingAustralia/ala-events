@@ -5,10 +5,11 @@ The idea is to use our geocoding layers to provide results like: denmark, copenh
 import wellknown from 'wellknown';
 import { bbox, polygon, booleanPointInPolygon, area } from '@turf/turf';
 import axios from 'axios';
-import { uniq } from 'lodash';
+import lodash from 'lodash';
 import { Router } from 'express';
-import config from '../config';
+import config from '../config.js';
 
+const { uniq } = lodash;
 const router = Router();
 
 export default (app) => {

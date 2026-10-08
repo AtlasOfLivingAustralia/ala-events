@@ -1,7 +1,7 @@
 # A small wrapper around ES vector tiles
 
 # Install
-requires node v16.13.1
+requires Node.js 24 or newer
 `npm i`
 
 # env file

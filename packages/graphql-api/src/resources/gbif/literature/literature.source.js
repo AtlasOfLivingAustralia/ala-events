@@ -1,18 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 
 const urlSizeLimit = 2000; // use GET for requests that serialized is less than N characters
 
-class LiteratureAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiEs;
-    this.config = config;
+class LiteratureAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiEs;
   }
 
-  willSendRequest(request) {
-    request.headers.set('Authorization', `ApiKey-v1 ${this.config.apiEsKey}`);
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+  willSendRequest(path, request) {
+    request.headers.Authorization = `ApiKey-v1 ${this.config.apiEsKey}`;
+    super.willSendRequest(path, request);
   }
 
   async searchLiteratureDocuments({ query }) {
@@ -24,13 +22,13 @@ class LiteratureAPI extends RESTDataSource {
     const body = { ...query, includeMeta: true };
     let response;
     if (JSON.stringify(body).length < urlSizeLimit) {
-      response = await this.get(
-        '/literature',
-        { body: JSON.stringify(body) },
-        { signal: this.context.abortController.signal },
-      );
+      response = await this.get('/literature', {
+        params: { body: JSON.stringify(body) },
+        signal: this.context.abortController.signal,
+      });
     } else {
-      response = await this.post('/literature', body, {
+      response = await this.post('/literature', {
+        body,
         signal: this.context.abortController.signal,
       });
     }
@@ -48,7 +46,7 @@ class LiteratureAPI extends RESTDataSource {
 
   async meta({ query }) {
     const body = { ...query };
-    const response = await this.post('/literature/meta', body);
+    const response = await this.post('/literature/meta', { body });
     return response;
   }
 }

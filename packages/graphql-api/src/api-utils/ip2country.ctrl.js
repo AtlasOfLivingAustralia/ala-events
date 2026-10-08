@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Router } from 'express';
 import ip3country from 'ip3country';
-import config from '../config';
+import config from '../config.js';
 
 const router = Router();
 ip3country.init();

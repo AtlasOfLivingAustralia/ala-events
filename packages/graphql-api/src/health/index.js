@@ -1,5 +1,5 @@
-import { getEnumStatus } from './components/enum';
-import { getInterpretationRemarkStatus } from './components/interpretationRemark';
+import { getEnumStatus } from './components/enum.js';
+import { getInterpretationRemarkStatus } from './components/interpretationRemark.js';
 
 export default (req, res) => {
   try {

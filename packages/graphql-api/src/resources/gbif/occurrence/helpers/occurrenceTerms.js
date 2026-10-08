@@ -1,4 +1,5 @@
-import { get } from 'lodash';
+import lodash from 'lodash';
+const { get } = lodash;
 
 const terms = [
   {

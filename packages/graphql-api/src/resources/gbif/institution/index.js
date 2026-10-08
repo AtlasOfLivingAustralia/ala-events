@@ -1,6 +1,6 @@
-import resolver from './institution.resolver';
-import typeDef from './institution.type';
-import institutionAPI from './institution.source';
+import resolver from './institution.resolver.js';
+import typeDef from './institution.type.js';
+import institutionAPI from './institution.source.js';
 
 export default {
   resolver,

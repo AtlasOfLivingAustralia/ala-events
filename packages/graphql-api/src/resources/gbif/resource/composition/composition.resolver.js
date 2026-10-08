@@ -1,5 +1,5 @@
-import { excerpt, getHtml, isNoneEmptyArray } from "#/helpers/utils";
-import { KNOWN_BLOCK_TYPES, KNOWN_CAROUSEL_BLOCKS, KNOWN_FEATURE_TYPES } from "./acceptedTypes";
+import { excerpt, getHtml, isNoneEmptyArray } from "../../../../helpers/utils.js";
+import { KNOWN_BLOCK_TYPES, KNOWN_CAROUSEL_BLOCKS, KNOWN_FEATURE_TYPES } from "./acceptedTypes.js";
 
 /**
  * fieldName: (parent, args, context, info) => data;

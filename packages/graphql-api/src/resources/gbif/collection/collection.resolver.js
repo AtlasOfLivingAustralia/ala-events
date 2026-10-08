@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { getExcerpt } from '#/helpers/utils';
+import { getExcerpt } from '../../../helpers/utils.js';
 
 function between(input, min, max) {
   return Math.min(Math.max(input, min), max);

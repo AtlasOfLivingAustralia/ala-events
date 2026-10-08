@@ -1,22 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class CollectionAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class CollectionAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchCollections({ query }) {
-    return this.get(
-      '/grscicoll/collection',
-      stringify(query, { indices: false }),
-    );
+    return this.get('/grscicoll/collection', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getCollectionByKey({ key }) {
@@ -25,10 +19,12 @@ class CollectionAPI extends RESTDataSource {
 
   async getCollectionsByInstitutionKey({ key, limit = 20, offset = 0 }) {
     return this.get('/grscicoll/collection', {
-      institution: key,
-      limit,
-      offset,
-    }).then((res) => res.results);
+      params: {
+        institution: key,
+        limit,
+        offset,
+      },
+      }).then((res) => res.results);
   }
 
   /*

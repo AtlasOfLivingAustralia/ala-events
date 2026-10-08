@@ -1,9 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { select, geoOrthographic, geoPath, geoGraticule } from 'd3';
 import { JSDOM } from 'jsdom';
-import { feature } from 'topojson';
-import world from './landmassLowRes.json';
+import topojson from 'topojson';
+import world from './landmassLowRes.json' with { type: "json" };
 
+const { feature } = topojson;
 const width = 100;
 const height = 100;
 const radius = height / 2;

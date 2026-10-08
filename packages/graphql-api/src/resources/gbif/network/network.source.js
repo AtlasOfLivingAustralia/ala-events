@@ -1,19 +1,16 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class NetworkAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class NetworkAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   async searchNetworks({ query }) {
-    return this.get('/network', stringify(query, { indices: false }));
+    return this.get('/network', {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getNetworkByKey({ key }) {
@@ -21,17 +18,15 @@ class NetworkAPI extends RESTDataSource {
   }
 
   async getConstituents({ key, query }) {
-    return this.get(
-      `/network/${key}/constituents`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/network/${key}/constituents`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getOrganizations({ key, query }) {
-    return this.get(
-      `/network/${key}/organization`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/network/${key}/organization`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
 }

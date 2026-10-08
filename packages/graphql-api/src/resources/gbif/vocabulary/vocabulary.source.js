@@ -1,20 +1,17 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
 
-class VocabularyAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-  }
-
-  willSendRequest(request) {
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+class VocabularyAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
   // since vocabulary search expose non releasd vocabularies, we will remove this option for now
   // async searchVocabularies({ query }) {
-  //   return this.get('/vocabularies', stringify(query, { indices: false }));
+  //   return this.get('/vocabularies', {
+  //     params: stringify(query, { indices: false }),
+  //   });
   // }
 
   async getVocabulary({ key }) {
@@ -22,17 +19,15 @@ class VocabularyAPI extends RESTDataSource {
   }
 
   async searchConcepts({ vocabulary, query }) {
-    return this.get(
-      `/vocabularies/${vocabulary}/concepts/latestRelease`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/vocabularies/${vocabulary}/concepts/latestRelease`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   async getConcept({ vocabulary, concept, query }) {
-    return this.get(
-      `/vocabularies/${vocabulary}/concepts/latestRelease/${concept}`,
-      stringify(query, { indices: false }),
-    );
+    return this.get(`/vocabularies/${vocabulary}/concepts/latestRelease/${concept}`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 }
 

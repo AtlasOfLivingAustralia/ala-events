@@ -6,12 +6,12 @@ import {
   getTemporal,
   getCardinality,
   getMultiFacet,
-} from './helpers/getMetrics';
-import { formattedCoordinates } from '#/helpers/utils';
-import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport';
-import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport';
-import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport';
-import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport';
+} from './helpers/getMetrics.js';
+import { formattedCoordinates } from '../../../../helpers/utils.js';
+import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport.js';
+import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport.js';
+import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport.js';
+import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport.js';
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {
   dictionary[facetName] = getFacet(facetName);
@@ -59,17 +59,28 @@ const temporalEventSearch = (parent) => {
  */
 export default {
   Query: {
-    eventSearch: (parent, { predicate, ...params }, { dataSources }) => {
+    eventSearch: (parent, { predicate, ...params }) => {
       return {
         _predicate: predicate,
         _params: params,
-        _tileServerToken: dataSources.eventAPI.registerPredicate({ predicate }),
       };
     },
     event: (parent, { eventID, datasetKey }, { dataSources }) =>
       dataSources.eventAPI.getEventByKey({ eventID, datasetKey }),
-    occurrences: (parent, { eventID, datasetKey, locationID, month, year, size, from }, { dataSources }) => {
-      return dataSources.eventAPI.searchEventOccurrences({ eventID, datasetKey, locationID, month, year, size, from });
+    occurrences: (
+      parent,
+      { eventID, datasetKey, locationID, month, year, size, from },
+      { dataSources },
+    ) => {
+      return dataSources.eventAPI.searchEventOccurrences({
+        eventID,
+        datasetKey,
+        locationID,
+        month,
+        year,
+        size,
+        from,
+      });
     },
     location: (parent, { locationID }, { dataSources }) =>
       dataSources.eventAPI.getLocation({ locationID }),
@@ -81,9 +92,13 @@ export default {
       });
     },
     occurrenceCount: (parent, query, { dataSources }) => {
-      if (typeof query === 'undefined') return null;
       return dataSources.eventAPI
-        .searchOccurrenceDocuments({ query, size: 1 })
+        .searchOccurrenceDocuments({
+          query: {
+            size: 0,
+            predicate: parent._predicate,
+          },
+        })
         .then((response) => {
           return response.total;
         });
@@ -95,14 +110,14 @@ export default {
       return {
         size: size,
         from: from,
-        _predicate: parent._predicate
+        _predicate: parent._predicate,
       };
     },
     multifacet: (parent, { size, from }) => {
       return {
         size: size,
         from: from,
-        _predicate: parent._predicate
+        _predicate: parent._predicate,
       };
     },
     cardinality: (parent) => {
@@ -117,6 +132,11 @@ export default {
     _meta: (parent, query, { dataSources }) => {
       return dataSources.eventAPI.meta({
         query: { predicate: parent._predicate },
+      });
+    },
+    _tileServerToken: (parent, query, { dataSources }) => {
+      return dataSources.eventAPI.registerPredicate({
+        predicate: parent._predicate,
       });
     },
   },
@@ -135,32 +155,38 @@ export default {
     species: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'species',
-        searchApi: dataSources.eventAPI.searchOccurrences,
+        endpoint: 'event-occurrence',
+        api: dataSources.eventAPI,
       }),
     taxa: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'gbifClassification_acceptedUsage_key',
-        searchApi: dataSources.eventAPI.searchOccurrences,
+        endpoint: 'event-occurrence',
+        api: dataSources.eventAPI,
       }),
     datasetKey: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'datasetKey',
-        searchApi: dataSources.eventAPI.searchEvents,
+        endpoint: 'event',
+        api: dataSources.eventAPI,
       }),
     locationID: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'locationID',
-        searchApi: dataSources.eventAPI.searchEvents,
+        endpoint: 'event',
+        api: dataSources.eventAPI,
       }),
     parentEventID: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'parentEventID',
-        searchApi: dataSources.eventAPI.searchEvents,
+        endpoint: 'event',
+        api: dataSources.eventAPI,
       }),
     surveyID: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
         field: 'surveyID',
-        searchApi: dataSources.eventAPI.searchEvents,
+        endpoint: 'event',
+        api: dataSources.eventAPI,
       }),
   },
   EventStats,
@@ -189,9 +215,9 @@ export default {
         { type: 'equals', key: 'eventHierarchy', value: eventID },
         query,
         {
-          dataSources,
           field: 'species',
-          searchApi: dataSources.eventAPI.searchOccurrences,
+          endpoint: 'event-occurrence',
+          api: dataSources.eventAPI,
         },
       );
     },
@@ -218,7 +244,7 @@ export default {
     datasetTitle: ({ key }, args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
       return dataSources.eventAPI
-        .searchEventDocuments({ query: { datasetKey: key }, size: 1 })
+        .searchEventDocuments({ query: { size: 1, datasetKey: key } })
         .then((response) => {
           return response.results[0].datasetTitle;
         });
@@ -226,7 +252,12 @@ export default {
     occurrenceCount: ({ key }, args, { dataSources }) => {
       if (typeof key === 'undefined') return null;
       return dataSources.eventAPI
-        .searchOccurrenceDocuments({ query: { datasetKey: key }, size: 1 })
+        .searchOccurrenceDocuments({
+          query: {
+            size: 0,
+            predicate: { type: 'equals', key: 'datasetKey', value: key },
+          },
+        })
         .then((response) => {
           return response.total;
         });
@@ -242,7 +273,9 @@ export default {
           },
         })
         .then(({ aggregations }) =>
-          aggregations.extensions_facet.buckets.map(({ key: facetKey }) => facetKey),
+          aggregations.extensions_facet.buckets.map(
+            ({ key: facetKey }) => facetKey,
+          ),
         );
     },
     events: facetEventSearch,
@@ -259,5 +292,4 @@ export default {
   EventTemporalResult_string: {
     events: temporalEventSearch,
   },
-
 };

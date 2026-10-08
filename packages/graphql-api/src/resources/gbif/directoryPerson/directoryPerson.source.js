@@ -3,23 +3,23 @@
  * Much of the data can be public though, but be cautious when adding new fields.
  */
 
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 import { stringify } from 'qs';
-import pick from 'lodash/pick';
-import { createSignedGetHeader } from '#/helpers/auth/authenticatedGet';
+import pick from 'lodash/pick.js';
+import { createSignedGetHeader } from '../../../helpers/auth/authenticatedGet.js';
 
-class DirectoryPersonAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-    this.config = config;
+class DirectoryPersonAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
-  willSendRequest(request) {
-    const header = createSignedGetHeader(request.path, this.config);
-    Object.keys(header).forEach(x => request.headers.set(x, header[x]));
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+  willSendRequest(path, request) {
+    const header = createSignedGetHeader(path, this.config);
+    Object.keys(header).forEach((x) => {
+      request.headers[x] = header[x];
+    });
+    super.willSendRequest(path, request);
   }
 
   /*
@@ -48,10 +48,9 @@ class DirectoryPersonAPI extends RESTDataSource {
   }
 
   async searchPeopleByRole({ query }) {
-    const response = await this.get(
-      '/directory/person_role',
-      stringify(query, { indices: false }),
-    );
+    const response = await this.get('/directory/person_role', {
+      params: stringify(query, { indices: false }),
+    });
     
     // Sanitize the data before returning it, this data is from an authorized endpoint.
     // response.results = response.results.map((p) => this.reduceDirectoryPerson(p));
@@ -65,7 +64,9 @@ class DirectoryPersonAPI extends RESTDataSource {
   }
 
   async getProfilePicture({ key, query }) {
-    return await this.get(`/directory/person/${key}/profilePicture`, stringify(query, { indices: false }));
+    return await this.get(`/directory/person/${key}/profilePicture`, {
+      params: stringify(query, { indices: false }),
+    });
   }
 
   /*

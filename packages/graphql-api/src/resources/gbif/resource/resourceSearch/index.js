@@ -1,5 +1,5 @@
-import resolver from './resourceSearch.resolver';
-import typeDef from './resourceSearch.type';
+import resolver from './resourceSearch.resolver.js';
+import typeDef from './resourceSearch.type.js';
 
 export default {
   resolver,

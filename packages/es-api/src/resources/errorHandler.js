@@ -8,11 +8,22 @@ class ResponseError extends Error {
 }
 
 function errorHandler(err, req, res, next) {
-  const { statusCode, message } = err;
+  // A second error after the response was sent (for example from a handler that
+  // both called next(err) and threw) must not write again. Express 5's
+  // res.status throws on a non-integer, which would replace the original error.
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+
+  const parsedStatus = Number(err.statusCode);
+  const statusCode = Number.isInteger(parsedStatus) && parsedStatus >= 100 && parsedStatus <= 999
+    ? parsedStatus
+    : 503;
   res.setHeader('Cache-Control', 'no-cache');
-  res.status(statusCode || 503).json({
-    statusCode: statusCode || 503,
-    message
+  res.status(statusCode).json({
+    statusCode,
+    message: err.message
   });
 
   next(err);

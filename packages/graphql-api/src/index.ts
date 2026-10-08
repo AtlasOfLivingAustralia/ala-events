@@ -1,71 +1,48 @@
 import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
-import { ApolloServer, ApolloServerPlugin, BaseContext } from '@apollo/server';
+import { ApolloServer, type ApolloServerPlugin, type BaseContext } from '@apollo/server';
 import mapController from './api-utils/maps/index.ctrl.js';
-import { DataSource } from 'apollo-datasource';
 import { expressMiddleware } from '@as-integrations/express5';
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 
-import AbortControllerServer from 'abort-controller';
-import { get } from 'lodash';
+import lodash from 'lodash';
 // recommended in the apollo docs https://github.com/stems/graphql-depth-limit
 import depthLimit from 'graphql-depth-limit';
 
 // Local imports
-import config from './config';
-import { hashMiddleware, mutateQuery } from './middleware';
-import health from './health';
+import config from './config.js';
+import { hashMiddleware, mutateQuery } from './middleware/index.ts';
+import health from './health/index.js';
 // get the full schema of what types, enums, scalars and queries are available
-import getSchema from './typeDefs';
+import getSchema from './typeDefs.js';
 // define how to resolve the various types, fields and queries
-import resolvers from './resolvers';
+import resolvers from './resolvers.js';
 // how to fetch the actual data and possible format/remap it to match the schemas
-import api from './dataSources';
+import api from './dataSources.js';
 // we will attach a user if an authorization header is present.
-import extractUser from './helpers/auth/extractUser';
+import extractUser from './helpers/auth/extractUser.js';
 import ipController from './api-utils/ip2country.ctrl.js';
 import polygonName from './api-utils/polygonName.ctrl.js';
-// import { loggingPlugin } from './plugins/loggingPlugin';
+import { loggingPlugin } from './plugins/loggingPlugin.ts';
+const { get } = lodash;
 
-type DataSources = Record<string, DataSource>;
-type DataSourcesFn = () => DataSources;
 interface ContextWithDataSources extends BaseContext {
-  dataSources?: DataSources;
+  dataSources?: Record<string, unknown>;
+  user?: unknown;
+  abortController?: AbortController;
+  userAgent?: string;
+  referer?: string | null;
+  locale?: string;
+  preview?: boolean;
 }
-
-export const ApolloDataSources = (options: {
-  dataSources: DataSourcesFn,
-}): ApolloServerPlugin<ContextWithDataSources> => ({
-  requestDidStart: async (requestContext) => {
-    const dataSources = options.dataSources();
-    const initializers = Object.values(dataSources).map(async (dataSource) => {
-      if (dataSource.initialize)
-        dataSource.initialize({
-          cache: requestContext.cache,
-          context: requestContext.contextValue,
-        });
-    });
-    await Promise.all(initializers);
-    requestContext.contextValue.dataSources = dataSources;
-  },
-});
-
-const dataSourcesFn = () => Object.keys(api).reduce(
-  (prev, cur) => ({
-    ...prev,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [cur]: new (api as { [key: string]: any })[cur](config),
-  }),
-  {},
-);
 
 // we are doing this async as we need to load the various enumerations from the APIs
 // and generate the schema from those
 async function initializeServer() {
   // this is async as we generate parts of the schema from the live enumeration API
   const typeDefs = await getSchema();
-  const server = new ApolloServer({
+  const server = new ApolloServer<ContextWithDataSources>({
     includeStacktraceInErrorResponses: config.debug,
     typeDefs,
     resolvers,
@@ -74,8 +51,7 @@ async function initializeServer() {
       ApolloServerPluginCacheControl({
         defaultMaxAge: config.debug ? 0 : 600,
       }),
-      ApolloDataSources(({ dataSources: dataSourcesFn })),
-      // loggingPlugin,
+      // Keep loggingPlugin disabled until both logging paths redact sensitive headers.
     ],
     logger: console,
   });
@@ -119,19 +95,34 @@ async function initializeServer() {
       context: async ({ req }) => {
         const user = await extractUser(get(req, 'headers.authorization'));
 
-        const controller = new AbortControllerServer();
+        const controller = new AbortController();
         req.on('close', () => {
           controller.abort();
         });
 
-        return {
+        const contextValue: ContextWithDataSources = {
           user,
           abortController: controller,
-          userAgent: get(req, 'headers.User-Agent') || 'GBIF_GRAPHQL_API',
-          referer: get(req, 'headers.referer') || null,
-          locale: get(req, 'headers.locale') || 'en-GB',
+          userAgent: String(get(req, 'headers.user-agent') || 'GBIF_GRAPHQL_API'),
+          referer: (get(req, 'headers.referer') as string | undefined) || null,
+          locale: String(get(req, 'headers.locale') || 'en-GB'),
           preview: get(req, 'headers.preview') === 'true',
         };
+
+        contextValue.dataSources = Object.keys(api).reduce(
+          (prev, cur) => ({
+            ...prev,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            [cur]: new (api as { [key: string]: any })[cur]({
+              cache: server.cache,
+              context: contextValue,
+              config,
+            }),
+          }),
+          {},
+        );
+
+        return contextValue;
       },
     }),
   );

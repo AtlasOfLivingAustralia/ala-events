@@ -1,16 +1,16 @@
 /* eslint-disable class-methods-use-this */
 
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
 
-class TaxonMediaAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.ala.biocache;
-    this.config = config;
+class TaxonMediaAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.ala.biocache;
   }
 
-  willSendRequest(request) {
-    request.headers.set('Accept', 'application/json');
+  willSendRequest(path, request) {
+    request.headers.Accept = 'application/json';
+    super.willSendRequest(path, request);
   }
 
   async getRepresentativeImages({ taxon, size, from, params }) {
@@ -56,9 +56,11 @@ class TaxonMediaAPI extends RESTDataSource {
 
     const { results: images } = await this.post(
       `${this.config.ala.images}/getImageInfoForIdList`,
-      JSON.stringify({
-        imageIds: occurrences.map(({ image }) => image),
-      }),
+      {
+        body: {
+          imageIds: occurrences.map(({ image }) => image),
+        },
+      },
     );
 
     return occurrences

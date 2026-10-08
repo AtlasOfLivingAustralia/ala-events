@@ -1,23 +1,24 @@
-import * as article from './article';
-import * as call from './call';
-import * as composition from './composition';
-import * as dataUse from './dataUse';
-import * as event from './event';
-import * as gbifDocument from './document';
-import * as gbifProject from './gbifProject';
-import * as programme from './programme';
-import * as help from './help';
-import * as news from './news';
-import * as notification from './notification';
-import * as resourceSearch from './resourceSearch';
-import * as resource from './resource';
-import * as tool from './tool';
-import * as misc from './misc';
-import * as menuItem from './menuItem';
-import * as home from './home';
-import * as fundingOrganisation from './fundingOrganisation';
-import { ResourceAPI, ResourceSearchAPI } from './resource.source';
-import { merge, get } from 'lodash';
+import * as article from './article/index.js';
+import * as call from './call/index.js';
+import * as composition from './composition/index.js';
+import * as dataUse from './dataUse/index.js';
+import * as event from './event/index.js';
+import * as gbifDocument from './document/index.js';
+import * as gbifProject from './gbifProject/index.js';
+import * as programme from './programme/index.js';
+import * as help from './help/index.js';
+import * as news from './news/index.js';
+import * as notification from './notification/index.js';
+import * as resourceSearch from './resourceSearch/index.js';
+import * as resource from './resource/index.js';
+import * as tool from './tool/index.js';
+import * as misc from './misc/index.js';
+import * as menuItem from './menuItem/index.js';
+import * as home from './home/index.js';
+import * as fundingOrganisation from './fundingOrganisation/index.js';
+import { ResourceAPI, ResourceSearchAPI } from './resource.source.js';
+import lodash from 'lodash';
+const { merge, get } = lodash;
 
 const children = [
   article,

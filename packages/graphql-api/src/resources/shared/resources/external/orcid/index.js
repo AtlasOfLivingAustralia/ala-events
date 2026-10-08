@@ -1,6 +1,6 @@
-import resolver from './orcid.resolver';
-import typeDef from './orcid.type';
-import orcidAPI from './orcid.source';
+import resolver from './orcid.resolver.js';
+import typeDef from './orcid.type.js';
+import orcidAPI from './orcid.source.js';
 
 export default {
   resolver,

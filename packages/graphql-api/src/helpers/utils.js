@@ -1,5 +1,5 @@
-import config from '../config';
-import { getHtml } from './getHtml';
+import config from '../config.js';
+import { getHtml } from './getHtml.js';
 
 function formattedCoordinates({ lat, lon }) {
   if (typeof lat !== 'number' || typeof lon !== 'number') return undefined;

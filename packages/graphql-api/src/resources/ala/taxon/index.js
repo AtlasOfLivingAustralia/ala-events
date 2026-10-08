@@ -1,3 +1,3 @@
-import taxonAPI from './taxon.source';
+import taxonAPI from './taxon.source.js';
 
 export default { dataSource: { taxonAPI } };

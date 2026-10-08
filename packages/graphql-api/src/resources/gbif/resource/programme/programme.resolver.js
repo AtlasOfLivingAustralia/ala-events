@@ -1,6 +1,6 @@
-import { getHtml, excerpt, createLocalizedGbifHref, isNoneEmptyArray } from "#/helpers/utils";
-import logger from "#/logger";
-import { KNOWN_BLOCK_TYPES } from "../composition/acceptedTypes";
+import { getHtml, excerpt, createLocalizedGbifHref, isNoneEmptyArray } from "../../../../helpers/utils.js";
+import logger from '../../../../logger.ts';
+import { KNOWN_BLOCK_TYPES } from "../composition/acceptedTypes.js";
 
 /**
  * fieldName: (parent, args, context, info) => data;

@@ -1,5 +1,5 @@
 import Thumbor from 'thumbor';
-import config from '../../../../config';
+import config from '../../../../config.js';
 
 const thumbor = new Thumbor(config.thumborSecurityKey, config.thumbor ?? 'https://api.gbif.org/v1/image');
 

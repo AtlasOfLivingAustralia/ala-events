@@ -1,5 +1,5 @@
 import mdit from 'markdown-it';
-import { sanitizeHtml } from './sanitize-html';
+import { sanitizeHtml } from './sanitize-html.ts';
 import mdAnchor from 'markdown-it-anchor';
 
 const md = mdit({

@@ -1,25 +1,25 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
-import { ResourceSearchAPI } from '#/resources/gbif/resource/resource.source';
+import GbifRESTDataSource from '../../../datasources/GbifRESTDataSource.js';
+import { ResourceSearchAPI } from '../resource/resource.source.js';
 import { stringify } from 'qs';
-import pick from 'lodash/pick';
-import { createSignedGetHeader } from '#/helpers/auth/authenticatedGet';
+import pick from 'lodash/pick.js';
+import { createSignedGetHeader } from '../../../helpers/auth/authenticatedGet.js';
 
 /**
  * This resource is from the directory API, which is not a public API.
  * Much of the data can be public though, but be cautious when adding new fields.
  */
-class ParticipantDirectoryAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.apiv1;
-    this.config = config;
+class ParticipantDirectoryAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.apiv1;
   }
 
-  willSendRequest(request) {
-    const header = createSignedGetHeader(request.path, this.config);
-    Object.keys(header).forEach(x => request.headers.set(x, header[x]));
-    request.headers.set('User-Agent', this.context.userAgent);
-    request.headers.set('referer', this.context.referer);
+  willSendRequest(path, request) {
+    const header = createSignedGetHeader(path, this.config);
+    Object.keys(header).forEach((x) => {
+      request.headers[x] = header[x];
+    });
+    super.willSendRequest(path, request);
   }
 
   /*
@@ -44,10 +44,9 @@ class ParticipantDirectoryAPI extends RESTDataSource {
   }
 
   async searchParticipants({ query }) {
-    const response = await this.get(
-      '/directory/participant',
-      stringify(query, { indices: false }),
-    );
+    const response = await this.get('/directory/participant', {
+      params: stringify(query, { indices: false }),
+    });
     // Sanitize the data before returning it, this data is from an authorized endpoint.
     response.results = response.results.map((p) => this.reduceParticipant(p));
     return response;
@@ -61,15 +60,9 @@ class ParticipantDirectoryAPI extends RESTDataSource {
 }
 
 class ParticipantAPI {
-  constructor(config) {
-    this.directoryAPI = new ParticipantDirectoryAPI(config);
-    this.resourceSearchAPI = new ResourceSearchAPI(config);
-  }
-
-  initialize(config) {
-    this.context = config.context;
-    this.directoryAPI.initialize(config);
-    this.resourceSearchAPI.initialize(config);
+  constructor(options) {
+    this.directoryAPI = new ParticipantDirectoryAPI(options);
+    this.resourceSearchAPI = new ResourceSearchAPI(options);
   }
 
   async searchParticipants({ query }, locale) {

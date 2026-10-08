@@ -1,4 +1,4 @@
-import { RESORUCE_OPTIONS } from "./resource.constants";
+import { RESORUCE_OPTIONS } from "./resource.constants.js";
 
 import gql from 'graphql-tag';
 

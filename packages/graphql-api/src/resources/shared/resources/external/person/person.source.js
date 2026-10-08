@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 
-import { RESTDataSource } from 'apollo-datasource-rest';
+import GbifRESTDataSource from '../../../../../datasources/GbifRESTDataSource.js';
 
 function reduce(people) {
   try {
@@ -29,14 +29,15 @@ function reduce(people) {
   }
 }
 
-class PersonAPI extends RESTDataSource {
-  constructor(config) {
-    super();
-    this.baseURL = config.orcid.pubApi;
+class PersonAPI extends GbifRESTDataSource {
+  constructor(options) {
+    super(options);
+    this.baseURL = this.config.orcid.pubApi;
   }
 
-  willSendRequest(request) {
-    request.headers.set('Accept', 'application/json');
+  willSendRequest(path, request) {
+    request.headers.Accept = 'application/json';
+    super.willSendRequest(path, request);
   }
 
   async getPersonByOrcid({ key, dataSources, expand }) {

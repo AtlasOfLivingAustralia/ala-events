@@ -1,4 +1,4 @@
-import { RESORUCE_OPTIONS } from './resource.constants';
+import { RESORUCE_OPTIONS } from './resource.constants.js';
 
 function elasticSearchTypeToGraphQLType(elasticSearchType) {
   return RESORUCE_OPTIONS.find(option => option.elasticSearchType === elasticSearchType).graphQLType;
