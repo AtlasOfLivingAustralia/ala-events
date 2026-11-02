@@ -12,6 +12,7 @@ import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport.js';
 import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport.js';
 import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport.js';
 import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport.js';
+import { exclusiveTaxaFromBuckets } from './exclusiveTaxa.js';
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {
   dictionary[facetName] = getFacet(facetName);
@@ -160,7 +161,7 @@ export default {
       }),
     taxa: (parent, query, { dataSources }) =>
       getCardinality(parent._predicate, query, {
-        field: 'gbifClassification_acceptedUsage_key',
+        field: 'species',
         endpoint: 'event-occurrence',
         api: dataSources.eventAPI,
       }),
@@ -221,23 +222,21 @@ export default {
         },
       );
     },
-    distinctTaxa: async ({ eventID }, query, { dataSources }) =>
-      dataSources.eventAPI
-        .searchOccurrences({
-          query: {
-            eventID,
-            facet: 'gbifClassification_acceptedUsage_key',
-            size: 0,
-          },
-        })
-        .then(({ aggregations }) =>
-          aggregations.gbifClassification_acceptedUsage_key_facet.buckets.map(
-            async ({ key, doc_count: count }) => ({
-              count,
-              ...(await dataSources.taxonAPI.getTaxonByKey({ key })),
-            }),
-          ),
-        ),
+    distinctTaxa: async ({ eventID }, query, { dataSources }) => {
+      const { aggregations } = await dataSources.eventAPI.searchOccurrences({
+        query: {
+          eventID,
+          facet: 'gbifClassification_acceptedUsage_key',
+          'facet.size.gbifClassification_acceptedUsage_key': 10000,
+          size: 0,
+        },
+      });
+      const buckets =
+        aggregations?.gbifClassification_acceptedUsage_key_facet?.buckets || [];
+      return exclusiveTaxaFromBuckets(buckets, (key) =>
+        dataSources.taxonAPI.getTaxonByKey({ key, useBie: true }),
+      );
+    },
     extensions: ({ seedbankRecord }) => ({ seedbank: seedbankRecord }),
   },
   EventFacetResult_dataset: {

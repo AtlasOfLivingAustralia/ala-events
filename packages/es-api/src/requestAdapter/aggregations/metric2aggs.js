@@ -3,6 +3,38 @@
 const _ = require('lodash');
 const { ResponseError } = require('../../resources/errorHandler');
 
+function flatNestedField(conf, metricKey) {
+  const inner = conf.config?.options?.[metricKey];
+  if (!inner) {
+    throw new ResponseError(400, 'badRequest', `Nested field ${metricKey} is not configured`);
+  }
+  return conf.config.prefix ? `${conf.config.prefix}.${inner.field}` : inner.field;
+}
+
+function flatNestedAgg(name, conf, metric, kind) {
+  const field = flatNestedField(conf, metric.key);
+  const from = parseInt(metric.from || 0, 10);
+  const size = parseInt(metric.size || 10, 10) || 10;
+  const leaf = kind === 'cardinality'
+    ? {
+        cardinality: {
+          field,
+          precision_threshold: metric.precision_threshold || 40000,
+        },
+      }
+    : {
+        terms: {
+          field,
+          size: size + from,
+          include: metric.include,
+        },
+      };
+  return {
+    nested: { path: conf.field },
+    aggs: { [name]: leaf },
+  };
+}
+
 function metric2aggs(metrics = {}, config) {
   const aggs = {};
   for (const [name, metric] of Object.entries(metrics)) {
@@ -22,6 +54,10 @@ function metric2aggs(metrics = {}, config) {
       const size = parseInt(metric.size || 10, 10) || 10;
       switch (metric.type) {
         case 'facet': {
+          if (conf.type === 'flatNested') {
+            aggs[name] = flatNestedAgg(name, conf, metric, 'facet');
+            break;
+          }
           if (!['keyword', 'numeric', 'boolean'].includes(conf.type)) {
             throw new ResponseError(400, 'badRequest', 'Facets are only supported on keywords, boolean and numeric fields');
           }
@@ -119,6 +155,10 @@ function metric2aggs(metrics = {}, config) {
           break;
         }
         case 'cardinality': {
+          if (conf.type === 'flatNested') {
+            aggs[name] = flatNestedAgg(name, conf, metric, 'cardinality');
+            break;
+          }
           if (!['keyword', 'numeric', 'boolean'].includes(conf.type)) throw new ResponseError(400, 'badRequest', 'Facets are only supported on keywords, boolean and numeric fields');
           aggs[name] = {
             cardinality: {
@@ -133,7 +173,7 @@ function metric2aggs(metrics = {}, config) {
           break;
         }
       }
-      if (aggs[name] && metric.metrics) {
+      if (aggs[name] && metric.metrics && conf?.type !== 'flatNested') {
         const subAggregations = metric2aggs(metric.metrics, config);
         aggs[name].aggs = subAggregations;
       }

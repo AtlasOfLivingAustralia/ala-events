@@ -29,9 +29,10 @@ export function TaxonClassification({
   majorOnly?: boolean;
   className?: string;
 }) {
+  const rows = classification ?? [];
   const classificationFiltered = majorOnly
-    ? classification.filter((c) => majorRanks.includes(c.rank) && c.name)
-    : classification;
+    ? rows.filter((c) => majorRanks.includes(c.rank) && c.name)
+    : rows;
   return (
     <Classification className={className}>
       {classificationFiltered.map((c, i) => (

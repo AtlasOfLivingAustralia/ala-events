@@ -1,5 +1,7 @@
 function mapFacetBuckets(data, field) {
-  return data.aggregation.buckets.map((bucket) => {
+  const buckets = data.aggregation?.buckets;
+  if (!Array.isArray(buckets)) return [];
+  return buckets.map((bucket) => {
     const predicate = {
       type: 'equals',
       key: field,
@@ -234,7 +236,7 @@ const getCardinality = (
         precision_threshold: precisionThreshhold,
       },
     })
-    .then((data) => data.aggregation.value);
+    .then((data) => data.aggregation?.value ?? 0);
 };
 
 /**

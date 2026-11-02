@@ -1,3 +1,5 @@
+const { joinedLineageKeyOptions } = require('../shared/lineageKey');
+
 const config =
 {
   options: {
@@ -17,171 +19,7 @@ const config =
         defaultLowerBound: 'lte'
       }
     },
-    taxonKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          taxonKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.taxonKey'
-          }
-        }
-      }
-    },
-    kingdomKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          kingdomKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.kingdomKey'
-          }
-        }
-      }
-    },
-    phylumKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          phylumKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.phylumKey'
-          }
-        }
-      }
-    },
-    classKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          classKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.classKey'
-          }
-        }
-      }
-    },
-    orderKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          orderKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.orderKey'
-          }
-        }
-      }
-    },
-    familyKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          familyKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.familyKey'
-          }
-        }
-      }
-    },
-    genusKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          genusKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.genusKey'
-          }
-        }
-      }
-    },
-    speciesKey: {
-      join: 'occurrence',
-      config: {
-        options: {
-          speciesKey: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.speciesKey'
-          }
-        }
-      }
-    },
-    kingdom: {
-      join: 'occurrence',
-      config: {
-        options: {
-          kingdom: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.kingdom'
-          }
-        }
-      }
-    },
-    phylum: {
-      join: 'occurrence',
-      config: {
-        options: {
-          phylum: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.phylum'
-          }
-        }
-      }
-    },
-    class: {
-      join: 'occurrence',
-      config: {
-        options: {
-          class: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.class'
-          }
-        }
-      }
-    },
-    order: {
-      join: 'occurrence',
-      config: {
-        options: {
-          order: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.order'
-          }
-        }
-      }
-    },
-    family: {
-      join: 'occurrence',
-      config: {
-        options: {
-          family: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.family'
-          }
-        }
-      }
-    },
-    genus: {
-      join: 'occurrence',
-      config: {
-        options: {
-          genus: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.genus'
-          }
-        }
-      }
-    },
-    species: {
-      join: 'occurrence',
-      config: {
-        options: {
-          species: {
-            type: 'keyword',
-            field: 'occurrence.gbifClassification.species'
-          }
-        }
-      }
-    },
+    ...joinedLineageKeyOptions('occurrence.taxonomy'),
     occurrenceSamplingProtocol: {
       join: 'occurrence',
       config: {
@@ -824,21 +662,9 @@ const config =
             type: 'keyword',
             field: 'basisOfRecord'
           },
-          class: {
-            type: 'keyword',
-            field: 'gbifClassification.class'
-          },
           eventID: {
             type: 'keyword',
             field: 'eventID'
-          },
-          family: {
-            type: 'keyword',
-            field: 'gbifClassification.family'
-          },
-          genus: {
-            type: 'keyword',
-            field: 'gbifClassification.genus'
           },
           identificationReferences: {
             type: 'keyword',
@@ -848,17 +674,9 @@ const config =
             type: 'keyword',
             field: 'core.identificationRemarks'
           },
-          kingdom: {
-            type: 'keyword',
-            field: 'gbifClassification.kingdom'
-          },
           occurrenceID: {
             type: 'keyword',
             field: 'core.occurrenceID'
-          },
-          order: {
-            type: 'keyword',
-            field: 'gbifClassification.order'
           },
           organismQuantity: {
             type: 'keyword',
@@ -868,21 +686,19 @@ const config =
             type: 'keyword',
             field: 'core.organismQuantityType'
           },
-          phylum: {
-            type: 'keyword',
-            field: 'gbifClassification.phylum'
-          },
-          scientificName: {
-            type: 'keyword',
-            field: 'gbifClassification.acceptedUsage.name.keyword'
-          },
-          taxonRank: {
-            type: 'keyword',
-            field: 'gbifClassification.acceptedUsage.rank'
-          },
+          // Parent config prefix is "occurrence", so the nested path is occurrence.taxonomy.
           taxonKey: {
-            type: 'keyword',
-            field: 'core.taxonomy.taxonKey'
+            type: 'flatNested',
+            field: 'taxonomy',
+            config: {
+              prefix: 'occurrence.taxonomy',
+              options: {
+                taxonKey: {
+                  type: 'keyword',
+                  field: 'taxonKey'
+                }
+              }
+            }
           }
         }
       }

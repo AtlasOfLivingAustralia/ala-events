@@ -294,7 +294,6 @@ export function OccurrenceKey() {
                   <div>
                     <TaxonClassification
                       className="flex mb-1"
-                      majorOnly
                       classification={occurrence.gbifClassification?.classification}
                     />
 

@@ -13,9 +13,9 @@ export function TaxonClassification({
 }) {
   // const theme = useContext(ThemeContext);
   return <Classification {...props}>
-    {ranks.map((rank, i, { length }) => {
+    {(ranks || []).map((rank, i, { length }) => {
       if (!includeTerminal && length - 1 === i) return null;
-      return <span key={rank.rank}>{rank.name}</span>
+      return <span key={rank.key || rank.name || i}>{rank.name}</span>
     })}
   </Classification>
 };

@@ -117,7 +117,7 @@ function Summary({
       <AcceptedScientificName {...{ showAll, termMap, occurrence }} />
 
       <BasicField label="occurrenceFieldNames.taxonomicClassification">
-        <TaxonClassification classification={occurrence.gbifClassification.classification} />
+        <TaxonClassification classification={occurrence.gbifClassification?.classification} />
       </BasicField>
       {occurrence?.gadm?.level0 && (
         <BasicField label="occurrenceFieldNames.gadmClassification">

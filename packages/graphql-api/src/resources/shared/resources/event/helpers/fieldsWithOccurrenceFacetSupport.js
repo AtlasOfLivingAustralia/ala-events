@@ -8,7 +8,6 @@ export default [
   'order',
   'family',
   'genus',
-  'species',
   'locationID',
   'basisOfRecord',
   'occurrenceStatus',

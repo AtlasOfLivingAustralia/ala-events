@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const { classificationFromTaxonomy } = require('../shared/taxonomy');
 const gadmLevels = [0,1,2,3,4,5];
 
 const indexedExtraFields = [
@@ -271,14 +272,12 @@ function reduce(item) {
     eventTypeHierarchy:                 source.eventTypeHierarchy
   };
 
+  const taxonomyFields = classificationFromTaxonomy(source.taxonomy, sourceVerbatim?.core);
+
   const gbifSpecific = {
     key:                                source.id,
     gbifID:                             source.gbifId,
-    acceptedScientificName:             source.gbifClassification?.acceptedUsage?.name,
-    acceptedTaxonKey:                   source.gbifClassification?.acceptedUsage?.guid,
-    scientificName:                     source.gbifClassification?.usage?.name,
-    class:                              source.gbifClassification?.class,
-    classKey:                           source.gbifClassification?.classKey,
+    ...taxonomyFields,
     collectionKey:                      source.collectionKey,
     crawlId:                            source.crawlId,
     datasetKey:                         item._source.metadata.datasetKey,
@@ -288,57 +287,30 @@ function reduce(item) {
     distanceAboveSurfaceAccuracy:       source.distanceAboveSurfaceAccuracy,
     elevation:                          source.elevation,
     elevationAccuracy:                  source.elevationAccuracy,
-    family:                             source.gbifClassification.family,
-    familyKey:                          source.gbifClassification.familyKey,
-    genericName:                        source.gbifClassification?.usageParsedName?.genericName,
-    genus:                              source.gbifClassification.genus,
-    genusKey:                           source.gbifClassification.genusKey,
     installationKey:                    source.installationKey,
     institutionKey:                     source.institutionKey,
     issues:                             source.issues || [],
-    kingdom:                            source.gbifClassification.kingdom,
-    kingdomKey:                         source.gbifClassification.kingdomKey,
     lastCrawled:                        source.lastCrawled,
     // lastInterpreted:                    source.lastInterpreted,
     lastParsed:                         source.lastParsed,
     // mediaType:                          source.mediaType,
     // networkKey:                         source.networkKeys || [],
-    order:                              source.gbifClassification.order,
-    orderKey:                           source.gbifClassification.orderKey,
-    phylum:                             source.gbifClassification.phylum,
-    phylumKey:                          source.gbifClassification.phylumKey,
     protocol:                           source.protocol,
     publishingCountry:                  source.publishingCountry,
     publishingOrgKey:                   source.publishingOrganizationKey,
     relativeOrganismQuantity:           source.relativeOrganismQuantity,
     // repatriated:                        source.repatriated,
-    species:                            source.gbifClassification.species,
-    speciesKey:                         source.gbifClassification.speciesKey,
-    specificEpithet:                    source.gbifClassification?.usageParsedName?.specificEpithet,
-    subgenus:                           source.gbifClassification.subgenus,
-    subgenusKey:                        source.gbifClassification.subgenusKey,
-    taxonKey:                           source.gbifClassification.usage?.key,
-    taxonomicStatus:                    source.gbifClassification?.diagnostics?.status,
-    taxonRank:                          source.gbifClassification.usage?.rank,
-    // typifiedName:                       source.typifiedName,
-    verbatimScientificName:             source.gbifClassification.verbatimScientificName,
     media:                              source.multimediaItems || [],
     facts:                              source.measurementOrFactItems || [],
     identifiers:                        [],
     relations:                          [],
-    extensions:                         sourceVerbatim.extensions,
-    gbifClassification:                 source.gbifClassification,
+    extensions:                         sourceVerbatim?.extensions,
 
     // not in v1
     datasetTitle:                       item._source.metadata.datasetTitle,
     publisherTitle:                     source.publisherTitle,
     parsedEventDate:                    source.eventDate
   };
-
-  if (gbifSpecific?.gbifClassification?.acceptedUsage?.guid) {
-    gbifSpecific.gbifClassification.acceptedUsage.key = gbifSpecific?.gbifClassification?.acceptedUsage?.guid;
-    delete gbifSpecific?.gbifClassification?.acceptedUsage?.guid;
-  }
 
   // extra gadm specific fields
   let gadm = {gadm:{}};
