@@ -2,6 +2,10 @@
 
 const _ = require('lodash');
 const { ResponseError } = require('../../resources/errorHandler');
+const { LEAF_TAXON_FIELD } = require('../../resources/shared/taxonomy');
+
+// shortcut: speciesKey cardinality is the leaf taxon, until taxonomy.rank is indexed
+const LEAF_CARDINALITY_KEYS = new Set(['taxonKey', 'speciesKey']);
 
 function flatNestedField(conf, metricKey) {
   const inner = conf.config?.options?.[metricKey];
@@ -155,8 +159,17 @@ function metric2aggs(metrics = {}, config) {
           break;
         }
         case 'cardinality': {
-          if (conf.type === 'flatNested') {
+          if (conf.type === 'flatNested' && !LEAF_CARDINALITY_KEYS.has(metric.key)) {
             aggs[name] = flatNestedAgg(name, conf, metric, 'cardinality');
+            break;
+          }
+          if (conf.type === 'flatNested') {
+            aggs[name] = {
+              cardinality: {
+                field: LEAF_TAXON_FIELD,
+                precision_threshold: metric.precision_threshold || 40000
+              }
+            };
             break;
           }
           if (!['keyword', 'numeric', 'boolean'].includes(conf.type)) throw new ResponseError(400, 'badRequest', 'Facets are only supported on keywords, boolean and numeric fields');

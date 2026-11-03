@@ -12,7 +12,7 @@ import fieldsWithTemporalSupport from './helpers/fieldsWithTemporalSupport.js';
 import fieldsWithFacetSupport from './helpers/fieldsWithFacetSupport.js';
 import fieldsWithOccurrenceFacetSupport from './helpers/fieldsWithOccurrenceFacetSupport.js';
 import fieldsWithStatsSupport from './helpers/fieldsWithStatsSupport.js';
-import { exclusiveTaxaFromBuckets } from './exclusiveTaxa.js';
+import { taxaFromLeafBuckets } from './exclusiveTaxa.js';
 // there are many fields that support facets. This function creates the resolvers for all of them
 const facetReducer = (dictionary, facetName) => {
   dictionary[facetName] = getFacet(facetName);
@@ -223,17 +223,17 @@ export default {
       );
     },
     distinctTaxa: async ({ eventID }, query, { dataSources }) => {
+      // shortcut: one terms page of leaf keys, until an event identifies more than 10000 taxa
       const { aggregations } = await dataSources.eventAPI.searchOccurrences({
         query: {
           eventID,
-          facet: 'gbifClassification_acceptedUsage_key',
-          'facet.size.gbifClassification_acceptedUsage_key': 10000,
+          facet: 'species',
+          'facet.size.species': 10000,
           size: 0,
         },
       });
-      const buckets =
-        aggregations?.gbifClassification_acceptedUsage_key_facet?.buckets || [];
-      return exclusiveTaxaFromBuckets(buckets, (key) =>
+      const buckets = aggregations?.species_facet?.buckets || [];
+      return taxaFromLeafBuckets(buckets, (key) =>
         dataSources.taxonAPI.getTaxonByKey({ key, useBie: true }),
       );
     },

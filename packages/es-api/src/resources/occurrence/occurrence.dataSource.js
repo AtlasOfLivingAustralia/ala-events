@@ -4,6 +4,7 @@ const { search } = require('../esRequest');
 const env = require('../../config');
 const { reduce } = require('./reduce');
 const { queryReducer } = require('../../responseAdapter');
+const { aggsUseLeafTaxon, leafTaxonRuntimeMappings } = require('../shared/taxonomy');
 
 const searchIndex = env.occurrence.index || 'occurrence';
 
@@ -36,7 +37,10 @@ async function query({ query, aggs, size = 20, from = 0, metrics, req }) {
     size,
     from,
     query,
-    aggs
+    aggs,
+    ...((aggsUseLeafTaxon(aggs) || aggsUseLeafTaxon(query)) && {
+      runtime_mappings: leafTaxonRuntimeMappings(),
+    }),
   };
 
   let response = await search({ client, index: searchIndex, query: esQuery, req });

@@ -119,7 +119,30 @@ test('species cardinality counts the leaf runtime field and lineage facets are n
     'occurrence.taxonomy.taxonKey',
   );
   assert.strictEqual(aggsUseLeafTaxon(aggs), true);
-  assert.match(leafTaxonRuntimeMappings().leafTaxonKey.script.source, /occ\.taxonomy/);
+  const leafScript = leafTaxonRuntimeMappings().leafTaxonKey.script.source;
+  assert.match(leafScript, /_source\.taxonomy/);
+  assert.match(leafScript, /occurrence\.taxonomy/);
+
+  const taxonCardinality = metric2aggs(
+    {
+      cardinality_taxonKey: { type: 'cardinality', key: 'taxonKey' },
+      cardinality_kingdomKey: { type: 'cardinality', key: 'kingdomKey' },
+      species_facet: { type: 'facet', key: 'species', size: 10000 },
+    },
+    eventOccurrenceConfig,
+  );
+  assert.strictEqual(taxonCardinality.cardinality_taxonKey.cardinality.field, 'leafTaxonKey');
+  assert.strictEqual(
+    taxonCardinality.cardinality_kingdomKey.nested.path,
+    'occurrence.taxonomy',
+  );
+  assert.strictEqual(taxonCardinality.species_facet.terms.field, 'leafTaxonKey');
+
+  const occurrenceCardinality = metric2aggs(
+    { cardinality_taxonKey: { type: 'cardinality', key: 'taxonKey' } },
+    occurrenceConfig,
+  );
+  assert.strictEqual(occurrenceCardinality.cardinality_taxonKey.cardinality.field, 'leafTaxonKey');
 
   const reduced = queryReducer({
     body: {

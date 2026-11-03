@@ -1,14 +1,11 @@
-import React, {useContext, useState} from 'react';
+import React from 'react';
 import {Button, Properties} from "../../../components";
 import * as css from "../styles";
 import {Group} from "./Groups";
 import {EnumFacetListInline, FacetList} from "./properties";
 import {Measurements} from "./Measurements";
 import {SingleTree} from "./Tree/SingleTree";
-import TaxonTreeMap from "../../../components/TaxonTreeMap/TaxonTreeMap";
-import ApiContext from "../../../dataManagement/api/ApiContext";
 import {MeasurementSummary} from "./MeasurementSummary";
-import env from '../../../../.env.json';
 
 const { Term: T, Value: V } = Properties;
 
@@ -210,149 +207,9 @@ export function Summaries({ event, setActiveEvent, addEventTypeToSearch, setTab,
       }
     </Group>
     <Methodology             {...{ showAll, termMap }} />
-    <TaxonomicCoverage       {...{ showAll, termMap, event }} />
     {hasMeasurement &&  <Measurements data={data.measurementResults}  /> }
     {!hasMeasurement &&  <MeasurementSummary data={mofHierarchyJoined}  /> }
   </>
-}
-
-function TaxonomicCoverage({ showAll, termMap, event }) {
-
-  const apiClient = useContext(ApiContext);
-  const taxonLevels = [
-    'kingdom',
-    'phylum',
-    'class',
-    'order',
-    'family',
-    'genus',
-    'species'
-  ]
-
-  const hasContent = taxonLevels.find(x => termMap[x].value);
-  if (!hasContent) return null;
-
-  function initialise(taxonLevels, termMap) {
-
-    let initialLevel = 0
-    let initialChartData = termMap[taxonLevels[initialLevel]].value;
-    let initialTaxonomy = []
-
-    while (initialChartData.length == 1 && initialLevel  < taxonLevels.length) {
-      initialTaxonomy.push(
-          {rank: taxonLevels[initialLevel], name: termMap[taxonLevels[initialLevel]].value[0].key}
-      );
-
-      if (initialLevel + 1 == taxonLevels.length){
-        break;
-      }
-
-      initialLevel = initialLevel + 1;
-      initialChartData = termMap[taxonLevels[initialLevel]].value;
-    }
-    return {
-      level: initialLevel,
-      chartData: initialChartData,
-      selectedTaxonomy: initialTaxonomy
-    }
-  }
-
-  let result = initialise(taxonLevels, termMap);
-  const iSelectedTaxonomy = result.selectedTaxonomy;
-  const iChartData = result.chartData;
-
-  if (!iChartData || iChartData.length == 0){
-    return null;
-  }
-
-  // initial values
-  let { level, chartData, selectedTaxonomy}  = initialise(taxonLevels, termMap);
-
-  const reset = () => {
-    const initialValues = initialise(taxonLevels, termMap);
-    level = initialValues.level;
-    chartData = initialValues.chartData;
-    selectedTaxonomy = initialValues.selectedTaxonomy;
-  }
-
-  const onSelection = (selectedIndex, callback) => {
-
-    if (level == taxonLevels.length -1){
-      return;
-    }
-
-    let taxonName = chartData[selectedIndex].key;
-    selectedTaxonomy.push({rank: taxonLevels[level], name: taxonName});
-
-    level = level + 1;
-    const facetKey = taxonLevels[level];
-    const query = `
-        query list($predicate: Predicate){
-          results: eventSearch(predicate:$predicate){
-            occurrenceFacet {
-              ${facetKey} {
-                count
-                key
-              }
-            }       
-          }
-        }
-    `;
-
-    let higherTaxaParams = selectedTaxonomy.map(item => {
-      return item.rank + '=' + item.name;
-    }).join('&')
-
-    //  to be removed..
-    let queryUrl = env.NAME_MATCHING_WS_URL + "searchByClassification?scientificName=" + taxonName + '&' + higherTaxaParams;
-
-    // translate to sci names - add higher classification
-    fetch(queryUrl, { method: 'GET'})
-    .then((response) => response.json())
-    .then((taxonLookup) => {
-
-      let taxonID = taxonLookup.taxonConceptID;
-
-      // load the tree
-      const predicate = {
-        type: "and",
-        predicates: [
-          { type: "equals", key: "taxonKey", value: taxonID },
-          { type: "equals", key: "eventHierarchy", value: event.eventID }
-        ]
-      }
-
-      // get the key of the selected node
-      // do the GraphQL query to get list of taxa
-      const { promise: dataPromise, cancel } = apiClient.query({
-        query: query, variables: {predicate:predicate}
-      });
-
-      dataPromise.then(response => {
-        const {data, error} = response;
-        chartData = data.results.occurrenceFacet[facetKey];
-        if (chartData && chartData.length > 0) {
-          callback(chartData, selectedTaxonomy);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-    })
-    .catch((err) => {
-      console.log(err.message);
-    });
-  }
-
-  return <Group label="eventDetails.groups.taxonomicCoverage">
-    <TaxonTreeMap
-        initialData={iChartData}
-        initialPath={iSelectedTaxonomy}
-        onSelection={onSelection}
-        resetCallback={() => reset()}
-    />
-  </Group>
 }
 
 function Methodology({ showAll, termMap }) {

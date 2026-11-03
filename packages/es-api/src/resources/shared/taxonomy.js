@@ -3,10 +3,12 @@ const DWC_SCIENTIFIC_NAME = 'http://rs.tdwg.org/dwc/terms/scientificName';
 const LEAF_TAXON_FIELD = 'leafTaxonKey';
 
 // Last taxonomy entry is the finest identified taxon. Rank is not stored.
+// Occurrence docs keep the array at the root; event-occurrence docs nest it under occurrence.
 const LEAF_TAXON_SCRIPT = [
-  'def occ = params._source.occurrence;',
-  'if (occ == null || occ.taxonomy == null || occ.taxonomy.size() == 0) { return; }',
-  'def leaf = occ.taxonomy.get(occ.taxonomy.size() - 1);',
+  'def tax = params._source.taxonomy;',
+  'if ((tax == null || tax.size() == 0) && params._source.occurrence != null) { tax = params._source.occurrence.taxonomy; }',
+  'if (tax == null || tax.size() == 0) { return; }',
+  'def leaf = tax.get(tax.size() - 1);',
   'if (leaf != null && leaf.taxonKey != null) { emit(leaf.taxonKey); }',
 ].join(' ');
 

@@ -200,34 +200,6 @@ query list($predicate1: Predicate, $predicate2: Predicate, $measurementDetailPre
         count
         key
       }
-      kingdom {
-        count
-        key
-      }
-      phylum {
-        count
-        key
-      }               
-      order {
-        count
-        key
-      }     
-      class {
-        count
-        key
-      }    
-      family {
-        count
-        key
-      }
-      genus {
-        count
-        key
-      }    
-      species {
-        count
-        key
-      }            
       samplingProtocol {
         count
         key

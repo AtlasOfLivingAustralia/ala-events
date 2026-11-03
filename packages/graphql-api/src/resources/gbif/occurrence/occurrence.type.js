@@ -431,32 +431,32 @@ const typeDef = gql`
   type GbifClassification {
     acceptedUsage: OccurrenceNameUsage
     class: String
-    classKey: Int
+    classKey: ID
     classification: [Classification]
     classificationPath: String
     diagnostics: Diagnostics
     family: String
-    familyKey: Int
+    familyKey: ID
     genus: String
-    genusKey: Int
+    genusKey: ID
     kingdom: String
-    kingdomKey: Int
+    kingdomKey: ID
     order: String
-    orderKey: Int
+    orderKey: ID
     phylum: String
-    phylumKey: Int
+    phylumKey: ID
     species: String
-    speciesKey: Int
+    speciesKey: ID
     synonym: Boolean
     taxonID: String
-    taxonKey: Int
+    taxonKey: ID
     usage: OccurrenceNameUsage
     usageParsedName: UsageParsedName
     verbatimScientificName: String
   }
 
   type Classification {
-    key: Int
+    key: ID
     name: String
     rank: String
     synonym: Boolean
@@ -469,10 +469,10 @@ const typeDef = gql`
   }
 
   type OccurrenceNameUsage {
-    key: Int!
-    name: String!
-    rank: String!
-    formattedName: String!
+    key: ID
+    name: String
+    rank: String
+    formattedName: String
   }
 
   type UsageParsedName {

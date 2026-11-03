@@ -1,69 +1,38 @@
 /* eslint-env mocha */
 import assert from 'assert';
-import {
-  exclusiveTaxaFromBuckets,
-  exclusiveTaxonCounts,
-} from './exclusiveTaxa.js';
+import { taxaFromLeafBuckets } from './exclusiveTaxa.js';
 
-const parents = {
-  s: 'g',
-  g: 'k',
-  k: null,
-  s2: 'missing-genus',
-  'missing-genus': 'k',
-};
-
-describe('exclusiveTaxonCounts', () => {
-  it('drops parent ranks and keeps genus-only identifications', () => {
-    const rows = exclusiveTaxonCounts(
+describe('taxaFromLeafBuckets', () => {
+  it('keeps the leaf count and loads each taxon once', async () => {
+    const calls = [];
+    const rows = await taxaFromLeafBuckets(
       [
-        { key: 'k', doc_count: 8 },
-        { key: 'g', doc_count: 8 },
-        { key: 's', doc_count: 5 },
-      ],
-      (key) => parents[key],
-    );
-    assert.deepStrictEqual(rows, [
-      { key: 'g', count: 3 },
-      { key: 's', count: 5 },
-    ]);
-  });
-
-  it('walks past a rank that is missing from the facet', () => {
-    const rows = exclusiveTaxonCounts(
-      [
-        { key: 'k', doc_count: 10 },
-        { key: 's2', doc_count: 10 },
-      ],
-      (key) => parents[key],
-    );
-    assert.deepStrictEqual(rows, [{ key: 's2', count: 10 }]);
-  });
-
-  it('loads missing parents and keeps the identified taxon', async () => {
-    const taxa = {
-      s2: { key: 's2', parentKey: 'missing-genus', scientificName: 'Species two', kingdom: 'Animalia' },
-      'missing-genus': { key: 'missing-genus', parentKey: 'k' },
-      k: { key: 'k', parentKey: null, scientificName: 'Animalia' },
-    };
-    const rows = await exclusiveTaxaFromBuckets(
-      [
-        { key: 'k', doc_count: 10 },
-        { key: 's2', doc_count: 10 },
+        { key: 'species-1', doc_count: 4 },
+        { key: 'genus-1', doc_count: 2 },
+        { key: 'species-1', doc_count: 1 },
       ],
       async (key) => {
-        if (!taxa[key]) throw new Error('missing');
-        return taxa[key];
+        calls.push(key);
+        return { key, scientificName: key, kingdom: 'Animalia' };
       },
     );
+    assert.deepStrictEqual(calls, ['species-1', 'genus-1']);
     assert.deepStrictEqual(rows, [
-      {
-        key: 's2',
-        parentKey: 'missing-genus',
-        scientificName: 'Species two',
-        kingdom: 'Animalia',
-        count: 10,
-      },
+      { key: 'species-1', scientificName: 'species-1', kingdom: 'Animalia', count: 4 },
+      { key: 'genus-1', scientificName: 'genus-1', kingdom: 'Animalia', count: 2 },
+      { key: 'species-1', scientificName: 'species-1', kingdom: 'Animalia', count: 1 },
     ]);
+  });
+
+  it('rejects when a taxon lookup fails', async () => {
+    await assert.rejects(
+      taxaFromLeafBuckets(
+        [{ key: 'species-1', doc_count: 4 }],
+        async () => {
+          throw new Error('bie down');
+        },
+      ),
+      /bie down/,
+    );
   });
 });

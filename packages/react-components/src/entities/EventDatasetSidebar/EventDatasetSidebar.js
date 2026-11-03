@@ -270,9 +270,6 @@ query dataset($key: JSON!){
       }        
     }   
     occurrenceFacet {
-      family {
-        key
-      }
       samplingProtocol {
         key
       }    

@@ -15,7 +15,6 @@ import {
   GiPlantsAndAnimals,
   MdAccountTree,
   MdLocationPin,
-  MdOutlineDeviceHub,
   MdOutlineDeviceThermostat,
   RiSurveyLine
 } from "react-icons/all";
@@ -120,29 +119,6 @@ query list($datasetKey: JSON){
         key
       }
     }   
-    occurrenceFacet {
-      kingdom {
-        key
-      } 
-      phylum {
-        key
-      }            
-      class {
-        key
-      } 
-      order (size: 10){
-        key
-      }         
-      family (size: 10){
-        key
-      }    
-      genus (size: 10){
-        key
-      }            
-      samplingProtocol (size: 10){
-        key
-      }
-    }
   }
 }
 `;
@@ -208,7 +184,7 @@ function Dataset({ datasetKey, datasetTitle, count, occurrenceCount, extensions,
     currentFilterContext.setField('measurementOrFactTypes', [mof], true)
   }
 
-  const { documents, occurrenceFacet, facet, stats, cardinality } = data.eventSearch;
+  const { documents, facet, stats, cardinality } = data.eventSearch;
 
   const hasMeasurements = facet.measurementOrFactTypes != null && facet.measurementOrFactTypes.length > 0;
   let hasStructure = facet.eventTypeHierarchy != null && facet.eventTypeHierarchy.length > 0;
@@ -222,19 +198,6 @@ function Dataset({ datasetKey, datasetTitle, count, occurrenceCount, extensions,
   } else if (occurrenceCount && occurrenceCount > 0){
     structure.push("Occurrence");
     hasStructure = true;
-  }
-
-  function getSensibleLevel(occurrenceFacet){
-    let levels = Array("kingdom", "phylum", "class", "order", "family", "genus");
-    let result = occurrenceFacet[levels[0]];
-    for (var i = 1; i < levels.length; i++){
-      if (occurrenceFacet[levels[i]] && occurrenceFacet[levels[i]].length < 20){
-        result = occurrenceFacet[levels[i]];
-      } else {
-        break;
-      }
-    }
-    return result;
   }
 
   function getLastPartOfURL(url) {
@@ -274,12 +237,6 @@ function Dataset({ datasetKey, datasetTitle, count, occurrenceCount, extensions,
             </div>
         </div>
         <div css={style.details_col2}>
-          <div style={{ marginBottom: '10px'}}><MdOutlineDeviceHub/> Taxonomy</div>
-          <div>
-             <Tags style={{fontSize: '18px'}}>
-                { getSensibleLevel(occurrenceFacet).map(x => <Tag key={x.key} type="light" outline={true}>{x.key}</Tag>) }
-             </Tags>
-          </div>
           {hasMeasurements &&
             <div style={{ marginTop: '25px'}}>
               <div style={{ marginBottom: '10px'}}>

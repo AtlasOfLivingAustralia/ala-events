@@ -314,13 +314,6 @@ export default gql`
 
   type EventOccurrenceFacet {
     datasetKey(size: Int, include: String):       [EventOccurrenceFacetResult_string]
-    kingdom(size: Int, include: String):          [EventOccurrenceFacetResult_string]
-    phylum(size: Int, include: String):           [EventOccurrenceFacetResult_string]
-    class(size: Int, include: String):            [EventOccurrenceFacetResult_string]
-    order(size: Int, include: String):            [EventOccurrenceFacetResult_string]
-    family(size: Int, include: String):           [EventOccurrenceFacetResult_string]
-    genus(size: Int, include: String):            [EventOccurrenceFacetResult_string]
-    species(size: Int, include: String):          [EventOccurrenceFacetResult_string]
     samplingProtocol(size: Int, include: String): [EventOccurrenceFacetResult_string]
     locationID(size: Int, include: String):       [EventOccurrenceFacetResult_string]
     basisOfRecord(size: Int, include: String):    [EventOccurrenceFacetResult_string]
