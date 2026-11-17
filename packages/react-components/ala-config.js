@@ -2,7 +2,7 @@ const config = {
     baseUrl: 'https://events.test.ala.org.au/',
     authServer: 'https://auth-test.ala.org.au/',
     authClientID: 'oidc-events-test',
-    collectionsServer: "https://collections-test.ala.org.au"
+    collectionsServer: "https://collections.test.ala.org.au"
 }
 
 // Production

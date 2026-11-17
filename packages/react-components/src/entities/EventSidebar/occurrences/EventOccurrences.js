@@ -3,7 +3,7 @@ import {useQuery} from "../../../dataManagement/api";
 import { DataTable, TBody} from "../../../components";
 import {OccurrenceEventSearchLink, OccurrenceLink} from "../../../components/resourceLinks/resourceLinks";
 import { MdOutbound} from "react-icons/md";
-import {MdHorizontalRule} from "react-icons/all";
+import {MdHorizontalRule} from "react-icons/md";
 
 const EVENT_OCCURRENCE_QUERY = `
 query list ($eventID: String, $datasetKey:String, $size:Int, $from:Int) {

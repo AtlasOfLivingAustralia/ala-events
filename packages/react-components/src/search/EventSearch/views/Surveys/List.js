@@ -14,12 +14,14 @@ import env from "../../../../../.env.json";
 import ThemeContext from "../../../../style/themes/ThemeContext";
 import {ResultsHeader} from "../../../ResultsHeader";
 import {
-    FaCreativeCommonsSampling,
-    GiBarrel, GrDocumentMissing, GrDocumentVerified, MdHorizontalRule,
+    MdHorizontalRule,
     MdLocationPin,
-    MdOutlineDeviceThermostat
-} from "react-icons/all";
-import {MdEvent} from "react-icons/md";
+    MdOutlineDeviceThermostat,
+    MdEvent
+} from "react-icons/md";
+import {FaCreativeCommonsSampling} from "react-icons/fa";
+import {GiBarrel} from "react-icons/gi";
+import {GrDocumentMissing, GrDocumentVerified} from "react-icons/gr";
 import {StringParam, useQueryParam} from "use-query-params";
 
 export const List = ({query, first, prev, next, size, from, data, total, loading }) => {

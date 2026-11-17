@@ -1,6 +1,6 @@
 import { jsx, css } from '@emotion/react'
 import React, { useState, useEffect } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import * as charts from '../../../../widgets/dashboard';
 import { Resizable } from 're-resizable';
 import Map from "../Map";

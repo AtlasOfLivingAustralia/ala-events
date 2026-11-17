@@ -6,7 +6,7 @@ import {
     OccurrenceLocationSearchLink
 } from "../../../components/resourceLinks/resourceLinks";
 import {MdOutbound} from "react-icons/md";
-import {MdHorizontalRule} from "react-icons/all";
+import {MdHorizontalRule} from "react-icons/md";
 
 const EVENT_MY_QUERY = `
 query list ($locationID: String, $month: Int, $year: Int, $size:Int, $from:Int) {

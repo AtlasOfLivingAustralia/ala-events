@@ -12,13 +12,13 @@ import { useQueryParam, StringParam } from 'use-query-params';
 import {useGraphQLContext} from "../../../../dataManagement/api/GraphQLContext";
 import {ResultsHeader} from "../../../ResultsHeader";
 import {
-  GiPlantsAndAnimals,
   MdAccountTree,
   MdLocationPin,
   MdOutlineDeviceHub,
-  MdOutlineDeviceThermostat,
-  RiSurveyLine
-} from "react-icons/all";
+  MdOutlineDeviceThermostat
+} from "react-icons/md";
+import {GiPlantsAndAnimals} from "react-icons/gi";
+import {RiSurveyLine} from "react-icons/ri";
 import {MdEvent, MdOutbound} from "react-icons/md";
 import {OccurrenceDatasetSearchLink} from "../../../../components/resourceLinks/resourceLinks";
 
