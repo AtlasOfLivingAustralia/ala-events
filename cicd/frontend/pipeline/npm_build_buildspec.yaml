@@ -48,8 +48,8 @@ phases:
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-        nvm install 16.13.1
-        nvm use 16.13.1
+        nvm install 24.3.0
+        nvm use 24.3.0
         node -v
       - npm install
   build:
