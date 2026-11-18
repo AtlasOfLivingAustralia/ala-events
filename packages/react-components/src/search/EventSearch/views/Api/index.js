@@ -3,7 +3,7 @@ import {Button, DetailsDrawer, Tooltip} from "../../../../components";
 import {css} from "@emotion/react";
 import {GraphQLSidebar} from "../../../../entities/GraphQLSidebar/GraphQLSidebar";
 import {useDialogState} from "reakit/Dialog";
-import {GrGraphQl} from "react-icons/all";
+import {GrGraphQl} from "react-icons/gr";
 
 function GraphQLApiInfo() {
     const dialog = useDialogState({ animated: true, modal: false, visible: false });
