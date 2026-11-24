@@ -17,7 +17,7 @@ export default {
 const labels = {
   taxonKey: {
     type: 'ENDPOINT',
-    template: ({ id, api }) => `//namematching-ws-test.ala.org.au/api/getByTaxonID?taxonID=${encodeURIComponent(id)}`,
+    template: ({ id, api }) => `//namematching-ws.test.ala.org.au/api/getByTaxonID?taxonID=${encodeURIComponent(id)}`,
     transform: result => ({ title: result.scientificName })
   },
 }
